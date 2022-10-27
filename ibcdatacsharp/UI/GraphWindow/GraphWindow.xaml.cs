@@ -1,7 +1,9 @@
-﻿using ibcdatacsharp.UI.Device;
-using System;
+﻿#define PARALLEL
+
+using ibcdatacsharp.UI.Device;
 using System.Threading.Tasks;
 using System.Timers;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -24,26 +26,34 @@ namespace ibcdatacsharp.UI.GraphWindow
             device = mainWindow.device;
             DataContext = this;
         }
-        public Model modelAccelerometer { get; private set; }
-        public Model modelGyroscope { get; private set; }
-        public Model modelMagnetometer { get; private set; }
-        // Funcion para inicializar los graficos
+        public ViewModel modelAccelerometer { get; private set; }
+        public ViewModel modelGyroscope { get; private set; }
+        public ViewModel modelMagnetometer { get; private set; }
+        // Inicializa los modelos
         private void initModels()
         {
-            modelAccelerometer = new Model(accelerometer ,-80, 80, titleY : "Accelerometer", units : "m/s^2");
-            modelGyroscope = new Model(gyroscope ,-600, 600, titleY: "Gyroscope", units: "g/s^2");
-            modelMagnetometer = new Model(magnetometer ,-4, 4, titleY: "Magnetometer", units: "k(mT)");
+            modelAccelerometer = new ViewModel(-80, 80);
+            modelGyroscope = new ViewModel(-600, 600);
+            modelMagnetometer = new ViewModel(-4, 4);
         }
         // Funcion para actualizar la grafica del acelerometro
+#if PARALLEL
         public async Task updateAccelerometer(int frame, double x, double y, double z)
+#else
+        public async void updateAccelerometer(int frame, double x, double y, double z)
+#endif
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelAccelerometer.updateData(new double[] { x, y, z });
+                modelAccelerometer.update(frame, new double[] { x, y, z });
             });
         }
-        // Funcion para borrar los datos del acelerometro
+#if PARALLEL
         public async Task clearAccelerometer()
+#else
+        public async void clearAccelerometer()
+#endif
+        // Funcion para borrar los datos del acelerometro
         {
             await Dispatcher.BeginInvoke(CLEAR_PRIORITY, () =>
             {
@@ -51,15 +61,23 @@ namespace ibcdatacsharp.UI.GraphWindow
             });
         }
         // Funcion para actualizar la grafica del giroscopio
+#if PARALLEL
         public async Task updateGyroscope(int frame, double x, double y, double z)
+#else
+        public async void updateGyroscope(int frame, double x, double y, double z)
+#endif
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelGyroscope.updateData(new double[] { x, y, z });
+                modelGyroscope.update(frame, new double[] { x, y, z });
             });
         }
         // Funcion para borrar los datos del giroscopio
+#if PARALLEL
         public async Task clearGyroscope()
+#else
+        public async void clearGyroscope()
+#endif
         {
             await Dispatcher.BeginInvoke(CLEAR_PRIORITY, () =>
             {
@@ -67,87 +85,89 @@ namespace ibcdatacsharp.UI.GraphWindow
             });
         }
         // Funcion para actualizar la grafica del magnetometro
+#if PARALLEL
         public async Task updateMagnetometer(int frame, double x, double y, double z)
+#else
+        public async void updateMagnetometer(int frame, double x, double y, double z)
+#endif
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelMagnetometer.updateData(new double[] { x, y, z });
+                modelMagnetometer.update(frame, new double[] { x, y, z });
             });
         }
         // Funcion para borrar los datos del magnetometro
+#if PARALLEL
         public async Task clearMagnetometer()
+#else
+        public async void clearMagnetometer()
+#endif
         {
             await Dispatcher.BeginInvoke(CLEAR_PRIORITY, () =>
             {
                 modelMagnetometer.clear();
             });
         }
+
         // Recive los datos del IMU inventado
+#if PARALLEL
         public async void onTick(object sender, ElapsedEventArgs e)
+#else
+        public void onTick(object sender, ElapsedEventArgs e)
+#endif
         {
             RawArgs rawArgs = device.rawData;
             int frame = device.frame;
-            //await updateAccelerometer(frame, rawArgs.accelerometer[0], rawArgs.accelerometer[1], rawArgs.accelerometer[2]);
-            //await updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]);
-            //await updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2]);
-            await Task.WhenAll(new Task[] { 
-                updateAccelerometer(frame, rawArgs.accelerometer[0], rawArgs.accelerometer[1], rawArgs.accelerometer[2]),
-                updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
-                updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
-            });
-        }
-        // Recive los datos del IMU inventado media timer
-        public async void onTick(object sender, EventArgs e)
-        {
-            RawArgs rawArgs = device.rawData;
-            int frame = device.frame;
+#if PARALLEL
             await Task.WhenAll(new Task[] {
                 updateAccelerometer(frame, rawArgs.accelerometer[0], rawArgs.accelerometer[1], rawArgs.accelerometer[2]),
                 updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
                 updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
             });
+#else
+            updateAccelerometer(frame, rawArgs.accelerometer[0], rawArgs.accelerometer[1], rawArgs.accelerometer[2]);
+            updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]);
+            updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2]);
+#endif
         }
-        // Borra el contenido de los graficos
-        public async void clearData()
+        // Recive los datos del IMU inventado media timer
+#if PARALLEL
+        public async void onTick(object sender, EventArgs e)
+#else
+        public void onTick(object sender, EventArgs e)
+#endif
         {
-            //await clearAccelerometer();
-            //await clearGyroscope();
-            //await clearMagnetometer();
+            RawArgs rawArgs = device.rawData;
+            int frame = device.frame;
+#if PARALLEL
+            await Task.WhenAll(new Task[] {
+                updateAccelerometer(frame, rawArgs.accelerometer[0], rawArgs.accelerometer[1], rawArgs.accelerometer[2]),
+                updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
+                updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
+            });
+#else
+            updateAccelerometer(frame, rawArgs.accelerometer[0], rawArgs.accelerometer[1], rawArgs.accelerometer[2]);
+            updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]);
+            updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2]);
+#endif
+        }
+#if PARALLEL
+        public async void clearData()
+#else
+        public void clearData()
+#endif
+        {
+#if PARALLEL
             await Task.WhenAll(new Task[] {
                 clearAccelerometer(),
                 clearGyroscope(),
                 clearMagnetometer(),
             });
-        }
-        public async Task renderAcceletometer()
-        {
-            await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-            {
-                modelAccelerometer.render();
-            });
-        }
-        public async Task renderGyroscope()
-        {
-            await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-            {
-                modelGyroscope.render();
-            });
-        }
-        public async Task renderMagnetometer()
-        {
-            await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-            {
-                modelMagnetometer.render();
-            });
-        }
-        public async void onRender(object sender, EventArgs e)
-        {
-            await Task.WhenAll(new Task[]
-            {
-                renderAcceletometer(),
-                renderGyroscope(),
-                renderMagnetometer(),
-            });
+#else
+            clearAccelerometer();
+            clearGyroscope();
+            clearMagnetometer();
+#endif
         }
     }
 }

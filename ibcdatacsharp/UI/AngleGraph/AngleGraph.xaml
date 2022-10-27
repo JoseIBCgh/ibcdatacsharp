@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ibcdatacsharp.UI.AngleGraph"
+      xmlns:realTimeGraphX="clr-namespace:RealTimeGraphX.WPF;assembly=RealTimeGraphX.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="AngleGraph">
@@ -14,8 +14,23 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <WpfPlot Grid.Row="0"  x:Name="angleX"/>
-        <WpfPlot Grid.Row="1"  x:Name="angleY"/>
-        <WpfPlot Grid.Row="2"  x:Name="angleZ"/>
+        <Grid Grid.Row="0">
+            <realTimeGraphX:WpfGraphGridLines Controller="{Binding modelX.Controller}" />
+            <realTimeGraphX:WpfGraphSurface Controller="{Binding modelX.Controller}" />
+            <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{Binding modelX.Controller}" StringFormat="0.0" />
+            <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{Binding modelX.Controller}" StringFormat="0.00" />
+        </Grid>
+        <Grid Grid.Row="1">
+            <realTimeGraphX:WpfGraphGridLines Controller="{Binding modelY.Controller}" />
+            <realTimeGraphX:WpfGraphSurface Controller="{Binding modelY.Controller}" />
+            <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{Binding modelY.Controller}" StringFormat="0.0" />
+            <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{Binding modelY.Controller}" StringFormat="0.00" />
+        </Grid>
+        <Grid Grid.Row="2">
+            <realTimeGraphX:WpfGraphGridLines Controller="{Binding modelZ.Controller}" />
+            <realTimeGraphX:WpfGraphSurface Controller="{Binding modelZ.Controller}" />
+            <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{Binding modelZ.Controller}" StringFormat="0.0" />
+            <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{Binding modelZ.Controller}" StringFormat="0.00" />
+        </Grid>
     </Grid>
 </Page>

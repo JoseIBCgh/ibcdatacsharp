@@ -1,6 +1,4 @@
 ﻿using ibcdatacsharp.UI.Device;
-using OxyPlot;
-using OxyPlot.Axes;
 using System;
 using System.Threading.Tasks;
 using System.Timers;
@@ -11,7 +9,7 @@ using System.Windows.Threading;
 namespace ibcdatacsharp.UI.AngleGraph
 {
     /// <summary>
-    /// Lógica de interacción para AngleGraph.xaml
+    /// Version de angle graph con la libreria RealTimeGraphX
     /// </summary>
     public partial class AngleGraph : Page
     {
@@ -26,22 +24,22 @@ namespace ibcdatacsharp.UI.AngleGraph
             device = mainWindow.device;
             DataContext = this;
         }
-        public Model modelX { get; private set; }
-        public Model modelY { get; private set; }
-        public Model modelZ { get; private set; }
-        // Funcion para inicializar los graficos
+        public ViewModel modelX { get; private set; }
+        public ViewModel modelY { get; private set; }
+        public ViewModel modelZ { get; private set; }
+        // Funcion para incializar los graficos
         private void initModels()
         {
-            modelX = new Model(angleX, titleY: "X Angle");
-            modelY = new Model(angleY, titleY: "Y Angle");
-            modelZ = new Model(angleZ, titleY: "Z Angle");
+            modelX = new ViewModel();
+            modelY = new ViewModel();
+            modelZ = new ViewModel();
         }
         // Funcion para actualizar la grafica del acelerometro
-        public async Task updateX(int frame, double data)
+        public async Task updateX(int frame, double data) 
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelX.updateData(data);
+                modelX.update(frame, data);
             });
         }
         // Funcion para borrar los datos del acelerometro
@@ -57,7 +55,7 @@ namespace ibcdatacsharp.UI.AngleGraph
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelY.updateData(data);
+                modelY.update(frame, data);
             });
         }
         // Funcion para borrar los datos del giroscopio
@@ -73,7 +71,7 @@ namespace ibcdatacsharp.UI.AngleGraph
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelZ.updateData(data);
+                modelZ.update(frame, data);
             });
         }
         // Funcion para borrar los datos del magnetometro
@@ -89,9 +87,6 @@ namespace ibcdatacsharp.UI.AngleGraph
         {
             AngleArgs angleArgs = device.angleData;
             int frame = device.frame;
-            //await updateX(frame, angleArgs.angle[0]);
-            //await updateY(frame, angleArgs.angle[1]);
-            //await updateZ(frame, angleArgs.angle[2]);
             await Task.WhenAll(new Task[]
             {
                 updateX(frame, angleArgs.angle[0]),
@@ -114,43 +109,10 @@ namespace ibcdatacsharp.UI.AngleGraph
         // Borra el contenido de los graficos
         public async void clearData()
         {
-            //await clearX();
-            //await clearY();
-            //await clearZ();
             await Task.WhenAll(new Task[] {
                 clearX(),
                 clearY(),
                 clearZ(),
-            });
-        }
-        public async Task renderX()
-        {
-            await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-            {
-                modelX.render();
-            });
-        }
-        public async Task renderY()
-        {
-            await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-            {
-                modelY.render();
-            });
-        }
-        public async Task renderZ()
-        {
-            await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-            {
-                modelZ.render();
-            });
-        }
-        public async void onRender(object sender, EventArgs e)
-        {
-            await Task.WhenAll(new Task[]
-            {
-                renderX(),
-                renderY(),
-                renderZ(),
             });
         }
     }

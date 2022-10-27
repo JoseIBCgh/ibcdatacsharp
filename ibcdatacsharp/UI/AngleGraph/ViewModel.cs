@@ -3,7 +3,7 @@ using RealTimeGraphX.Renderers;
 using RealTimeGraphX.WPF;
 using System.Windows.Media;
 
-namespace ibcdatacsharp.UI.RealTimeGraphX.AngleGraph
+namespace ibcdatacsharp.UI.AngleGraph
 {
     // Modelo para el angle graph version RealTimeGraphX
     public class ViewModel

@@ -4,7 +4,7 @@ using RealTimeGraphX.WPF;
 using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace ibcdatacsharp.UI.RealTimeGraphX.GraphWindow
+namespace ibcdatacsharp.UI.GraphWindow
 {
     // Modelos para el grfico acc, gyr, mag version RealTimeGraphX
     public class ViewModel
@@ -41,7 +41,7 @@ namespace ibcdatacsharp.UI.RealTimeGraphX.GraphWindow
             DoubleDataPoint kframesddp = new DoubleDataPoint(kframes);
             List<DoubleDataPoint> kframesList = new List<DoubleDataPoint>();
             List<DoubleDataPoint> dataList = new List<DoubleDataPoint>();
-            for(int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 kframesList.Add(kframesddp);
                 dataList.Add(new DoubleDataPoint(data[i]));
