@@ -140,9 +140,5 @@ C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\UI\File
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\UI\FileSaver\SavingMenu.baml
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\RealTimeGraphX.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\RealTimeGraphX.WPF.dll
-C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\UI\RealTimeGraphX\AngleGraph\AngleGraph.g.cs
-C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\UI\RealTimeGraphX\GraphWindow\GraphWindow.g.cs
-C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\UI\RealTimeGraphX\AngleGraph\AngleGraph.baml
-C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\UI\RealTimeGraphX\GraphWindow\GraphWindow.baml
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ScottPlot.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ScottPlot.WPF.dll
