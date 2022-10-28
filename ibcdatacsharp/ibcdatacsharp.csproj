@@ -81,4 +81,8 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="diagrams\" />
+  </ItemGroup>
+
 </Project>

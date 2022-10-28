@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ibcdatacsharp.UI.MainWindow" Collapsed="true">
+    <Position X="0.75" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABgEABAiBAAAAAAAIAAAgVAkgAYBYAAAFAAQAAAAAAA=</HashCode>
+      <FileName>UI\MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.Common.BaseObject" Collapsed="true">
+    <Position X="12" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAgAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Common\BaseObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.DeviceList.TreeClasses.CameraInfo" Collapsed="true">
+    <Position X="7.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAAAEAAAAABAAAAAAAAA=</HashCode>
+      <FileName>UI\DeviceList\TreeClasses\CameraInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.DeviceList.TreeClasses.DeviceListInfo" Collapsed="true">
+    <Position X="9.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAAQAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\DeviceList\TreeClasses\DeviceListInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.DeviceList.TreeClasses.IMUInfo">
+    <Position X="12" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAAAAAAAAAAAAAAAAEAAIIAAAAAAAAAAA=</HashCode>
+      <FileName>UI\DeviceList\TreeClasses\IMUInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.DeviceList.TreeClasses.InsolesInfo" Collapsed="true">
+    <Position X="14.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\DeviceList\TreeClasses\InsolesInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.ShellClasses.FileSystemObjectInfo" Collapsed="true">
+    <Position X="16.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wAAAAQIIAAAAEAAAAQEEAAgACACAoAUACIAEABAAAIA=</HashCode>
+      <FileName>UI\FileBrowser\ShellClasses\FileSystemObjectInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Common.Helpers" Collapsed="true">
+    <Position X="21" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Common\Helpers.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.Common.PropertyNotifier" Collapsed="true">
+    <Position X="12" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Common\PropertyNotifier.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Device.AngleArgs" Collapsed="true">
+    <Position X="41.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>UI\Device\AngleArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Device.Device" Collapsed="true">
+    <Position X="25.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQBAAgAAAAAAAAAAAgAAAAAAQAAAAAAAAoAgQAAAAA=</HashCode>
+      <FileName>UI\Device\Device.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Device.DeviceArgs" Collapsed="true">
+    <Position X="0.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAIAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Device\DeviceArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Device.RawArgs" Collapsed="true">
+    <Position X="32.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAAABAAAAAAAAAAAAAI=</HashCode>
+      <FileName>UI\Device\RawArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Object" Collapsed="true">
+    <Position X="28.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="System.EventArgs" Collapsed="true">
+    <Position X="3" Y="6.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.ShellClasses.DummyFileSystemObjectInfo" Collapsed="true">
+    <Position X="16.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\FileBrowser\ShellClasses\DummyFileSystemObjectInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.ToolBar.ToolBar" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\ToolBar\ToolBar.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.ToolBar.VirtualToolBar" Collapsed="true">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEgAAAAgCAAAgAAAAAAIIoABIAAAIAIAgAAAAAAABA=</HashCode>
+      <FileName>UI\ToolBar\VirtualToolBar.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.Page" Collapsed="true">
+    <Position X="7.75" Y="9" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.MenuBar.MenuBar" Collapsed="true">
+    <Position X="3.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAQAAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\MenuBar\MenuBar.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.MenuBar.Version" Collapsed="true">
+    <Position X="3" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAwAAAAAAAAAAAAAAAAIAAAAAAAAIAAAAAAAAA=</HashCode>
+      <FileName>UI\MenuBar\Version.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="System.Windows.Window" Collapsed="true">
+    <Position X="3" Y="13" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.GraphWindow.ViewModel">
+    <Position X="48" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>UI\GraphWindow\ViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.GraphWindow.GraphWindow" Collapsed="true">
+    <Position X="12.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAACAAAACAIDAQAAAAAAQABAAAAAGggAAASAAAA=</HashCode>
+      <FileName>UI\GraphWindow\GraphWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileSaver.FileSaver">
+    <Position X="52.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAIAJACgAMBABAgAAEWgAAQwAIQEACBCARAECEAAgA=</HashCode>
+      <FileName>UI\FileSaver\FileSaver.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileSaver.SaveArgs" Collapsed="true">
+    <Position X="3" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAACAAAAAA=</HashCode>
+      <FileName>UI\FileSaver\SaveArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileSaver.VideoBuffer">
+    <Position X="54.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAIAAAAAQAAAEQAAgAQBAAQAAAAA=</HashCode>
+      <FileName>UI\FileSaver\VideoBuffer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileSaver.SavingMenu" Collapsed="true">
+    <Position X="5.25" Y="14.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\FileSaver\SavingMenu.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.DeviceList.Converters.BatteryConverter" Collapsed="true">
+    <Position X="39" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\DeviceList\Converters\BatteryConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.DeviceList.Converters.ConnectedConverter" Collapsed="true">
+    <Position X="45.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\DeviceList\Converters\ConnectedConverter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.AngleGraph.AngleGraph" Collapsed="true">
+    <Position X="14.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEANAAACAAAAAAAAAQAAAAAAQAAAAAAAAAgAAASIAAA=</HashCode>
+      <FileName>UI\AngleGraph\AngleGraph.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.AngleGraph.ViewModel">
+    <Position X="50.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>UI\AngleGraph\ViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.CamaraViewport.CamaraViewport" Collapsed="true">
+    <Position X="7.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAkAABAAAAAgIQAAAECAAAAAAIAIQAEgACAAA=</HashCode>
+      <FileName>UI\CamaraViewport\CamaraViewport.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.FileBrowser" Collapsed="true">
+    <Position X="10" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAUAAAAAAAABAAAAAAQAAQAAAAEAAAAAEAAAAAIA=</HashCode>
+      <FileName>UI\FileBrowser\FileBrowser.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.FileManager" Collapsed="true">
+    <Position X="34.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\FileBrowser\FileManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.FolderManager" Collapsed="true">
+    <Position X="27.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\FileBrowser\FolderManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.Interop" Collapsed="true">
+    <Position X="23.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\FileBrowser\Interop.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.FileBrowser.ShellManager" Collapsed="true">
+    <Position X="30" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\FileBrowser\ShellManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.TimeLine.CurrentFrameArgs" Collapsed="true">
+    <Position X="36.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\TimeLine\CurrentFrameArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ibcdatacsharp.UI.TimeLine.Model">
+    <Position X="43.5" Y="1.75" Width="1.5" />
+    <NestedTypes>
+      <Delegate Name="ibcdatacsharp.UI.TimeLine.Model.CurrentFrameEventHandler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>UI\TimeLine\Model.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAgAIAAAABAAAIAAgAAAAAAEAAAACAAAQAg=</HashCode>
+      <FileName>UI\TimeLine\Model.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.TimeLine.TimeLine" Collapsed="true">
+    <Position X="5.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQQAAAAAAAAAAAAABAAAAAAAAAAAAAIEAAAAAAAIAA=</HashCode>
+      <FileName>UI\TimeLine\TimeLine.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Timer.FrameArgs" Collapsed="true">
+    <Position X="5.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>UI\Timer\FrameArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="System.Windows.Controls.ContentControl" Collapsed="true">
+    <Position X="3" Y="11.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="System.Windows.FrameworkElement" Collapsed="true">
+    <Position X="7.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Timer.Timer" Collapsed="true">
+    <Position X="18.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AiIAgAAAEKYAgyLAAIIAQCIAAAogDCAAIQQAAgADQAY=</HashCode>
+      <FileName>UI\Timer\Timer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ibcdatacsharp.UI.Timer.TimerMeasure" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAUAAAAAEKAAAQAAAAAQQAAAAAAgBAAAMAIAAQAAQAI=</HashCode>
+      <FileName>UI\Timer\TimerMeasure.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

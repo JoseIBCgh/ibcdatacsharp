@@ -253,12 +253,12 @@ namespace ibcdatacsharp.UI
                 deviceListClass.hideIMUs();
                 deviceListClass.showCameras();
                 deviceListClass.hideInsoles(); //Por defecto estan escondidos pero si los muestras una vez los tienes que volver a esconder
-                /*
+                
                 deviceListClass.showIMUs();
                 deviceListClass.showInsoles();
                 deviceListClass.addIMU(new IMUInfo("IMU", "AD:DS"));
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
-                */
+                
             }
             deviceListLoadedCheck(onScanFunction);
         }
