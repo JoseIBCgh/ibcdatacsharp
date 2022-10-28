@@ -8,30 +8,12 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GraphWindow">
 
-    <Grid>
+    <Grid x:Name="grid">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <realTimeGraphX:WpfGraphGridLines Controller="{Binding modelAccelerometer.Controller}" />
-            <realTimeGraphX:WpfGraphSurface Controller="{Binding modelAccelerometer.Controller}" />
-            <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{Binding modelAccelerometer.Controller}" StringFormat="0.0" />
-            <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{Binding modelAccelerometer.Controller}" StringFormat="0.00" />
-        </Grid>
-        <Grid Grid.Row="1">
-            <realTimeGraphX:WpfGraphGridLines Controller="{Binding modelGyroscope.Controller}" />
-            <realTimeGraphX:WpfGraphSurface Controller="{Binding modelGyroscope.Controller}" />
-            <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{Binding modelGyroscope.Controller}" StringFormat="0.0" />
-            <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{Binding modelGyroscope.Controller}" StringFormat="0.00" />
-        </Grid>
-        <Grid Grid.Row="2">
-            <realTimeGraphX:WpfGraphGridLines Controller="{Binding modelMagnetometer.Controller}" />
-            <realTimeGraphX:WpfGraphSurface Controller="{Binding modelMagnetometer.Controller}" />
-            <realTimeGraphX:WpfGraphAxisControl Orientation="Vertical" Controller="{Binding modelMagnetometer.Controller}" StringFormat="0.0" />
-            <realTimeGraphX:WpfGraphAxisControl Orientation="Horizontal" Controller="{Binding modelMagnetometer.Controller}" StringFormat="0.00" />
-        </Grid>
     </Grid>
 </Page>
 

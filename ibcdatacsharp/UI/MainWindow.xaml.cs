@@ -45,7 +45,7 @@ namespace ibcdatacsharp.UI
             initIcon();
             initToolBarHandlers();
             initMenuHandlers();
-            loadAllGraphs();
+            //loadAllGraphs();
         }
         private void setGraphLibraries()
         {
@@ -109,14 +109,12 @@ namespace ibcdatacsharp.UI
                     graphWindow.Navigated += delegate (object sender, NavigationEventArgs e)
                     {
                         GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
-                        graphWindowClass.clearData();
                         timerCapture.Elapsed += graphWindowClass.onTick;
                     };
                 }
                 else
                 {
                     GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
-                    graphWindowClass.clearData();
                     timerCapture.Elapsed += graphWindowClass.onTick;
                 }
                 if (angleGraph.Content == null)
@@ -124,14 +122,12 @@ namespace ibcdatacsharp.UI
                     angleGraph.Navigated += delegate (object sender, NavigationEventArgs e)
                     {
                         AngleGraphClass angleGraphClass = angleGraph.Content as AngleGraphClass;
-                        angleGraphClass.clearData();
                         timerCapture.Elapsed += angleGraphClass.onTick;
                     };
                 }
                 else
                 {
                     AngleGraphClass angleGraphClass = angleGraph.Content as AngleGraphClass;
-                    angleGraphClass.clearData();
                     timerCapture.Elapsed += angleGraphClass.onTick;
                 }
                 virtualToolBar.pauseEvent += onPause; //funcion local
