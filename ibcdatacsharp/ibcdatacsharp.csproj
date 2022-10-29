@@ -85,4 +85,10 @@
     <Folder Include="diagrams\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="WisewalkSDK">
+      <HintPath>..\..\wisewalkapi\WisewalkSDK.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

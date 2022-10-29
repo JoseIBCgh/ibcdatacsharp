@@ -156,7 +156,7 @@ namespace ibcdatacsharp.UI.MenuBar {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/ibcdatacsharp;component/ui/menubar/menubar.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/ibcdatacsharp;V1.0.0.0;component/ui/menubar/menubar.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\UI\MenuBar\MenuBar.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

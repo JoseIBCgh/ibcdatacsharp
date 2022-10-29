@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using ibcdatacsharp.UI.ToolBar;
 using ibcdatacsharp.UI.Timer;
 using ibcdatacsharp.UI.ToolBar.Enums;
+using WisewalkSDK;
 
 using GraphWindowClass = ibcdatacsharp.UI.GraphWindow.GraphWindow;
 using AngleGraphClass = ibcdatacsharp.UI.AngleGraph.AngleGraph;
@@ -24,6 +25,11 @@ namespace ibcdatacsharp.UI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    /// 
+
+
+    
+
     public partial class MainWindow : System.Windows.Window
     {
 
@@ -35,6 +41,43 @@ namespace ibcdatacsharp.UI
 
         private System.Timers.Timer timerCapture;
         private FileSaver.FileSaver fileSaver;
+
+
+        // WiseWare vars
+        private const string pathDir = @"c:\Wiseware\Wisewalk-API\";
+
+        private const int ColumnBatteryIndex = 2;
+        private const int ColumnNPacketsIndex = 5;
+        private const int ColumnTimespanIndex = 6;
+        private const int ColumnAccIndex = 7;
+
+
+        private Wisewalk api;
+        private string portName = "";
+        private int baudRate = 921600;
+        private List<Wisewalk.ComPort> ports;
+        private bool isConnected = false;
+        private bool startStream = false;
+        private bool startRecord = false;
+        private Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
+
+        private byte counterUI = 0;
+
+        private readonly ushort[] SampleRate = { 25, 50, 100, 200 };
+
+        private string version = "";
+
+        private List<int> counter = new List<int>();
+
+        private List<Wisewalk.Dev> scanDevices = null;
+
+        private bool devConnected = false;
+
+        private int indexDev = -1;
+
+        private int indexSelected = -1;
+        private short handlerSelected = -1;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,7 +89,51 @@ namespace ibcdatacsharp.UI
             initToolBarHandlers();
             initMenuHandlers();
             loadAllGraphs();
+
+            // WiseWalk
+            api = new Wisewalk();
+            api = new Wisewalk();
+            api.scanFinished += Api_scanFinished;
+            
+            version = api.GetApiVersion();
+
+            ports = new List<Wisewalk.ComPort>();
+
+            devices_list = new Dictionary<string, WisewalkSDK.Device>();
+
+            counter = new List<int>();
+
         }
+        private void Api_scanFinished(List<Wisewalk.Dev> devices)
+        {
+            scanDevices = devices;
+
+            sca.Invoke(new EventHandler(delegate
+            {
+                labelSpinner.Visible = false;
+                buttonScanDevices.Enabled = true;
+
+                ShowScanList(scanDevices);
+            }));
+        }
+
+        private void ShowScanList(List<Wisewalk.Dev> devices)
+        {
+            //lstScanList.Items.Clear();
+
+            for (int idx = 0; idx < devices.Count; idx++)
+            {
+                string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
+                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
+
+                //lstScanList.Items.Add(macAddress);
+
+                //SetLogText("", " * " + macAddress);
+            }
+
+            
+        }
+
         private void setGraphLibraries()
         {
             graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
