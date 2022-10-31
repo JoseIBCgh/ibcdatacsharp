@@ -19,6 +19,7 @@ using WisewalkSDK;
 
 using GraphWindowClass = ibcdatacsharp.UI.GraphWindow.GraphWindow;
 using AngleGraphClass = ibcdatacsharp.UI.AngleGraph.AngleGraph;
+using System.IO.Ports;
 
 namespace ibcdatacsharp.UI
 {
@@ -91,9 +92,9 @@ namespace ibcdatacsharp.UI
             loadAllGraphs();
 
             // WiseWalk
-            api = new Wisewalk();
-            api = new Wisewalk();
-            api.scanFinished += Api_scanFinished;
+
+            api = new  Wisewalk();
+            
             
             version = api.GetApiVersion();
 
@@ -104,35 +105,9 @@ namespace ibcdatacsharp.UI
             counter = new List<int>();
 
         }
-        private void Api_scanFinished(List<Wisewalk.Dev> devices)
-        {
-            scanDevices = devices;
 
-            sca.Invoke(new EventHandler(delegate
-            {
-                labelSpinner.Visible = false;
-                buttonScanDevices.Enabled = true;
+      
 
-                ShowScanList(scanDevices);
-            }));
-        }
-
-        private void ShowScanList(List<Wisewalk.Dev> devices)
-        {
-            //lstScanList.Items.Clear();
-
-            for (int idx = 0; idx < devices.Count; idx++)
-            {
-                string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
-                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
-
-                //lstScanList.Items.Add(macAddress);
-
-                //SetLogText("", " * " + macAddress);
-            }
-
-            
-        }
 
         private void setGraphLibraries()
         {
@@ -292,9 +267,11 @@ namespace ibcdatacsharp.UI
             // Funcion que se ejecuta al clicar el boton scan
             void onScanFunction()
             {
+                
                 // Añade las camaras al TreeView
                 async void addCameras(DeviceList.DeviceList deviceListClass)
                 {
+                   
                     // Devuelve el nombre de todas las camaras conectadas
                     List<string> cameraNames()
                     {
@@ -326,6 +303,20 @@ namespace ibcdatacsharp.UI
                     //names.ForEach(n => Trace.WriteLine(n));
                     List<int> indices = await Task.Run(() => cameraIndices(names.Count));
                     //indices.ForEach(i => Trace.WriteLine(i));
+
+
+
+                    string[] ports = SerialPort.GetPortNames();
+
+                    Console.WriteLine("The following serial ports were found:");
+
+                    // Display each port name to the console.
+                    foreach (string port in ports)
+                    {
+                        Trace.WriteLine(port);
+                    }
+
+
                     for (int i = 0; i < names.Count; i++)
                     {
                         if (indices.Contains(i))
@@ -346,8 +337,10 @@ namespace ibcdatacsharp.UI
                 deviceListClass.addIMU(new IMUInfo("IMU", "AD:DS"));
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
                 
+
             }
             deviceListLoadedCheck(onScanFunction);
+            
         }
         // Conecta el boton connect
         private void onConnect(object sender, EventArgs e)
@@ -449,5 +442,23 @@ namespace ibcdatacsharp.UI
             fileSaver.onCloseApplication();
             base.OnClosing(e);
         }
+        private void ShowScanList(List<Wisewalk.Dev> devices)
+        {
+            //lstScanList.Items.Clear();
+
+            for (int idx = 0; idx < devices.Count; idx++)
+            {
+                string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
+                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
+
+                //lstScanList.Items.Add(macAddress);
+
+                Console.WriteLine("", " * " + macAddress);
+            }
+
+
+        }
+
+     
     }
 }
