@@ -78,6 +78,8 @@ namespace ibcdatacsharp.UI
 
         private int indexSelected = -1;
         private short handlerSelected = -1;
+        string macaddress = "";
+
 
         public MainWindow()
         {
@@ -92,21 +94,63 @@ namespace ibcdatacsharp.UI
             loadAllGraphs();
 
             // WiseWalk
-
-            api = new  Wisewalk();
-            
-            
+            string error = "";
+            api = new Wisewalk();
             version = api.GetApiVersion();
-
-            ports = new List<Wisewalk.ComPort>();
 
             devices_list = new Dictionary<string, WisewalkSDK.Device>();
 
             counter = new List<int>();
+            api.scanFinished += Api_scanFinished;
+
+
+            string[] ports = SerialPort.GetPortNames();
+
+
+            // Display each port name to the console.
+            foreach (string port in ports)
+            {
+                Trace.WriteLine(port);
+
+            }
+            if (api.Open("COM6", out error))
+            {
+                Trace.WriteLine("Opened");
+            }
+
+            if (api.ScanDevices(out error))
+            {
+                Trace.WriteLine("Scanned :");
+            }
+
+
+
 
         }
 
-      
+        private void Api_scanFinished(List<Wisewalk.Dev> devices)
+        {
+            scanDevices = devices;
+            ShowScanList(scanDevices);
+           
+        }
+
+        private void ShowScanList(List<Wisewalk.Dev> devices)
+        {
+            
+
+            for (int idx = 0; idx < devices.Count; idx++)
+            {
+                string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
+                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
+
+
+                Trace.WriteLine("", " * " + macAddress);
+            }
+
+            
+        }
+
 
 
         private void setGraphLibraries()
@@ -267,11 +311,14 @@ namespace ibcdatacsharp.UI
             // Funcion que se ejecuta al clicar el boton scan
             void onScanFunction()
             {
-                
+              
+
                 // Añade las camaras al TreeView
                 async void addCameras(DeviceList.DeviceList deviceListClass)
                 {
-                   
+                  
+                    
+
                     // Devuelve el nombre de todas las camaras conectadas
                     List<string> cameraNames()
                     {
@@ -283,8 +330,10 @@ namespace ibcdatacsharp.UI
                         }
                         return cameraNames;
                     }
+
+                 
                     // Devuelve una lista de indice OpenCV de las camaras disponibles
-                     List<int> cameraIndices(int maxIndex = 10)
+                    List<int> cameraIndices(int maxIndex = 10)
                     {
                         List<int> indices = new List<int>();
                         VideoCapture capture = new VideoCapture();
@@ -299,22 +348,27 @@ namespace ibcdatacsharp.UI
                         }
                         return indices;
                     }
+                 
                     List<string> names = await Task.Run(() => cameraNames());
+
+                    string mac = await Task.Run(() =>
+                    {
+                        while (macaddress == "")
+                        {
+                            continue;
+                        }
+                        return macaddress;
+                    }
+                           
+                       );
                     //names.ForEach(n => Trace.WriteLine(n));
                     List<int> indices = await Task.Run(() => cameraIndices(names.Count));
                     //indices.ForEach(i => Trace.WriteLine(i));
 
+                    Trace.WriteLine("This is mac: ", mac);
+                   
 
-
-                    string[] ports = SerialPort.GetPortNames();
-
-                    Console.WriteLine("The following serial ports were found:");
-
-                    // Display each port name to the console.
-                    foreach (string port in ports)
-                    {
-                        Trace.WriteLine(port);
-                    }
+                    deviceListClass.addIMU(new IMUInfo("IMU", mac));
 
 
                     for (int i = 0; i < names.Count; i++)
@@ -324,23 +378,35 @@ namespace ibcdatacsharp.UI
                             deviceListClass.addCamera(new CameraInfo(i, names[i]));
                         }
                     }
+
+                    
+                    
                 }
+               
                 DeviceList.DeviceList deviceListClass = deviceList.Content as DeviceList.DeviceList;
                 deviceListClass.clearAll();
                 addCameras(deviceListClass);
+                
                 deviceListClass.hideIMUs();
                 deviceListClass.showCameras();
                 deviceListClass.hideInsoles(); //Por defecto estan escondidos pero si los muestras una vez los tienes que volver a esconder
                 
                 deviceListClass.showIMUs();
                 deviceListClass.showInsoles();
-                deviceListClass.addIMU(new IMUInfo("IMU", "AD:DS"));
+                //deviceListClass.addIMU(new IMUInfo("IMU", "AD:DS"));
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
-                
+              
+
+
 
             }
             deviceListLoadedCheck(onScanFunction);
-            
+
+           
+
+
+
+
         }
         // Conecta el boton connect
         private void onConnect(object sender, EventArgs e)
@@ -442,23 +508,11 @@ namespace ibcdatacsharp.UI
             fileSaver.onCloseApplication();
             base.OnClosing(e);
         }
-        private void ShowScanList(List<Wisewalk.Dev> devices)
+       
+
+        private void toolBar_Navigated(object sender, NavigationEventArgs e)
         {
-            //lstScanList.Items.Clear();
-
-            for (int idx = 0; idx < devices.Count; idx++)
-            {
-                string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
-                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
-
-                //lstScanList.Items.Add(macAddress);
-
-                Console.WriteLine("", " * " + macAddress);
-            }
-
 
         }
-
-     
     }
 }

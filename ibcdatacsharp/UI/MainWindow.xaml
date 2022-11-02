@@ -14,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Frame Grid.Row="0" Source="pack://application:,,,/UI/MenuBar/MenuBar.xaml" x:Name="menuBar"/>
-        <Frame Grid.Row="1" Source="pack://application:,,,/UI/ToolBar/ToolBar.xaml" x:Name="toolBar"/>
+        <Frame Grid.Row="1" Source="pack://application:,,,/UI/ToolBar/ToolBar.xaml" x:Name="toolBar" Navigated="toolBar_Navigated"/>
         <dock:DockingManager Grid.Row="2">
             <dock:LayoutRoot>
                 <dock:LayoutPanel Orientation="Vertical" DockHeight="*" DockWidth="*">
