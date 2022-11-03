@@ -13,9 +13,14 @@ using System.Threading.Tasks;
 using ibcdatacsharp.UI.ToolBar;
 using ibcdatacsharp.UI.Timer;
 using ibcdatacsharp.UI.ToolBar.Enums;
+using System.Threading;
 
 using GraphWindowClass = ibcdatacsharp.UI.GraphWindow.GraphWindow;
 using AngleGraphClass = ibcdatacsharp.UI.AngleGraph.AngleGraph;
+
+using WisewalkSDK;
+using static WisewalkSDK.Protocol_v3;
+
 
 namespace ibcdatacsharp.UI
 {
@@ -34,6 +39,43 @@ namespace ibcdatacsharp.UI
         private System.Timers.Timer timerCapture;
         private System.Timers.Timer timerRender;
         private FileSaver.FileSaver fileSaver;
+
+        //Wiseware
+        // WiseWare
+        private const string pathDir = @"c:\Wiseware\Wisewalk-API\";
+
+        private const int ColumnBatteryIndex = 2;
+        private const int ColumnNPacketsIndex = 5;
+        private const int ColumnTimespanIndex = 6;
+        private const int ColumnAccIndex = 7;
+
+        private Wisewalk api;
+        private string portName = "";
+        private int baudRate = 921600;
+        private List<Wisewalk.ComPort> ports;
+        private bool isConnected = false;
+        private bool startStream = false;
+        private bool startRecord = false;
+        private Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
+
+        private byte counterUI = 0;
+
+        private readonly ushort[] SampleRate = { 25, 50, 100, 200 };
+
+        private string version = "";
+
+        private List<int> counter = new List<int>();
+
+        private List<Wisewalk.Dev> scanDevices = null;
+
+        private bool devConnected = false;
+
+        private int indexDev = -1;
+
+        private int indexSelected = -1;
+        private short handlerSelected = -1;
+
+        string error = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -45,8 +87,91 @@ namespace ibcdatacsharp.UI
             initToolBarHandlers();
             initMenuHandlers();
             //loadAllGraphs();
+
+            //WiseWalk
+          
+            ports = new List<Wisewalk.ComPort>();
+
+            devices_list = new Dictionary<string, WisewalkSDK.Device>();
+
+            counter = new List<int>();
+            api = new Wisewalk();
+            version = api.GetApiVersion();
+            api.scanFinished += Api_scanFinished;
+            api.deviceConnected += Api_deviceConnected;
+            api.dataReceived += Api_dataReceived;
+
+
         }
-        private void setGraphLibraries()
+
+        private void Api_dataReceived(byte deviceHandler, WisewalkData data)
+        {
+            Trace.WriteLine(data.Imu[0].acc_x +" " + data.Imu[0].acc_y + " " + data.Imu[0].acc_z);
+        }
+
+        private void Api_scanFinished(List<Wisewalk.Dev> devices)
+        {
+            scanDevices = devices;
+            Trace.WriteLine(devices.Count);
+            ShowScanList(scanDevices);
+           
+        }
+
+        private void ShowScanList(List<Wisewalk.Dev> devices)
+        {
+            
+
+            for (int idx = 0; idx < devices.Count; idx++)
+            {
+                string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
+                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
+
+
+
+                Trace.WriteLine("MacAddress: ", " * " + macAddress);
+            }
+
+        }
+
+        private void Api_deviceConnected(byte handler, WisewalkSDK.Device dev)
+        {
+            if (!devices_list.ContainsKey(handler.ToString()))
+            {
+                // Add new device to list
+                WisewalkSDK.Device device = new WisewalkSDK.Device();
+
+                devices_list.Add(handler.ToString(), device);
+
+                // Update values
+                devices_list[handler.ToString()].Id = dev.Id;
+                devices_list[handler.ToString()].Name = dev.Name;
+                devices_list[handler.ToString()].Connected = dev.Connected;
+                devices_list[handler.ToString()].HeaderInfo = dev.HeaderInfo;
+                devices_list[handler.ToString()].NPackets = 0;
+                devices_list[handler.ToString()].sampleRate = dev.sampleRate;
+                devices_list[handler.ToString()].offsetTime = dev.offsetTime;
+                devices_list[handler.ToString()].Rtc = dev.Rtc;
+                devices_list[handler.ToString()].Stream = false;
+                devices_list[handler.ToString()].Record = false;
+
+                counter.Add(0);
+
+                Trace.WriteLine("Dev: " + devices_list["0"].Id);
+            }
+            else
+            {
+                // Update info device
+                devices_list[handler.ToString()].HeaderInfo = dev.HeaderInfo;
+            }
+
+            
+            //ShowDevices(devices_list);
+
+           
+        }
+
+    
+            private void setGraphLibraries()
         {
             graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
             angleGraph.Source = new Uri("pack://application:,,,/UI/AngleGraph/AngleGraph.xaml");
@@ -54,6 +179,7 @@ namespace ibcdatacsharp.UI
         // Configura el timer capture
         private void initTimerCapture()
         {
+            
             void onPause(object sender, PauseState pauseState)
             {
                 if (pauseState == PauseState.Pause)
@@ -125,6 +251,7 @@ namespace ibcdatacsharp.UI
                 }
                 device.initTimer();
             }
+            
         }
         // Cambia el icono de la ventana
         private void initIcon()
@@ -185,6 +312,7 @@ namespace ibcdatacsharp.UI
         // Conecta el boton scan
         private void onScan(object sender, EventArgs e)
         {
+            
             // Funcion que se ejecuta al clicar el boton scan
             void onScanFunction()
             {
@@ -229,6 +357,11 @@ namespace ibcdatacsharp.UI
                             deviceListClass.addCamera(new CameraInfo(i, names[i]));
                         }
                     }
+
+                    api.Open("COM6", out error);
+                    api.ScanDevices(out error);
+                   
+
                 }
                 DeviceList.DeviceList deviceListClass = deviceList.Content as DeviceList.DeviceList;
                 deviceListClass.clearAll();
@@ -236,10 +369,11 @@ namespace ibcdatacsharp.UI
                 deviceListClass.hideIMUs();
                 deviceListClass.showCameras();
                 deviceListClass.hideInsoles(); //Por defecto estan escondidos pero si los muestras una vez los tienes que volver a esconder
-                /*
+                
                 deviceListClass.showIMUs();
-                deviceListClass.showInsoles();
                 deviceListClass.addIMU(new IMUInfo("IMU", "AD:DS"));
+                /*
+                deviceListClass.showInsoles();
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
                 */
             }
@@ -267,6 +401,13 @@ namespace ibcdatacsharp.UI
                     }
                 }
             }
+
+            handlerSelected = 0;
+            api.Connect(scanDevices, out error);
+            Thread.Sleep(1000);
+            api.SetDeviceConfiguration(0, 100, 3, out error);
+            Thread.Sleep(1000);
+
             deviceListLoadedCheck(onConnectFunction);
         }
         // Conecta el boton disconnect
@@ -310,7 +451,10 @@ namespace ibcdatacsharp.UI
         // Funcion que se ejecuta al clicar el boton Capture
         private void onCapture(object sender, EventArgs e)
         {
-            initTimerCapture(); 
+            api.StartStream(out error);
+
+            initTimerCapture();
+            
         }
         // Funcion que se ejecuta al clicar el boton Pause
         private void onPause(object sender, EventArgs e)

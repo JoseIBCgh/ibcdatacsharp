@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "XDKuBJHy1XfMwae6zQvSJud3ZN9s26731QzNOxDVgNvsXfmpa5yrTd16sGy2GgNQ6Hzts7jDZ90jp3jMcgSDWw==",
+  "dgSpecHash": "vkpGrsFFbNSI0w8hT/Pdgd8mPRoLazJyKyUhldO1eJcIMyQkIDBZXlbP2bGgwk8UKonctCeQmq+TLM7WEYltKw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Deva\\wsibc\\ibcdatacsharp\\ibcdatacsharp\\ibcdatacsharp.csproj",
   "expectedPackageFiles": [
@@ -17,9 +17,16 @@
     "C:\\Users\\Deva\\.nuget\\packages\\oxyplot.wpf.shared\\2.1.0\\oxyplot.wpf.shared.2.1.0.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\realtimegraphx\\1.0.17\\realtimegraphx.1.0.17.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\realtimegraphx.wpf\\1.0.17\\realtimegraphx.wpf.1.0.17.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\runtime.linux-arm.runtime.native.system.io.ports\\6.0.0\\runtime.linux-arm.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\runtime.linux-arm64.runtime.native.system.io.ports\\6.0.0\\runtime.linux-arm64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\runtime.linux-x64.runtime.native.system.io.ports\\6.0.0\\runtime.linux-x64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\runtime.native.system.io.ports\\6.0.0\\runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\runtime.osx-arm64.runtime.native.system.io.ports\\6.0.0\\runtime.osx-arm64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\runtime.osx-x64.runtime.native.system.io.ports\\6.0.0\\runtime.osx-x64.runtime.native.system.io.ports.6.0.0.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\scottplot\\4.1.58\\scottplot.4.1.58.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\scottplot.wpf\\4.1.58\\scottplot.wpf.4.1.58.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
+    "C:\\Users\\Deva\\.nuget\\packages\\system.io.ports\\6.0.0\\system.io.ports.6.0.0.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
     "C:\\Users\\Deva\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
