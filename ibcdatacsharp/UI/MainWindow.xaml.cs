@@ -74,12 +74,18 @@ namespace ibcdatacsharp.UI
 
         private int indexSelected = -1;
         private short handlerSelected = -1;
+        float[] acc = new float[3];
+
+        
 
         string error = "";
         public MainWindow()
         {
             InitializeComponent();
             setGraphLibraries();
+            graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
+            
+
             virtualToolBar = new VirtualToolBar();
             device = new Device.Device();
             fileSaver = new FileSaver.FileSaver();
@@ -89,24 +95,35 @@ namespace ibcdatacsharp.UI
             //loadAllGraphs();
 
             //WiseWalk
-          
+;       
             ports = new List<Wisewalk.ComPort>();
 
             devices_list = new Dictionary<string, WisewalkSDK.Device>();
 
             counter = new List<int>();
             api = new Wisewalk();
+
+
             version = api.GetApiVersion();
             api.scanFinished += Api_scanFinished;
             api.deviceConnected += Api_deviceConnected;
             api.dataReceived += Api_dataReceived;
 
+           
 
         }
 
         private void Api_dataReceived(byte deviceHandler, WisewalkData data)
         {
-            Trace.WriteLine(data.Imu[0].acc_x +" " + data.Imu[0].acc_y + " " + data.Imu[0].acc_z);
+            acc[0] = data.Imu[0].acc_x;
+            acc[1] = data.Imu[0].acc_y;
+            acc[2] = data.Imu[0].acc_z;
+            Trace.WriteLine(acc[0].ToString() + " " + acc[1].ToString() + " " + acc[2].ToString());
+       
+
+            //timerCapture.Elapsed += graphWindowClass.onTick;
+            //timerRender.Elapsed += graphWindowClass.onRender;
+
         }
 
         private void Api_scanFinished(List<Wisewalk.Dev> devices)
@@ -120,12 +137,10 @@ namespace ibcdatacsharp.UI
         private void ShowScanList(List<Wisewalk.Dev> devices)
         {
             
-
             for (int idx = 0; idx < devices.Count; idx++)
             {
                 string macAddress = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
                                     devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
-
 
 
                 Trace.WriteLine("MacAddress: ", " * " + macAddress);
@@ -163,17 +178,15 @@ namespace ibcdatacsharp.UI
                 // Update info device
                 devices_list[handler.ToString()].HeaderInfo = dev.HeaderInfo;
             }
-
-            
+        
             //ShowDevices(devices_list);
-
-           
+       
         }
 
     
-            private void setGraphLibraries()
+        private void setGraphLibraries()
         {
-            graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
+            //graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
             angleGraph.Source = new Uri("pack://application:,,,/UI/AngleGraph/AngleGraph.xaml");
         }
         // Configura el timer capture
@@ -208,23 +221,30 @@ namespace ibcdatacsharp.UI
                 timerCapture.AutoReset = true;
                 timerRender = new System.Timers.Timer(RENDER_MS);
                 timerRender.AutoReset = true;
+                /*
                 if (graphWindow.Content == null)
                 {
                     graphWindow.Navigated += delegate (object sender, NavigationEventArgs e)
                     {
+                        
                         GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
                         graphWindowClass.clearData();
+
+                        
                         timerCapture.Elapsed += graphWindowClass.onTick;
                         timerRender.Elapsed += graphWindowClass.onRender;
+                        
                     };
                 }
                 else
                 {
+                    
                     GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
                     graphWindowClass.clearData();
                     timerCapture.Elapsed += graphWindowClass.onTick;
                     timerRender.Elapsed += graphWindowClass.onRender;
-                }
+                    
+                }*/
                 if (angleGraph.Content == null)
                 {
                     angleGraph.Navigated += delegate (object sender, NavigationEventArgs e)

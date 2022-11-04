@@ -107,6 +107,17 @@ namespace ibcdatacsharp.UI.GraphWindow
                 updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
             });
         }
+
+        public async void onTick(float[] acc)
+        {
+            RawArgs rawArgs = device.rawData;
+            int frame = device.frame;
+            await Task.WhenAll(new Task[] {
+                updateAccelerometer(frame, acc[0], acc[1], acc[2]),
+                //updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
+                //updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
+            });
+        }
         // Borra el contenido de los graficos
         public async void clearData()
         {
