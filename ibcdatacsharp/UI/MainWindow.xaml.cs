@@ -223,9 +223,7 @@ namespace ibcdatacsharp.UI
                         graphWindowClass.clearData();
 
                         api.dataReceived += graphWindowClass.Api_dataReceived;
-                        //timerCapture.Elapsed += graphWindowClass.onTick;
-
-                        //timerRender.Elapsed += graphWindowClass.onRender;
+                      
 
                     };
                 }
