@@ -107,7 +107,7 @@ namespace ibcdatacsharp.UI
             version = api.GetApiVersion();
             api.scanFinished += Api_scanFinished;
             api.deviceConnected += Api_deviceConnected;
-            api.dataReceived += Api_dataReceived;
+            
 
            
 
@@ -192,7 +192,8 @@ namespace ibcdatacsharp.UI
         // Configura el timer capture
         private void initTimerCapture()
         {
-            
+            api.dataReceived += Api_dataReceived;
+
             void onPause(object sender, PauseState pauseState)
             {
                 if (pauseState == PauseState.Pause)
@@ -221,18 +222,21 @@ namespace ibcdatacsharp.UI
                 timerCapture.AutoReset = true;
                 timerRender = new System.Timers.Timer(RENDER_MS);
                 timerRender.AutoReset = true;
-                /*
+                
                 if (graphWindow.Content == null)
                 {
+                   
+
                     graphWindow.Navigated += delegate (object sender, NavigationEventArgs e)
                     {
                         
                         GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
                         graphWindowClass.clearData();
 
+
+                        //timerCapture.Elapsed += graphWindowClass.onTick;
                         
-                        timerCapture.Elapsed += graphWindowClass.onTick;
-                        timerRender.Elapsed += graphWindowClass.onRender;
+                        //timerRender.Elapsed += graphWindowClass.onRender;
                         
                     };
                 }
@@ -244,7 +248,7 @@ namespace ibcdatacsharp.UI
                     timerCapture.Elapsed += graphWindowClass.onTick;
                     timerRender.Elapsed += graphWindowClass.onRender;
                     
-                }*/
+                }
                 if (angleGraph.Content == null)
                 {
                     angleGraph.Navigated += delegate (object sender, NavigationEventArgs e)
@@ -253,6 +257,7 @@ namespace ibcdatacsharp.UI
                         angleGraphClass.clearData();
                         timerCapture.Elapsed += angleGraphClass.onTick;
                         timerRender.Elapsed += angleGraphClass.onRender;
+                        
                     };
                 }
                 else
@@ -270,6 +275,7 @@ namespace ibcdatacsharp.UI
                     timerRender.Start();
                 }
                 device.initTimer();
+                api.StartStream(out error);
             }
             
         }
@@ -293,7 +299,7 @@ namespace ibcdatacsharp.UI
                 toolBarClass.pause.Click += new RoutedEventHandler(onPause);
                 toolBarClass.stop.Click += new RoutedEventHandler(onStop);
                 toolBarClass.record.Click += new RoutedEventHandler(onRecord);
-                toolBarClass.capturedFiles.Click += new RoutedEventHandler(onCapturedFiles);
+                toolBarClass.capturedFiles.Click += new RoutedEventHandler(onCapturedFiles); 
             };
         }
         // Conecta los botones del Menu
@@ -471,7 +477,6 @@ namespace ibcdatacsharp.UI
         // Funcion que se ejecuta al clicar el boton Capture
         private void onCapture(object sender, EventArgs e)
         {
-            api.StartStream(out error);
 
             initTimerCapture();
             
