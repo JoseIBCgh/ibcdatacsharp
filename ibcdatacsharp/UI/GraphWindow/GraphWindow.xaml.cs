@@ -1,10 +1,12 @@
 ﻿using ibcdatacsharp.UI.Device;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using WisewalkSDK;
 
 namespace ibcdatacsharp.UI.GraphWindow
 {
@@ -16,6 +18,8 @@ namespace ibcdatacsharp.UI.GraphWindow
         private const DispatcherPriority UPDATE_PRIORITY = DispatcherPriority.Render;
         private const DispatcherPriority CLEAR_PRIORITY = DispatcherPriority.Render;
         private Device.Device device;
+
+        double[] acc = new double[3];
         public GraphWindow()
         {
             InitializeComponent();
@@ -108,16 +112,31 @@ namespace ibcdatacsharp.UI.GraphWindow
             });
         }
 
-        public async void onTick(float[] acc)
+
+
+        //Callback para recoger datas del IMU
+        public async void Api_dataReceived( byte devicehandler, WisewalkSDK.WisewalkData data)
         {
-            RawArgs rawArgs = device.rawData;
+
+            acc[0] = data.Imu[0].acc_x;
+            acc[1] = data.Imu[0].acc_y;
+            acc[2] = data.Imu[0].acc_z;
+            Trace.WriteLine("Data: " + acc[0].ToString() + " " + acc[1].ToString() + " " + acc[2].ToString());
+
+
             int frame = device.frame;
             await Task.WhenAll(new Task[] {
-                updateAccelerometer(frame, acc[0], acc[1], acc[2]),
-                //updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
-                //updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
+                updateAccelerometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
+                updateMagnetometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
+                updateGyroscope(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
+                renderAcceletometer(),
+                renderGyroscope(),
+                renderMagnetometer(),
+
             });
+
         }
+
         // Borra el contenido de los graficos
         public async void clearData()
         {

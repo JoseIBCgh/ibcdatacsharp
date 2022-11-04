@@ -106,25 +106,14 @@ namespace ibcdatacsharp.UI
 
             version = api.GetApiVersion();
             api.scanFinished += Api_scanFinished;
-            api.deviceConnected += Api_deviceConnected;
+            
             
 
            
 
         }
 
-        private void Api_dataReceived(byte deviceHandler, WisewalkData data)
-        {
-            acc[0] = data.Imu[0].acc_x;
-            acc[1] = data.Imu[0].acc_y;
-            acc[2] = data.Imu[0].acc_z;
-            Trace.WriteLine(acc[0].ToString() + " " + acc[1].ToString() + " " + acc[2].ToString());
-       
-
-            //timerCapture.Elapsed += graphWindowClass.onTick;
-            //timerRender.Elapsed += graphWindowClass.onRender;
-
-        }
+        
 
         private void Api_scanFinished(List<Wisewalk.Dev> devices)
         {
@@ -192,7 +181,7 @@ namespace ibcdatacsharp.UI
         // Configura el timer capture
         private void initTimerCapture()
         {
-            api.dataReceived += Api_dataReceived;
+            
 
             void onPause(object sender, PauseState pauseState)
             {
@@ -233,21 +222,23 @@ namespace ibcdatacsharp.UI
                         GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
                         graphWindowClass.clearData();
 
-
+                        api.dataReceived += graphWindowClass.Api_dataReceived;
                         //timerCapture.Elapsed += graphWindowClass.onTick;
-                        
+
                         //timerRender.Elapsed += graphWindowClass.onRender;
-                        
+
                     };
                 }
                 else
                 {
                     
+
                     GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
                     graphWindowClass.clearData();
-                    timerCapture.Elapsed += graphWindowClass.onTick;
-                    timerRender.Elapsed += graphWindowClass.onRender;
-                    
+                    api.dataReceived += graphWindowClass.Api_dataReceived;
+                    //timerCapture.Elapsed += graphWindowClass.onTick;
+                    //timerRender.Elapsed += graphWindowClass.onRender;
+
                 }
                 if (angleGraph.Content == null)
                 {
@@ -255,8 +246,8 @@ namespace ibcdatacsharp.UI
                     {
                         AngleGraphClass angleGraphClass = angleGraph.Content as AngleGraphClass;
                         angleGraphClass.clearData();
-                        timerCapture.Elapsed += angleGraphClass.onTick;
-                        timerRender.Elapsed += angleGraphClass.onRender;
+                        //timerCapture.Elapsed += angleGraphClass.onTick;
+                        //timerRender.Elapsed += angleGraphClass.onRender;
                         
                     };
                 }
@@ -264,8 +255,8 @@ namespace ibcdatacsharp.UI
                 {
                     AngleGraphClass angleGraphClass = angleGraph.Content as AngleGraphClass;
                     angleGraphClass.clearData();
-                    timerCapture.Elapsed += angleGraphClass.onTick;
-                    timerRender.Elapsed += angleGraphClass.onRender;
+                    //timerCapture.Elapsed += angleGraphClass.onTick;
+                    //timerRender.Elapsed += angleGraphClass.onRender;
                 }
                 virtualToolBar.pauseEvent += onPause; //funcion local
                 virtualToolBar.stopEvent += onStop; //funcion local
