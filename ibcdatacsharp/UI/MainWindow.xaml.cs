@@ -56,7 +56,6 @@ namespace ibcdatacsharp.UI
         private bool isConnected = false;
         private bool startStream = false;
         private bool startRecord = false;
-        private Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
 
         private byte counterUI = 0;
 

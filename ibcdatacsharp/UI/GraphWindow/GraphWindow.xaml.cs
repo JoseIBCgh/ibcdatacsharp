@@ -1,5 +1,7 @@
 ﻿using ibcdatacsharp.UI.Device;
+using ibcdatacsharp.UI.DeviceList;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Timers;
@@ -8,11 +10,15 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using WisewalkSDK;
 
+
 namespace ibcdatacsharp.UI.GraphWindow
 {
     /// <summary>
     /// Lógica de interacción para GraphWindow.xaml
     /// </summary>
+    /// 
+    
+
     public partial class GraphWindow : Page
     {
         private const DispatcherPriority UPDATE_PRIORITY = DispatcherPriority.Render;
@@ -20,6 +26,7 @@ namespace ibcdatacsharp.UI.GraphWindow
         private Device.Device device;
 
         double[] acc = new double[9];
+        private Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
         public GraphWindow()
         {
             InitializeComponent();
@@ -110,6 +117,52 @@ namespace ibcdatacsharp.UI.GraphWindow
                 updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
                 updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
             });
+        }
+
+        // <summary>
+        /// Get stream duration (HH:MM:SS).
+        /// </summary>
+        /// <returns></returns>
+        private string GetStreamDuration()
+        {
+            string streamDuration = "";
+
+            try
+            {
+                int maxPacket = 0;
+                int sampleRate = 0;
+                for (int idx = 0; idx < devices_list.Count; idx++)
+                {
+                    if (devices_list[idx.ToString()].NPackets * devices_list[idx.ToString()].HeaderInfo.sampleFrame > maxPacket)
+                    {
+                        maxPacket = devices_list[idx.ToString()].NPackets * devices_list[idx.ToString()].HeaderInfo.sampleFrame;
+                        sampleRate = devices_list[idx.ToString()].sampleRate;
+                    }
+                }
+
+                int seconds = maxPacket / sampleRate;
+
+                if (seconds > 0)
+                {
+                    int nHours = seconds / 3600;
+                    int nMinutes = (seconds % 3600) / 60;
+                    int nSeconds = (seconds % 3600) % 60;
+
+                    streamDuration = nHours.ToString() + ":" +
+                                     (nMinutes > 9 ? nMinutes.ToString() : "0" + nMinutes.ToString()) + ":" +
+                                     (nSeconds > 9 ? nSeconds.ToString() : "0" + nSeconds.ToString());
+                }
+                else
+                {
+                    streamDuration = " - - : - - : - - ";
+                }
+            }
+            catch (Exception ex)
+            {
+                streamDuration = " - - : - - : - - ";
+            }
+
+            return streamDuration;
         }
 
         //Callback para recoger datas del IMU
