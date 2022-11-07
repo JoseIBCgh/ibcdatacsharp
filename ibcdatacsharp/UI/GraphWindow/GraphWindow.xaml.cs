@@ -19,7 +19,7 @@ namespace ibcdatacsharp.UI.GraphWindow
         private const DispatcherPriority CLEAR_PRIORITY = DispatcherPriority.Render;
         private Device.Device device;
 
-        double[] acc = new double[3];
+        double[] acc = new double[9];
         public GraphWindow()
         {
             InitializeComponent();
@@ -34,9 +34,9 @@ namespace ibcdatacsharp.UI.GraphWindow
         // Funcion para inicializar los graficos
         private void initModels()
         {
-            modelAccelerometer = new Model(accelerometer ,-80, 80, titleY : "Accelerometer", units : "m/s^2");
-            modelGyroscope = new Model(gyroscope ,-600, 600, titleY: "Gyroscope", units: "g/s^2");
-            modelMagnetometer = new Model(magnetometer ,-4, 4, titleY: "Magnetometer", units: "k(mT)");
+            modelAccelerometer = new Model(accelerometer ,-100, 100, titleY : "Accelerometer", units : "m/s^2");
+            modelGyroscope = new Model(gyroscope ,-5000, 5000, titleY: "Gyroscope", units: "g/s^2");
+            modelMagnetometer = new Model(magnetometer ,-20, 20, titleY: "Magnetometer", units: "k(mT)");
         }
         // Funcion para actualizar la grafica del acelerometro
         public async Task updateAccelerometer(int frame, double x, double y, double z)
@@ -112,23 +112,22 @@ namespace ibcdatacsharp.UI.GraphWindow
             });
         }
 
-
-
         //Callback para recoger datas del IMU
         public async void Api_dataReceived( byte devicehandler, WisewalkSDK.WisewalkData data)
         {
 
-            acc[0] = data.Imu[0].acc_x;
-            acc[1] = data.Imu[0].acc_y;
-            acc[2] = data.Imu[0].acc_z;
-            Trace.WriteLine("Data: " + acc[0].ToString() + " " + acc[1].ToString() + " " + acc[2].ToString());
+        
+
+            Trace.WriteLine("Data: " + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") 
+                + " " + data.Imu[0].gyro_x.ToString("F3") + " " +  data.Imu[0].gyro_y.ToString("F3") +" "+ data.Imu[0].gyro_z.ToString("F3") + " " +
+                data.Imu[0].mag_x.ToString("F3") + " " + data.Imu[0].mag_y.ToString("F3") + " " + data.Imu[0].mag_z.ToString("F3"));
 
 
             int frame = device.frame;
             await Task.WhenAll(new Task[] {
                 updateAccelerometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
-                updateMagnetometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
-                updateGyroscope(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
+                updateMagnetometer(frame, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z),
+                updateGyroscope(frame, data.Imu[0].mag_x, data.Imu[0].mag_y, data.Imu[0].mag_z),
                 renderAcceletometer(),
                 renderGyroscope(),
                 renderMagnetometer(),

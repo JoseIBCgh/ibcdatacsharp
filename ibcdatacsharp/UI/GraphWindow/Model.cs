@@ -125,7 +125,7 @@ namespace ibcdatacsharp.UI.GraphWindow
         }
         public void render()
         {
-            int index = nextIndex + 1;
+            int index = nextIndex - 1;
             signalPlotX.MaxRenderIndex = index;
             signalPlotY.MaxRenderIndex = index;
             signalPlotZ.MaxRenderIndex = index;
