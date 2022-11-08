@@ -27,6 +27,8 @@ namespace ibcdatacsharp.UI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    
+
     public partial class MainWindow : System.Windows.Window
     {
 
@@ -56,6 +58,7 @@ namespace ibcdatacsharp.UI
         private bool isConnected = false;
         private bool startStream = false;
         private bool startRecord = false;
+        public Dictionary<string, WisewalkSDK.Device> devices_list;
 
         private byte counterUI = 0;
 
@@ -63,7 +66,7 @@ namespace ibcdatacsharp.UI
 
         private string version = "";
 
-        private List<int> counter = new List<int>();
+        public List<int> counter;
 
         private List<Wisewalk.Dev> scanDevices = null;
 
@@ -84,7 +87,6 @@ namespace ibcdatacsharp.UI
             setGraphLibraries();
             graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
             
-
             virtualToolBar = new VirtualToolBar();
             device = new Device.Device();
             fileSaver = new FileSaver.FileSaver();
@@ -105,14 +107,10 @@ namespace ibcdatacsharp.UI
 
             version = api.GetApiVersion();
             api.scanFinished += Api_scanFinished;
+            api.deviceConnected += Api_deviceConnected;
             
-            
 
-           
-
-        }
-
-        
+        }    
 
         private void Api_scanFinished(List<Wisewalk.Dev> devices)
         {
@@ -159,7 +157,9 @@ namespace ibcdatacsharp.UI
 
                 counter.Add(0);
 
-                Trace.WriteLine("Dev: " + devices_list["0"].Id);
+                Trace.WriteLine("DevList: " + devices_list[handler.ToString()].Id);
+               
+                
             }
             else
             {
@@ -180,8 +180,9 @@ namespace ibcdatacsharp.UI
         // Configura el timer capture
         private void initTimerCapture()
         {
-            
 
+            GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
+            graphWindowClass.devicesList(devices_list, counter);
             void onPause(object sender, PauseState pauseState)
             {
                 if (pauseState == PauseState.Pause)
@@ -218,10 +219,12 @@ namespace ibcdatacsharp.UI
                     graphWindow.Navigated += delegate (object sender, NavigationEventArgs e)
                     {
                         
-                        GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
+                        
                         graphWindowClass.clearData();
 
                         api.dataReceived += graphWindowClass.Api_dataReceived;
+                        
+                        
                       
 
                     };
@@ -230,8 +233,9 @@ namespace ibcdatacsharp.UI
                 {
                     
 
-                    GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
+                   
                     graphWindowClass.clearData();
+                    
                     api.dataReceived += graphWindowClass.Api_dataReceived;
                     //timerCapture.Elapsed += graphWindowClass.onTick;
                     //timerRender.Elapsed += graphWindowClass.onRender;

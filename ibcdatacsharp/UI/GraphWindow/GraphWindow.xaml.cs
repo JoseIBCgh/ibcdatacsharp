@@ -1,5 +1,6 @@
 ﻿using ibcdatacsharp.UI.Device;
 using ibcdatacsharp.UI.DeviceList;
+using OpenCvSharp.Flann;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,7 +27,9 @@ namespace ibcdatacsharp.UI.GraphWindow
         private Device.Device device;
 
         double[] acc = new double[9];
-        private Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
+        
+        Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
+        public List<int> counter = new List<int>();
         public GraphWindow()
         {
             InitializeComponent();
@@ -34,6 +37,7 @@ namespace ibcdatacsharp.UI.GraphWindow
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             device = mainWindow.device;
             DataContext = this;
+            
         }
         public Model modelAccelerometer { get; private set; }
         public Model modelGyroscope { get; private set; }
@@ -166,15 +170,25 @@ namespace ibcdatacsharp.UI.GraphWindow
         }
 
         //Callback para recoger datas del IMU
-        public async void Api_dataReceived( byte devicehandler, WisewalkSDK.WisewalkData data)
+        public async void Api_dataReceived( byte deviceHandler, WisewalkSDK.WisewalkData data)
         {
+            
+            devices_list[deviceHandler.ToString()].NPackets++;
+            devices_list[deviceHandler.ToString()].Stream = true;
+            
+            // N. Packets + N. Frames received from device handler
+            string frame2 = counter[deviceHandler].ToString() + " / " + (devices_list[deviceHandler.ToString()].NPackets * devices_list[deviceHandler.ToString()].HeaderInfo.sampleFrame).ToString();
 
-        
+            int sr = devices_list[deviceHandler.ToString()].sampleRate;
+            int timespan = (int)((devices_list[deviceHandler.ToString()].NPackets * devices_list[deviceHandler.ToString()].HeaderInfo.sampleFrame) * ((1 / (float)devices_list[deviceHandler.ToString()].sampleRate) * 1000));
 
-            Trace.WriteLine("Data: " + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") 
+            string ts = timespan.ToString();
+            
+            Trace.WriteLine("Data: " + " "+ frame2 + " " + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") 
                 + " " + data.Imu[0].gyro_x.ToString("F3") + " " +  data.Imu[0].gyro_y.ToString("F3") +" "+ data.Imu[0].gyro_z.ToString("F3") + " " +
                 data.Imu[0].mag_x.ToString("F3") + " " + data.Imu[0].mag_y.ToString("F3") + " " + data.Imu[0].mag_z.ToString("F3"));
 
+        
 
             int frame = device.frame;
             await Task.WhenAll(new Task[] {
@@ -186,6 +200,14 @@ namespace ibcdatacsharp.UI.GraphWindow
                 renderMagnetometer(),
 
             });
+
+        }
+
+        public async void devicesList(Dictionary<string, WisewalkSDK.Device> dl, List<int> c)
+        {
+            devices_list = dl;
+            counter = c;
+            Trace.WriteLine(c.Count);
 
         }
 
