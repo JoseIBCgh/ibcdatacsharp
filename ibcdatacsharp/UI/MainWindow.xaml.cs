@@ -20,7 +20,8 @@ using AngleGraphClass = ibcdatacsharp.UI.AngleGraph.AngleGraph;
 
 using WisewalkSDK;
 using static WisewalkSDK.Protocol_v3;
-
+using System.Windows.Forms;
+using Application = System.Windows.Application;
 
 namespace ibcdatacsharp.UI
 {
@@ -40,9 +41,8 @@ namespace ibcdatacsharp.UI
 
         private System.Timers.Timer timerCapture;
         private System.Timers.Timer timerRender;
-        private FileSaver.FileSaver fileSaver;
+        public FileSaver.FileSaver fileSaver;
 
-        //Wiseware
         // WiseWare
         private const string pathDir = @"c:\Wiseware\Wisewalk-API\";
 
@@ -77,8 +77,7 @@ namespace ibcdatacsharp.UI
         private int indexSelected = -1;
         private short handlerSelected = -1;
         float[] acc = new float[3];
-
-        
+                
 
         string error = "";
         public MainWindow()
@@ -232,7 +231,6 @@ namespace ibcdatacsharp.UI
                 else
                 {
                     
-
                    
                     graphWindowClass.clearData();
                     
@@ -397,6 +395,15 @@ namespace ibcdatacsharp.UI
             }
             deviceListLoadedCheck(onScanFunction);
         }
+        
+        //Cálculo de Fecha y hora
+        private DateTime GetDateTime()
+        {
+            DateTime dateTime = new DateTime(2022, 11, 8, 13, 0, 0, 0);
+            return dateTime;
+        }
+
+
         // Conecta el boton connect
         private void onConnect(object sender, EventArgs e)
         {
@@ -419,11 +426,12 @@ namespace ibcdatacsharp.UI
                     }
                 }
             }
-
             handlerSelected = 0;
             api.Connect(scanDevices, out error);
             Thread.Sleep(1000);
             api.SetDeviceConfiguration(0, 100, 3, out error);
+            Thread.Sleep(1000);
+            api.SetRTCDevices(GetDateTime(), out error);
             Thread.Sleep(1000);
 
             deviceListLoadedCheck(onConnectFunction);

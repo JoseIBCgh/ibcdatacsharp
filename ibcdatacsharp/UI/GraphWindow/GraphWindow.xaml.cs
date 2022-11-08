@@ -30,11 +30,18 @@ namespace ibcdatacsharp.UI.GraphWindow
         
         Dictionary<string, WisewalkSDK.Device> devices_list = new Dictionary<string, WisewalkSDK.Device>();
         public List<int> counter = new List<int>();
+        public FileSaver.FileSaver v;
+        public string frame2;
+        public int sr;
+        int timespan;
+        string ts;
+        int frame = 0;
         public GraphWindow()
         {
             InitializeComponent();
             initModels();
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            v = mainWindow.fileSaver;
             device = mainWindow.device;
             DataContext = this;
             
@@ -173,24 +180,26 @@ namespace ibcdatacsharp.UI.GraphWindow
         public async void Api_dataReceived( byte deviceHandler, WisewalkSDK.WisewalkData data)
         {
             
-            devices_list[deviceHandler.ToString()].NPackets++;
-            devices_list[deviceHandler.ToString()].Stream = true;
+            devices_list["0"].NPackets++;
+            devices_list["0"].Stream = true;
             
             // N. Packets + N. Frames received from device handler
-            string frame2 = counter[deviceHandler].ToString() + " / " + (devices_list[deviceHandler.ToString()].NPackets * devices_list[deviceHandler.ToString()].HeaderInfo.sampleFrame).ToString();
+            frame2 = counter[0].ToString() + " / " + (devices_list["0"].NPackets * devices_list["0"].HeaderInfo.sampleFrame).ToString();
+
 
             int sr = devices_list[deviceHandler.ToString()].sampleRate;
-            int timespan = (int)((devices_list[deviceHandler.ToString()].NPackets * devices_list[deviceHandler.ToString()].HeaderInfo.sampleFrame) * ((1 / (float)devices_list[deviceHandler.ToString()].sampleRate) * 1000));
-
-            string ts = timespan.ToString();
+            int timespan = (int)((devices_list["0"].NPackets * 4) * ((1 / (float)devices_list["0"].sampleRate) * 1000));
             
-            Trace.WriteLine("Data: " + " "+ frame2 + " " + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") 
-                + " " + data.Imu[0].gyro_x.ToString("F3") + " " +  data.Imu[0].gyro_y.ToString("F3") +" "+ data.Imu[0].gyro_z.ToString("F3") + " " +
-                data.Imu[0].mag_x.ToString("F3") + " " + data.Imu[0].mag_y.ToString("F3") + " " + data.Imu[0].mag_z.ToString("F3"));
+            float tsA = ((float)(devices_list["0"].NPackets * 4) * ((1 / (float)devices_list["0"].sampleRate) * 1000) / 1000) ;
 
-        
+            ts = timespan.ToString();
+            frame += 1;
+            Trace.WriteLine("Data: " + " "+ tsA.ToString("F3") +" " + (devices_list["0"].NPackets * devices_list["0"].HeaderInfo.sampleFrame).ToString() + " " 
+                + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") + " " 
+                + data.Imu[0].gyro_x.ToString("F3") + " " +  data.Imu[0].gyro_y.ToString("F3") +" "+ data.Imu[0].gyro_z.ToString("F3") + " " 
+                + data.Imu[0].mag_x.ToString("F3") + " " + data.Imu[0].mag_y.ToString("F3") +" " + data.Imu[0].mag_z.ToString("F3"));
 
-            int frame = device.frame;
+                    
             await Task.WhenAll(new Task[] {
                 updateAccelerometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
                 updateMagnetometer(frame, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z),
@@ -198,9 +207,13 @@ namespace ibcdatacsharp.UI.GraphWindow
                 renderAcceletometer(),
                 renderGyroscope(),
                 renderMagnetometer(),
+                 v.appendCSV(frame.ToString(), tsA.ToString("F3"), data.Imu[0].acc_x.ToString("F3"), data.Imu[0].acc_y.ToString("F3"), data.Imu[0].acc_z.ToString("F3"),
+                data.Imu[0].gyro_x.ToString("F3") ,  data.Imu[0].gyro_y.ToString("F3") , data.Imu[0].gyro_z.ToString("F3") ,
+                data.Imu[0].mag_x.ToString("F3") , data.Imu[0].mag_y.ToString("F3") , data.Imu[0].mag_z.ToString("F3")
+                ),
 
-            });
-
+        });
+           
         }
 
         public async void devicesList(Dictionary<string, WisewalkSDK.Device> dl, List<int> c)

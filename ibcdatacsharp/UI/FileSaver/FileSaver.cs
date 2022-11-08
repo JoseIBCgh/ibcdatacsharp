@@ -4,6 +4,7 @@ using ibcdatacsharp.UI.ToolBar.Enums;
 using OpenCvSharp;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -13,7 +14,7 @@ using System.Windows.Navigation;
 
 namespace ibcdatacsharp.UI.FileSaver
 {
-    internal class FileSaver
+    public class FileSaver
     {
         private const int FPS = 25;
         private const int RECORD_CSV_MS = 10;
@@ -40,7 +41,7 @@ namespace ibcdatacsharp.UI.FileSaver
             ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL	ORIGINAL
         ITEM	0	0	x	x	x	x	x	x	x	x	x
 ";
-        private StringBuilder? csvData;
+        private StringBuilder? csvData = new StringBuilder();
         public FileSaver()
         {
             recordCSV = false;
@@ -91,7 +92,7 @@ namespace ibcdatacsharp.UI.FileSaver
         {
             timerCsv = new System.Timers.Timer();
             timerCsv.Interval = RECORD_CSV_MS;
-            timerCsv.Elapsed += (sender, e) => appendCSV();
+            //timerCsv.Elapsed += (sender, e) => appendCSV();
 
             virtualToolBar.pauseEvent += onPauseCsv;
 
@@ -174,7 +175,7 @@ namespace ibcdatacsharp.UI.FileSaver
             string baseFilename = fileName();
             if (recordCSV)
             {
-                csvFile = baseFilename + ".csv";
+                csvFile = baseFilename + ".txt";
                 csvData = new StringBuilder();
                 csvData.Append(csvHeader);
                 initRecordCsv();
@@ -187,16 +188,30 @@ namespace ibcdatacsharp.UI.FileSaver
                 initRecordVideo();
             }
         }
-        // Añade una fila al csv
-        private void appendCSV()
+        // Añade una fila al csv (con datos prefabricados)
+        //public void appendCSV()
+        //{
+        //    RawArgs rawArgs = device.rawData;
+        //    //AngleArgs angleArgs = device.angleData;
+        //    double elapsed = stopwatchCSV.Elapsed.TotalSeconds;
+        //    string newLine = "1 " + elapsed.ToString() + " " + frameCsv.ToString() + " " +
+        //        rawArgs.accelerometer[0].ToString() + " " + rawArgs.accelerometer[1].ToString() + " " + rawArgs.accelerometer[2].ToString() + " " +
+        //        rawArgs.gyroscope[0].ToString() + " " + rawArgs.gyroscope[1].ToString() + " " + rawArgs.gyroscope[2].ToString() + " " +
+        //        rawArgs.magnetometer[0].ToString() + " " + rawArgs.magnetometer[1].ToString() + " " + rawArgs.magnetometer[2].ToString() + "\n";
+        //    csvData.Append(newLine);
+        //    frameCsv++;
+        //}
+
+        public async Task appendCSV(string fr, string ts, string acc_x, string acc_y, string acc_z, 
+            string gyr_x, string gyr_y, string gyr_z, 
+            string mag_x, string mag_y, string mag_z)
         {
             RawArgs rawArgs = device.rawData;
             //AngleArgs angleArgs = device.angleData;
-            double elapsed = stopwatchCSV.Elapsed.TotalSeconds;
-            string newLine = "1 " + elapsed.ToString() + " " + frameCsv.ToString() + " " +
-                rawArgs.accelerometer[0].ToString() + " " + rawArgs.accelerometer[1].ToString() + " " + rawArgs.accelerometer[2].ToString() + " " +
-                rawArgs.gyroscope[0].ToString() + " " + rawArgs.gyroscope[1].ToString() + " " + rawArgs.gyroscope[2].ToString() + " " +
-                rawArgs.magnetometer[0].ToString() + " " + rawArgs.magnetometer[1].ToString() + " " + rawArgs.magnetometer[2].ToString() + "\n";
+            //double elapsed = stopwatchCSV.Elapsed.TotalSeconds;
+            string newLine = "1 " + ts + " " + fr + " " + acc_x +" " + acc_y + " " + acc_z +
+                gyr_x + " " + gyr_y + " " + gyr_z +
+                mag_x + " " + mag_y + " " + mag_z + "\n";
             csvData.Append(newLine);
             frameCsv++;
         }
