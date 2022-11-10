@@ -114,9 +114,19 @@ namespace ibcdatacsharp.UI
         private void Api_scanFinished(List<Wisewalk.Dev> devices)
         {
             scanDevices = devices;
-            Trace.WriteLine(devices.Count);
+            Trace.WriteLine("# of devices: " + devices.Count);
             ShowScanList(scanDevices);
            
+        }
+
+        private string GetMacAddress(List<Wisewalk.Dev> devices, int idx)
+        {
+            string mac = "";
+
+            mac = devices[idx].mac[5].ToString("X2") + ":" + devices[idx].mac[4].ToString("X2") + ":" + devices[idx].mac[3].ToString("X2") + ":" +
+                                    devices[idx].mac[2].ToString("X2") + ":" + devices[idx].mac[1].ToString("X2") + ":" + devices[idx].mac[0].ToString("X2");
+
+            return mac;
         }
 
         private void ShowScanList(List<Wisewalk.Dev> devices)
@@ -223,8 +233,6 @@ namespace ibcdatacsharp.UI
 
                         api.dataReceived += graphWindowClass.Api_dataReceived;
                         
-                        
-                      
 
                     };
                 }
@@ -330,8 +338,18 @@ namespace ibcdatacsharp.UI
         {
             
             // Funcion que se ejecuta al clicar el boton scan
-            void onScanFunction()
+            async void onScanFunction()
             {
+                
+                async void scanIMUs(DeviceList.DeviceList deviceListClass)
+                {
+                    api.Open("COM6", out error);
+                   
+                    api.ScanDevices(out error);
+                    Thread.Sleep(2000);
+
+                }
+
                 // Añade las camaras al TreeView
                 async void addCameras(DeviceList.DeviceList deviceListClass)
                 {
@@ -347,7 +365,7 @@ namespace ibcdatacsharp.UI
                         return cameraNames;
                     }
                     // Devuelve una lista de indice OpenCV de las camaras disponibles
-                     List<int> cameraIndices(int maxIndex = 10)
+                    List<int> cameraIndices(int maxIndex = 10)
                     {
                         List<int> indices = new List<int>();
                         VideoCapture capture = new VideoCapture();
@@ -362,10 +380,31 @@ namespace ibcdatacsharp.UI
                         }
                         return indices;
                     }
+                    
+                    
+                    void getIMUs()
+                    {
+                        api.Open("COM6", out error);
+                        
+                        if (!api.ScanDevices(out error))
+                        {
+                            // Error
+                            Trace.WriteLine("", "Error to scan devices - " + error);
+                        }
+                        else
+                        {
+                            Thread.Sleep(2000);
+                        }
+                        
+                    }
+                  
+
                     List<string> names = await Task.Run(() => cameraNames());
                     //names.ForEach(n => Trace.WriteLine(n));
                     List<int> indices = await Task.Run(() => cameraIndices(names.Count));
                     //indices.ForEach(i => Trace.WriteLine(i));
+                    await Task.Run( () => getIMUs());
+                    
                     for (int i = 0; i < names.Count; i++)
                     {
                         if (indices.Contains(i))
@@ -373,21 +412,28 @@ namespace ibcdatacsharp.UI
                             deviceListClass.addCamera(new CameraInfo(i, names[i]));
                         }
                     }
-
-                    api.Open("COM6", out error);
-                    api.ScanDevices(out error);
-                   
+                    Thread.Sleep(4000);
+                    for (int i = 0; i < scanDevices.Count; i++)
+                    {
+                        deviceListClass.addIMU(new IMUInfo("ActiSense", GetMacAddress(scanDevices, i)));
+                    }
 
                 }
                 DeviceList.DeviceList deviceListClass = deviceList.Content as DeviceList.DeviceList;
                 deviceListClass.clearAll();
+             
+
                 addCameras(deviceListClass);
                 deviceListClass.hideIMUs();
                 deviceListClass.showCameras();
                 deviceListClass.hideInsoles(); //Por defecto estan escondidos pero si los muestras una vez los tienes que volver a esconder
                 
                 deviceListClass.showIMUs();
-                deviceListClass.addIMU(new IMUInfo("IMU", "AD:DS"));
+             
+              
+
+
+
                 /*
                 deviceListClass.showInsoles();
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
@@ -427,13 +473,17 @@ namespace ibcdatacsharp.UI
                 }
             }
             handlerSelected = 0;
-            api.Connect(scanDevices, out error);
-            Thread.Sleep(1000);
-            api.SetDeviceConfiguration(0, 100, 3, out error);
-            Thread.Sleep(1000);
-            api.SetRTCDevices(GetDateTime(), out error);
-            Thread.Sleep(1000);
 
+            
+            api.Connect(scanDevices, out error);
+
+
+            
+
+            api.SetDevicesConfigurations(100, 3, out error);
+            
+            api.SetRTCDevices(GetDateTime(), out error);
+            
             deviceListLoadedCheck(onConnectFunction);
         }
         // Conecta el boton disconnect
@@ -449,6 +499,8 @@ namespace ibcdatacsharp.UI
                     TreeViewItem treeViewItem = (TreeViewItem)deviceListClass.IMUs.ItemContainerGenerator.ContainerFromItem(selected);
                     deviceListClass.disconnectIMU(treeViewItem);
                 }
+
+                api.Disconnect(out error);
             }
             deviceListLoadedCheck(onDisconnectFunction);
         }
