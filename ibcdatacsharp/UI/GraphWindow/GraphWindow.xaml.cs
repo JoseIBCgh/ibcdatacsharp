@@ -194,7 +194,7 @@ namespace ibcdatacsharp.UI.GraphWindow
 
             ts = timespan.ToString();
             frame += 1;
-            Trace.WriteLine("Data: " + " "+ tsA.ToString("F3") +" " + (devices_list["0"].NPackets * devices_list["0"].HeaderInfo.sampleFrame).ToString() + " " 
+            Trace.WriteLine("Data: " + " "+ tsA.ToString("F3") +" " + (devices_list["0"].NPackets).ToString() + " " 
                 + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") + " " 
                 + data.Imu[0].gyro_x.ToString("F3") + " " +  data.Imu[0].gyro_y.ToString("F3") +" "+ data.Imu[0].gyro_z.ToString("F3") + " " 
                 + data.Imu[0].mag_x.ToString("F3") + " " + data.Imu[0].mag_y.ToString("F3") +" " + data.Imu[0].mag_z.ToString("F3"));

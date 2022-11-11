@@ -273,6 +273,13 @@ namespace ibcdatacsharp.UI
                     timerRender.Start();
                 }
                 device.initTimer();
+
+                api.SetDeviceConfiguration(0, 100, 3, out error);
+                Thread.Sleep(1000);
+                api.SetRTCDevice(0, GetDateTime(), out error);
+                Thread.Sleep(1000);
+
+
                 api.StartStream(out error);
             }
             
@@ -478,11 +485,8 @@ namespace ibcdatacsharp.UI
             api.Connect(scanDevices, out error);
 
 
-            
 
-            api.SetDevicesConfigurations(100, 3, out error);
-            
-            api.SetRTCDevices(GetDateTime(), out error);
+
             
             deviceListLoadedCheck(onConnectFunction);
         }
