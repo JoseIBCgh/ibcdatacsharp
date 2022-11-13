@@ -7,6 +7,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using AngleGraphClass = ibcdatacsharp.UI.AngleGraph.AngleGraph;
 
 namespace ibcdatacsharp.UI.AngleGraph
 {

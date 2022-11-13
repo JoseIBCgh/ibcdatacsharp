@@ -180,27 +180,31 @@ namespace ibcdatacsharp.UI.GraphWindow
         public async void Api_dataReceived( byte deviceHandler, WisewalkSDK.WisewalkData data)
         {
             
-            devices_list["0"].NPackets++;
-            devices_list["0"].Stream = true;
+            devices_list[deviceHandler.ToString()].NPackets++;
+            devices_list[deviceHandler.ToString()].Stream = true;
             
             // N. Packets + N. Frames received from device handler
-            frame2 = counter[0].ToString() + " / " + (devices_list["0"].NPackets * devices_list["0"].HeaderInfo.sampleFrame).ToString();
+            frame2 = counter[0].ToString() + " / " + (devices_list[deviceHandler.ToString()].NPackets * devices_list[deviceHandler.ToString()].HeaderInfo.sampleFrame).ToString();
 
 
             int sr = devices_list[deviceHandler.ToString()].sampleRate;
-            int timespan = (int)((devices_list["0"].NPackets * 4) * ((1 / (float)devices_list["0"].sampleRate) * 1000));
+            int timespan = (int)((devices_list[deviceHandler.ToString()].NPackets * 4) * ((1 / (float)devices_list[deviceHandler.ToString()].sampleRate) * 1000));
             
-            float tsA = ((float)(devices_list["0"].NPackets * 4) * ((1 / (float)devices_list["0"].sampleRate) * 1000) / 1000) ;
+            float tsA = ((float)(devices_list[deviceHandler.ToString()].NPackets * 4) * ((1 / (float)devices_list[deviceHandler.ToString()].sampleRate) * 1000) / 1000) ;
 
             ts = timespan.ToString();
             frame += 1;
-            Trace.WriteLine("Data: " + " "+ tsA.ToString("F3") +" " + (devices_list["0"].NPackets).ToString() + " " 
-                + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") +" "+ data.Imu[0].acc_z.ToString("F3") + " " 
-                + data.Imu[0].gyro_x.ToString("F3") + " " +  data.Imu[0].gyro_y.ToString("F3") +" "+ data.Imu[0].gyro_z.ToString("F3") + " " 
-                + data.Imu[0].mag_x.ToString("F3") + " " + data.Imu[0].mag_y.ToString("F3") +" " + data.Imu[0].mag_z.ToString("F3"));
+            
+            if (data.Imu.Count > 0 ) {
+                Trace.WriteLine("Data: " + " " + devices_list[deviceHandler.ToString()].Id.ToString() + " " + tsA.ToString("F3") + " " + (devices_list[deviceHandler.ToString()].NPackets).ToString() + " "
+              + data.Imu[deviceHandler].acc_x.ToString("F3") + " " + data.Imu[deviceHandler].acc_y.ToString("F3") + " " + data.Imu[deviceHandler].acc_z.ToString("F3"));
+            }
 
-                    
-            await Task.WhenAll(new Task[] {
+            // Only a IMU
+
+            if ( devices_list.Count  == 1)
+            {
+                await Task.WhenAll(new Task[] {
                 updateAccelerometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
                 updateMagnetometer(frame, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z),
                 updateGyroscope(frame, data.Imu[0].mag_x, data.Imu[0].mag_y, data.Imu[0].mag_z),
@@ -212,7 +216,14 @@ namespace ibcdatacsharp.UI.GraphWindow
                 data.Imu[0].mag_x.ToString("F3") , data.Imu[0].mag_y.ToString("F3") , data.Imu[0].mag_z.ToString("F3")
                 ),
 
-        });
+            });
+            }
+            else if (devices_list.Count == 2)
+            {
+                
+            }
+       
+            
            
         }
 
