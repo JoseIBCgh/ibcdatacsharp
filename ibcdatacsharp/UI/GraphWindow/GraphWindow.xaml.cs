@@ -4,6 +4,8 @@ using OpenCvSharp.Flann;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Numerics;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -36,6 +38,16 @@ namespace ibcdatacsharp.UI.GraphWindow
         int timespan;
         string ts;
         int frame = 0;
+
+        Quaternion q1 = new Quaternion();
+        Quaternion refq = new Quaternion();
+        Quaternion q_lower = new Quaternion();
+        Quaternion q_upper = new Quaternion();
+
+        int anglequat = 0;
+        int mac1 = 0;
+        int mac2 = 0;
+        
         public GraphWindow()
         {
             InitializeComponent();
@@ -128,6 +140,8 @@ namespace ibcdatacsharp.UI.GraphWindow
                 updateMagnetometer(frame, rawArgs.magnetometer[0], rawArgs.magnetometer[1], rawArgs.magnetometer[2]),
                 updateGyroscope(frame, rawArgs.gyroscope[0], rawArgs.gyroscope[1], rawArgs.gyroscope[2])
             });
+
+            
         }
 
         // <summary>
@@ -176,6 +190,42 @@ namespace ibcdatacsharp.UI.GraphWindow
             return streamDuration;
         }
 
+        public static Vector3 ToEulerAngles(Quaternion q)
+        {
+            Vector3 angles = new();
+
+            // roll / x
+            double sinr_cosp = 2 * (q.W * q.X + q.Y * q.Z);
+            double cosr_cosp = 1 - 2 * (q.X * q.X + q.Y * q.Y);
+            angles.X = (float)Math.Atan2(sinr_cosp, cosr_cosp);
+
+            // pitch / y
+            double sinp = 2 * (q.W * q.Y - q.Z * q.X);
+            if (Math.Abs(sinp) >= 1)
+            {
+                angles.Y = (float)Math.CopySign(Math.PI / 2, sinp);
+            }
+            else
+            {
+                angles.Y = (float)Math.Asin(sinp);
+            }
+
+            // yaw / z
+            double siny_cosp = 2 * (q.W * q.Z + q.X * q.Y);
+            double cosy_cosp = 1 - 2 * (q.Y * q.Y + q.Z * q.Z);
+            angles.Z = (float)Math.Atan2(siny_cosp, cosy_cosp);
+
+            return angles;
+        }
+
+        /// <summary>
+        /// Convert radians to degrees.
+        /// </summary>
+        public static float ToDegrees(float radians)
+        {
+            return radians * 180f / (float)Math.PI;
+        }
+
         //Callback para recoger datas del IMU
         public async void Api_dataReceived( byte deviceHandler, WisewalkSDK.WisewalkData data)
         {
@@ -194,10 +244,98 @@ namespace ibcdatacsharp.UI.GraphWindow
 
             ts = timespan.ToString();
             frame += 1;
+
+            // refq = 0.823125, 0.000423, 0.009129, -0.567773
+
+
+            /**
+             * 
+             *  
+                X1 = Q1*X*conj(Q1);
+                Y1 = Q1*Y*conj(Q1);
+                Z1 = Q1*Z*conj(Q1);
+
+                X2 = Q2*X*conj(Q2);
+                Y2 = Q2*Y*conj(Q2);
+                Z2 = Q2*Z*conj(Q2);
+
+
+                DiffAngleX = acos(dot(X1,X2));
+                DiffAngleY = acos(dot(Y1,Y2));
+                DiffAngleZ = acos(dot(Z1,Z2));
+             */
+
+            /*
             
+            Q1 = C0:97:3C:F2:DA:40
+            Q2 = D8:D3:A5:0A:4F:BC
+
+             */
+
+            q1.W = (float) data.Quat[0].W;
+            q1.X = (float) data.Quat[0].X;
+            q1.Y = (float) data.Quat[0].Y;
+            q1.Z = (float) data.Quat[0].Z;
+
+            //ref_quaternion:
+            //0.823125, 0.000423, 0.009129, -0.567773 Z para arriba
+            // 0.176144, -0.189621, 0.693031, -0.672846 Y para arriba
+            // 0.516224, 0.4542, 0.55528, -0.467841 X para arriba
+
+            refq.W = 0.176144f;
+            refq.X = -0.189621f;
+            refq.Y = 0.693031f;
+            refq.Z = -0.672846f;
+
+
+            Matrix4x4 refmat = Matrix4x4.CreateFromQuaternion(refq);
+
+            
+            
+           
             if (data.Imu.Count > 0 ) {
-                Trace.WriteLine("Data: " + " " + devices_list[deviceHandler.ToString()].Id.ToString() + " " + tsA.ToString("F3") + " " + (devices_list[deviceHandler.ToString()].NPackets).ToString() + " "
-              + data.Imu[deviceHandler].acc_x.ToString("F3") + " " + data.Imu[deviceHandler].acc_y.ToString("F3") + " " + data.Imu[deviceHandler].acc_z.ToString("F3"));
+            //    Trace.WriteLine("Data: " + " " + devices_list[deviceHandler.ToString()].Id.ToString() + " " + tsA.ToString("F3") + " " + devices_list[deviceHandler.ToString()].NPackets.ToString() + " "
+            //+ data.Quat[0].W.ToString() + ", " + data.Quat[0].X.ToString() + ", " + data.Quat[0].Y.ToString() + ", " + data.Quat[0].Z.ToString());
+
+                if (devices_list[deviceHandler.ToString()].Id.ToString() == "C0:97:3C:F2:DA:40"  )  
+                {
+                    q_lower.W = (float)data.Quat[0].W;
+                    q_lower.X = (float)data.Quat[0].X;
+                    q_lower.Y = (float)data.Quat[0].Y;
+                    q_lower.Z = (float)data.Quat[0].Z;
+                    anglequat++;
+                    
+                }
+                
+                else if ( devices_list[deviceHandler.ToString()].Id.ToString() == "D8:D3:A5:0A:4F:BC" )
+                {
+                    q_lower.W = (float)data.Quat[0].W;
+                    q_lower.X = (float)data.Quat[0].X;
+                    q_lower.Y = (float)data.Quat[0].Y;
+                    q_lower.Z = (float)data.Quat[0].Z;
+                    anglequat++;
+                }
+                
+
+
+               if (anglequat % 2 == 0)
+                {
+                    Vector3 angle_low = new();
+                    Vector3 angle_up = new();
+                    Vector3 angle_ref = new();
+                    angle_low = ToEulerAngles(q_lower);
+                    angle_up = ToEulerAngles(q_upper);
+                    angle_ref = ToEulerAngles(refq);
+                    float a1 = angle_low.X - angle_up.X + angle_ref.X;
+                    float a2 = angle_low.Y - angle_up.Y + angle_ref.Y;
+                    float a3 = angle_low.Z - angle_up.Z + angle_ref.Z;
+                    a1 = ToDegrees(a1);
+                    a2 = ToDegrees(a2);
+                    a3 = ToDegrees(a3);
+
+                    Trace.WriteLine(":::::: ANGLE JOINT: " + a1.ToString() + " " + a2.ToString() + " " + a3.ToString());
+
+                }
             }
 
             // Only a IMU
@@ -220,7 +358,7 @@ namespace ibcdatacsharp.UI.GraphWindow
             }
             else if (devices_list.Count == 2)
             {
-                
+                //
             }
        
             
