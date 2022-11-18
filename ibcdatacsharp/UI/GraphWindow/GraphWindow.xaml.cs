@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using WisewalkSDK;
-
+using Quaternion = System.Numerics.Quaternion;
 
 namespace ibcdatacsharp.UI.GraphWindow
 {
@@ -272,10 +273,6 @@ namespace ibcdatacsharp.UI.GraphWindow
 
              */
 
-            q1.W = (float) data.Quat[0].W;
-            q1.X = (float) data.Quat[0].X;
-            q1.Y = (float) data.Quat[0].Y;
-            q1.Z = (float) data.Quat[0].Z;
 
             //ref_quaternion:
             //0.823125, 0.000423, 0.009129, -0.567773 Z para arriba
@@ -309,10 +306,10 @@ namespace ibcdatacsharp.UI.GraphWindow
                 
                 else if ( devices_list[deviceHandler.ToString()].Id.ToString() == "D8:D3:A5:0A:4F:BC" )
                 {
-                    q_lower.W = (float)data.Quat[0].W;
-                    q_lower.X = (float)data.Quat[0].X;
-                    q_lower.Y = (float)data.Quat[0].Y;
-                    q_lower.Z = (float)data.Quat[0].Z;
+                    q_upper.W = (float)data.Quat[0].W;
+                    q_upper.X = (float)data.Quat[0].X;
+                    q_upper.Y = (float)data.Quat[0].Y;
+                    q_upper.Z = (float)data.Quat[0].Z;
                     anglequat++;
                 }
                 
@@ -333,8 +330,14 @@ namespace ibcdatacsharp.UI.GraphWindow
                     a2 = ToDegrees(a2);
                     a3 = ToDegrees(a3);
 
-                    Trace.WriteLine(":::::: ANGLE JOINT: " + a1.ToString() + " " + a2.ToString() + " " + a3.ToString());
+                    //Trace.WriteLine(":::::: ANGLE JOINT: " + a1.ToString() + " " + a2.ToString() + " " + a3.ToString());
 
+                    Quaternion res = Quaternion.Multiply(q_lower, Quaternion.Inverse(q_upper));
+                    Matrix4x4 m3 = Matrix4x4.CreateFromQuaternion(res);
+                    float alpha = (float)Math.Asin(m3.M21);
+                    Trace.WriteLine("Joint Angle: " + ToDegrees( alpha ).ToString("F3") 
+                        + " " +  ToDegrees( (float) (Math.Asin(-m3.M22 / Math.Cos(alpha) ))).ToString("F3")  );
+                   
                 }
             }
 
