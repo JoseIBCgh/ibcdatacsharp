@@ -1,4 +1,5 @@
-﻿using ibcdatacsharp.UI.Device;
+﻿using DirectShowLib.DES;
+using ibcdatacsharp.UI.Device;
 using ibcdatacsharp.UI.DeviceList;
 using OpenCvSharp.Flann;
 using System;
@@ -330,14 +331,27 @@ namespace ibcdatacsharp.UI.GraphWindow
                     a2 = ToDegrees(a2);
                     a3 = ToDegrees(a3);
 
-                    //Trace.WriteLine(":::::: ANGLE JOINT: " + a1.ToString() + " " + a2.ToString() + " " + a3.ToString());
+                    Trace.WriteLine(":::::: ANGLE JOINT: " + a1.ToString() + " " + a2.ToString() + " " + a3.ToString());
 
-                    Quaternion res = Quaternion.Multiply(q_lower, Quaternion.Inverse(q_upper));
-                    Matrix4x4 m3 = Matrix4x4.CreateFromQuaternion(res);
-                    float alpha = (float)Math.Asin(m3.M21);
-                    Trace.WriteLine("Joint Angle: " + ToDegrees( alpha ).ToString("F3") 
-                        + " " +  ToDegrees( (float) (Math.Asin(-m3.M22 / Math.Cos(alpha) ))).ToString("F3")  );
-                   
+                    Matrix4x4 m_lower = Matrix4x4.CreateFromQuaternion(q_lower);
+                    Matrix4x4 m_upper = Matrix4x4.CreateFromQuaternion(q_upper);
+
+                    Matrix4x4 R = Matrix4x4.Multiply(m_lower, m_upper);
+
+                    double beta = Math.Atan2(R.M32 , Math.Sqrt( Math.Pow(R.M12,2) * Math.Pow(R.M22, 2) ) );
+                    double delta = Math.Atan2(-(R.M12 / Math.Cos(beta)), R.M22 / Math.Cos(beta));
+                    double phi = Math.Atan2(-(R.M31 / Math.Cos(beta)), R.M33 / Math.Cos(beta));
+
+                    if (beta >= 90.0 && beta < 91.0)
+                    {
+                        beta = 90.0d;
+                        delta = 0.0d;
+                        phi = Math.Atan2(R.M13, R.M23);
+                        
+                    }
+
+                    //Trace.WriteLine("Beta: " + ToDegrees((float) beta).ToString() + " Delta:" + ToDegrees((float) delta).ToString() + 
+                    //    " Phi: " + ToDegrees((float) phi).ToString());                   
                 }
             }
 
