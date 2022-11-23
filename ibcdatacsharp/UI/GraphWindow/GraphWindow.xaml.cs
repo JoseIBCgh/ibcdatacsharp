@@ -388,7 +388,21 @@ namespace ibcdatacsharp.UI.GraphWindow
                     renderGyroscope(),
                     renderMagnetometer(),
                     
-                    
+                    v.appendCSV(frame, data.timespans[0], data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z,
+                    data.Imu[0].gyro_x ,  data.Imu[0].gyro_y, data.Imu[0].gyro_z ,
+                    data.Imu[0].mag_x , data.Imu[0].mag_y , data.Imu[0].mag_z),
+
+                    v.appendCSV(frame, data.timespans[1], data.Imu[1].acc_x, data.Imu[1].acc_y, data.Imu[1].acc_z,
+                    data.Imu[1].gyro_x ,  data.Imu[1].gyro_y, data.Imu[1].gyro_z ,
+                    data.Imu[1].mag_x , data.Imu[1].mag_y , data.Imu[1].mag_z),
+
+                    v.appendCSV(frame, data.timespans[2], data.Imu[2].acc_x, data.Imu[2].acc_y, data.Imu[2].acc_z,
+                    data.Imu[2].gyro_x ,  data.Imu[2].gyro_y, data.Imu[2].gyro_z ,
+                    data.Imu[2].mag_x , data.Imu[2].mag_y , data.Imu[2].mag_z),
+
+                    v.appendCSV(frame, data.timespans[3], data.Imu[3].acc_x, data.Imu[3].acc_y, data.Imu[3].acc_z,
+                    data.Imu[3].gyro_x ,  data.Imu[3].gyro_y, data.Imu[3].gyro_z ,
+                    data.Imu[3].mag_x , data.Imu[3].mag_y , data.Imu[3].mag_z),
 
 
 
@@ -409,17 +423,7 @@ namespace ibcdatacsharp.UI.GraphWindow
 
             });
 
-                v.appendCSV(frame, data.timespans[0], data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z,
-                        data.Imu[0].mag_x, data.Imu[0].mag_y, data.Imu[0].mag_z);
 
-                v.appendCSV(frame, data.timespans[1], data.Imu[1].acc_x, data.Imu[1].acc_y, data.Imu[1].acc_z, data.Imu[1].gyro_x, data.Imu[1].gyro_y, data.Imu[1].gyro_z,
-                    data.Imu[1].mag_x, data.Imu[1].mag_y, data.Imu[1].mag_z);
-
-                v.appendCSV(frame, data.timespans[2], data.Imu[2].acc_x, data.Imu[2].acc_y, data.Imu[2].acc_z,
-                data.Imu[2].gyro_x, data.Imu[2].gyro_y, data.Imu[2].gyro_z, data.Imu[2].mag_x, data.Imu[2].mag_y, data.Imu[2].mag_z);
-
-                v.appendCSV(frame, data.timespans[3], data.Imu[3].acc_x, data.Imu[3].acc_y, data.Imu[3].acc_z,
-                data.Imu[3].gyro_x, data.Imu[3].gyro_y, data.Imu[3].gyro_z, data.Imu[3].mag_x, data.Imu[3].mag_y, data.Imu[3].mag_z);
 
 
 
