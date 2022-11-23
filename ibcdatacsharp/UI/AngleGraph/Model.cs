@@ -37,7 +37,7 @@ namespace ibcdatacsharp.UI.AngleGraph
         // Inicializa el modelo
         private void SetupModel(string titleY)
         {
-            plot.Plot.SetAxisLimits(yMin: -200, yMax: 200);
+            plot.Plot.SetAxisLimits(yMin: -400, yMax: 400);
             paintAreas();
             /*
             PlotModel = new PlotModel();

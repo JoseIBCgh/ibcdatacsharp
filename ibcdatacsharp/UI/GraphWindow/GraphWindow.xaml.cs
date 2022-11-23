@@ -19,6 +19,7 @@ using Quaternion = System.Numerics.Quaternion;
 
 using ibcdatacsharp.UI.AngleGraph;
 using DirectShowLib.BDA;
+using System.Windows.Navigation;
 
 namespace ibcdatacsharp.UI.GraphWindow
 {
@@ -68,13 +69,18 @@ namespace ibcdatacsharp.UI.GraphWindow
         public GraphWindow()
         {
             InitializeComponent();
-            angleGraph = new AngleGraph.AngleGraph();
+        
             initModels();
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             v = mainWindow.fileSaver;
             device = mainWindow.device;
             DataContext = this;
 
+            mainWindow.angleGraph.Navigated += delegate (object sender, NavigationEventArgs e)
+            {
+                angleGraph = mainWindow.angleGraph.Content as AngleGraph.AngleGraph;
+
+            };
 
         }
         public Model modelAccelerometer { get; private set; }
@@ -381,26 +387,39 @@ namespace ibcdatacsharp.UI.GraphWindow
                     renderAcceletometer(),
                     renderGyroscope(),
                     renderMagnetometer(),
-                     v.appendCSV(frame.ToString(), tsA.ToString("F3"), data.Imu[0].acc_x.ToString("F3"), data.Imu[0].acc_y.ToString("F3"), data.Imu[0].acc_z.ToString("F3"),
-                    data.Imu[0].gyro_x.ToString("F3") ,  data.Imu[0].gyro_y.ToString("F3") , data.Imu[0].gyro_z.ToString("F3") ,
-                    data.Imu[0].mag_x.ToString("F3") , data.Imu[0].mag_y.ToString("F3") , data.Imu[0].mag_z.ToString("F3")
-                ),
+                    
+                    
+
+
+
 
             });
             }
             else if (devices_list.Count == 2)
             {
-                await Task.WhenAll(new Task[] { 
-                
+                await Task.WhenAll(new Task[] {
+
                     angleGraph.updateX(frame, a1),
-                
-                   
-                    angleGraph.renderX()
-                  
-                
-                });
+                    angleGraph.updateY(frame, a2),
+                    angleGraph.updateZ(frame, a3),
+                    angleGraph.renderX(),
+                    angleGraph.renderY(),
+                    angleGraph.renderZ()
+                     
 
+            });
 
+                v.appendCSV(frame, data.timespans[0], data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z,
+                        data.Imu[0].mag_x, data.Imu[0].mag_y, data.Imu[0].mag_z);
+
+                v.appendCSV(frame, data.timespans[1], data.Imu[1].acc_x, data.Imu[1].acc_y, data.Imu[1].acc_z, data.Imu[1].gyro_x, data.Imu[1].gyro_y, data.Imu[1].gyro_z,
+                    data.Imu[1].mag_x, data.Imu[1].mag_y, data.Imu[1].mag_z);
+
+                v.appendCSV(frame, data.timespans[2], data.Imu[2].acc_x, data.Imu[2].acc_y, data.Imu[2].acc_z,
+                data.Imu[2].gyro_x, data.Imu[2].gyro_y, data.Imu[2].gyro_z, data.Imu[2].mag_x, data.Imu[2].mag_y, data.Imu[2].mag_z);
+
+                v.appendCSV(frame, data.timespans[3], data.Imu[3].acc_x, data.Imu[3].acc_y, data.Imu[3].acc_z,
+                data.Imu[3].gyro_x, data.Imu[3].gyro_y, data.Imu[3].gyro_z, data.Imu[3].mag_x, data.Imu[3].mag_y, data.Imu[3].mag_z);
 
 
 
