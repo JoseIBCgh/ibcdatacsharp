@@ -42,7 +42,7 @@ namespace ibcdatacsharp.UI.AngleGraph
         {
             await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
-                modelX.updateData(data);
+                modelX.updateData( (float) data);
             });
         }
         // Funcion para borrar los datos del acelerometro
@@ -86,18 +86,20 @@ namespace ibcdatacsharp.UI.AngleGraph
             });
         }
         // Recive los datos del IMU inventado
-        public async void onTick(object sender, ElapsedEventArgs e)
+        public async Task onTick2( int frame, float delta)
         {
+         
             AngleArgs angleArgs = device.angleData;
-            int frame = device.frame;
+            //int frame = device.frame;
+           
             //await updateX(frame, angleArgs.angle[0]);
             //await updateY(frame, angleArgs.angle[1]);
             //await updateZ(frame, angleArgs.angle[2]);
             await Task.WhenAll(new Task[]
             {
-                updateX(frame, angleArgs.angle[0]),
-                updateY(frame, angleArgs.angle[1]),
-                updateZ(frame, angleArgs.angle[2])
+                updateX(frame, delta),
+                updateY(frame, delta),
+                updateZ(frame, delta)
             });
         }
         // Recive los datos del IMU inventado media timer
@@ -155,6 +157,15 @@ namespace ibcdatacsharp.UI.AngleGraph
             });
         }
 
+        public async Task onRender2()
+        {
+            await Task.WhenAll(new Task[]
+            {
+                renderX(),
+                renderY(),
+                renderZ(),
+            });
+        }
 
     }
 }

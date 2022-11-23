@@ -75,8 +75,6 @@ namespace ibcdatacsharp.UI.GraphWindow
             device = mainWindow.device;
             DataContext = this;
 
-          
-            
 
         }
         public Model modelAccelerometer { get; private set; }
@@ -392,7 +390,15 @@ namespace ibcdatacsharp.UI.GraphWindow
             }
             else if (devices_list.Count == 2)
             {
-
+                await Task.WhenAll(new Task[] { 
+                
+                    angleGraph.updateX(frame, a1),
+                
+                   
+                    angleGraph.renderX()
+                  
+                
+                });
 
 
 
