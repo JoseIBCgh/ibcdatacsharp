@@ -80,11 +80,13 @@ namespace ibcdatacsharp.UI
                 
 
         string error = "";
+
+
         public MainWindow()
         {
             InitializeComponent();
             setGraphLibraries();
-            graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
+            //graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
             
             virtualToolBar = new VirtualToolBar();
             device = new Device.Device();
@@ -183,7 +185,7 @@ namespace ibcdatacsharp.UI
     
         private void setGraphLibraries()
         {
-            //graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
+            graphWindow.Source = new Uri("pack://application:,,,/UI/GraphWindow/GraphWindow.xaml");
             angleGraph.Source = new Uri("pack://application:,,,/UI/AngleGraph/AngleGraph.xaml");
         }
         // Configura el timer capture
@@ -191,6 +193,8 @@ namespace ibcdatacsharp.UI
         {
 
             GraphWindowClass graphWindowClass = graphWindow.Content as GraphWindowClass;
+            AngleGraphClass angleGraphClass = angleGraph.Content as AngleGraphClass;
+
             graphWindowClass.devicesList(devices_list, counter);
             void onPause(object sender, PauseState pauseState)
             {
@@ -233,6 +237,8 @@ namespace ibcdatacsharp.UI
 
                         api.dataReceived += graphWindowClass.Api_dataReceived;
                         
+                        
+                        
 
                     };
                 }
@@ -243,6 +249,7 @@ namespace ibcdatacsharp.UI
                     graphWindowClass.clearData();
                     
                     api.dataReceived += graphWindowClass.Api_dataReceived;
+
                     //timerCapture.Elapsed += graphWindowClass.onTick;
                     //timerRender.Elapsed += graphWindowClass.onRender;
 
@@ -260,7 +267,7 @@ namespace ibcdatacsharp.UI
                 }
                 else
                 {
-                    AngleGraphClass angleGraphClass = angleGraph.Content as AngleGraphClass;
+                    angleGraphClass = angleGraph.Content as AngleGraphClass;
                     angleGraphClass.clearData();
                     //timerCapture.Elapsed += angleGraphClass.onTick;
                     //timerRender.Elapsed += angleGraphClass.onRender;

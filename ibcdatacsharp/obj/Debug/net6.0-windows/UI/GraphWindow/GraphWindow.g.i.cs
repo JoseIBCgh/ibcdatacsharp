@@ -84,7 +84,7 @@ namespace ibcdatacsharp.UI.GraphWindow {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/ibcdatacsharp;V1.0.0.0;component/ui/graphwindow/graphwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/ibcdatacsharp;component/ui/graphwindow/graphwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\UI\GraphWindow\GraphWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

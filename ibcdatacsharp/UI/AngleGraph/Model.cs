@@ -22,7 +22,7 @@ namespace ibcdatacsharp.UI.AngleGraph
         double[] values;
         ScottPlot.Plottable.SignalPlot signalPlot;
 #endif 
-        private int nextIndex = 0;
+        private int nextIndex = 1;
         private WpfPlot plot;
 
         public Model(WpfPlot plot,string titleY = "")

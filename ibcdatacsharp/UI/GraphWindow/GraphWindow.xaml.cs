@@ -16,13 +16,17 @@ using System.Windows.Threading;
 using WisewalkSDK;
 using Quaternion = System.Numerics.Quaternion;
 
+
+using ibcdatacsharp.UI.AngleGraph;
+using DirectShowLib.BDA;
+
 namespace ibcdatacsharp.UI.GraphWindow
 {
     /// <summary>
     /// Lógica de interacción para GraphWindow.xaml
     /// </summary>
     /// 
-    
+   
 
     public partial class GraphWindow : Page
     {
@@ -49,16 +53,31 @@ namespace ibcdatacsharp.UI.GraphWindow
         int anglequat = 0;
         int mac1 = 0;
         int mac2 = 0;
-        
+
+        double alpha = 0.0d;
+        double delta = 0.0d;
+        double phi = 0.0d;
+
+        float a1 = 0.0f;
+        float a2 = 0.0f;
+        float a3 = 0.0f;
+
+        MainWindow mainWindow;
+        AngleGraph.AngleGraph angleGraph;
+
         public GraphWindow()
         {
             InitializeComponent();
+            angleGraph = new AngleGraph.AngleGraph();
             initModels();
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             v = mainWindow.fileSaver;
             device = mainWindow.device;
             DataContext = this;
+
+          
             
+
         }
         public Model modelAccelerometer { get; private set; }
         public Model modelGyroscope { get; private set; }
@@ -288,9 +307,7 @@ namespace ibcdatacsharp.UI.GraphWindow
 
             Matrix4x4 refmat = Matrix4x4.CreateFromQuaternion(refq);
 
-            
-            
-           
+
             if (data.Imu.Count > 0 ) {
             //    Trace.WriteLine("Data: " + " " + devices_list[deviceHandler.ToString()].Id.ToString() + " " + tsA.ToString("F3") + " " + devices_list[deviceHandler.ToString()].NPackets.ToString() + " "
             //+ data.Quat[0].W.ToString() + ", " + data.Quat[0].X.ToString() + ", " + data.Quat[0].Y.ToString() + ", " + data.Quat[0].Z.ToString());
@@ -324,9 +341,9 @@ namespace ibcdatacsharp.UI.GraphWindow
                     angle_low = ToEulerAngles(q_lower);
                     angle_up = ToEulerAngles(q_upper);
                     angle_ref = ToEulerAngles(refq);
-                    float a1 = angle_low.X - angle_up.X + angle_ref.X;
-                    float a2 = angle_low.Y - angle_up.Y + angle_ref.Y;
-                    float a3 = angle_low.Z - angle_up.Z + angle_ref.Z;
+                    a1 = angle_low.X - angle_up.X + angle_ref.X;
+                    a2 = angle_low.Y - angle_up.Y + angle_ref.Y;
+                    a3 = angle_low.Z - angle_up.Z + angle_ref.Z;
                     a1 = ToDegrees(a1);
                     a2 = ToDegrees(a2);
                     a3 = ToDegrees(a3);
@@ -357,25 +374,30 @@ namespace ibcdatacsharp.UI.GraphWindow
 
             // Only a IMU
 
-            if ( devices_list.Count  == 1)
+            if (devices_list.Count == 1)
             {
                 await Task.WhenAll(new Task[] {
-                updateAccelerometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
-                updateMagnetometer(frame, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z),
-                updateGyroscope(frame, data.Imu[0].mag_x, data.Imu[0].mag_y, data.Imu[0].mag_z),
-                renderAcceletometer(),
-                renderGyroscope(),
-                renderMagnetometer(),
-                 v.appendCSV(frame.ToString(), tsA.ToString("F3"), data.Imu[0].acc_x.ToString("F3"), data.Imu[0].acc_y.ToString("F3"), data.Imu[0].acc_z.ToString("F3"),
-                data.Imu[0].gyro_x.ToString("F3") ,  data.Imu[0].gyro_y.ToString("F3") , data.Imu[0].gyro_z.ToString("F3") ,
-                data.Imu[0].mag_x.ToString("F3") , data.Imu[0].mag_y.ToString("F3") , data.Imu[0].mag_z.ToString("F3")
+                    updateAccelerometer(frame, data.Imu[0].acc_x, data.Imu[0].acc_y, data.Imu[0].acc_z),
+                    updateMagnetometer(frame, data.Imu[0].gyro_x, data.Imu[0].gyro_y, data.Imu[0].gyro_z),
+                    updateGyroscope(frame, data.Imu[0].mag_x, data.Imu[0].mag_y, data.Imu[0].mag_z),
+                    renderAcceletometer(),
+                    renderGyroscope(),
+                    renderMagnetometer(),
+                     v.appendCSV(frame.ToString(), tsA.ToString("F3"), data.Imu[0].acc_x.ToString("F3"), data.Imu[0].acc_y.ToString("F3"), data.Imu[0].acc_z.ToString("F3"),
+                    data.Imu[0].gyro_x.ToString("F3") ,  data.Imu[0].gyro_y.ToString("F3") , data.Imu[0].gyro_z.ToString("F3") ,
+                    data.Imu[0].mag_x.ToString("F3") , data.Imu[0].mag_y.ToString("F3") , data.Imu[0].mag_z.ToString("F3")
                 ),
 
             });
             }
             else if (devices_list.Count == 2)
             {
-                //
+
+
+
+
+
+
             }
        
             
