@@ -15,13 +15,12 @@ using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using WisewalkSDK;
 using Quaternion = System.Numerics.Quaternion;
-
-
 using ibcdatacsharp.UI.AngleGraph;
 using DirectShowLib.BDA;
 using System.Windows.Navigation;
 using System.Runtime.CompilerServices;
 using System.IO;
+
 
 namespace ibcdatacsharp.UI.GraphWindow
 {
@@ -70,6 +69,13 @@ namespace ibcdatacsharp.UI.GraphWindow
         string dataline;
 
         float fakets = 0.01f;
+
+        LinearAcceleration linAcc;
+        QuatLinear quatlinear;
+        qVector qvector;
+
+        qVector laresult;
+      
         public GraphWindow()
         {
             InitializeComponent();
@@ -86,6 +92,12 @@ namespace ibcdatacsharp.UI.GraphWindow
 
             };
 
+            quatlinear = new QuatLinear(0.0f,0.0f,0.0f,0.0f);
+            qvector = new qVector(0.0f,0.0f,0.0f);
+            linAcc = new LinearAcceleration();
+
+            
+           
         }
         public Model modelAccelerometer { get; private set; }
         public Model modelGyroscope { get; private set; }
@@ -387,8 +399,15 @@ namespace ibcdatacsharp.UI.GraphWindow
             
 
             if (devices_list.Count == 1)
+
+
             {
-                dataline = "Timespan1: " + frame.ToString() + " " + (fakets).ToString("F2") + " " + data.Imu[0].acc_y.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") + " " + data.Imu[0].acc_z.ToString("F3") + "\n" +
+
+                quatlinear = new QuatLinear((float)data.Quat[0].W, (float)data.Quat[0].X, (float)data.Quat[0].Y, (float)data.Quat[0].Z);
+                qvector = new qVector((float)data.Imu[0].acc_x, (float)data.Imu[0].acc_y, (float)data.Imu[0].acc_z);
+                laresult = linAcc.calcLinAcc(quatlinear, qvector);
+
+                dataline = "Timespan1: " + frame.ToString() + " " + (fakets).ToString("F2") + " " + data.Imu[0].acc_x.ToString("F3") + " " + data.Imu[0].acc_y.ToString("F3") + " " + data.Imu[0].acc_z.ToString("F3") + " " + data.Quat[0].W.ToString("F3") + " " + data.Quat[0].X.ToString("F3") + "  " + data.Quat[0].Y.ToString("F3") + " "+ data.Quat[0].Z.ToString("F3") + " LA: " + laresult.x.ToString() + " " + laresult.y.ToString() + " " + laresult.z.ToString() +"\n" +
                                "Timespan2: " + (frame + 1).ToString() + " " + (fakets + 0.01).ToString("F2") + " " + data.Imu[1].acc_y.ToString("F3") + " " + data.Imu[1].acc_y.ToString("F3") + " " + data.Imu[1].acc_z.ToString("F3") + "\n" +
                                "Timespan3: " + (frame + 2).ToString() + " " + (fakets + 0.02).ToString("F2") + " " + data.Imu[2].acc_y.ToString("F3") + " " + data.Imu[2].acc_y.ToString("F3") + " " + data.Imu[2].acc_z.ToString("F3") + "\n" +
                                "Timespan4: " + (frame + 3).ToString() + " " + (fakets + 0.03).ToString("F2") + " " + data.Imu[3].acc_y.ToString("F3") + " " + data.Imu[3].acc_y.ToString("F3") + " " + data.Imu[3].acc_z.ToString("F3");
