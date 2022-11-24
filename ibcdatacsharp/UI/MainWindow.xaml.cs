@@ -283,7 +283,7 @@ namespace ibcdatacsharp.UI
 
                 api.SetDevicesConfigurations(100, 3, out error);
                 Thread.Sleep(1000);
-                api.SetRTCDevices(GetDateTime(), out error);
+                api.SetRTCDevice(0, GetDateTime(), out error);
                 Thread.Sleep(1000);
 
 

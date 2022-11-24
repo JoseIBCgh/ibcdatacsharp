@@ -202,11 +202,25 @@ namespace ibcdatacsharp.UI.FileSaver
         //    frameCsv++;
         //}
 
-        public async Task appendCSV(int fr, int ts, double acc_x, double acc_y, double acc_z, 
-            double gyr_x, double gyr_y, double gyr_z, 
-            double mag_x, double mag_y, double mag_z)
+        public void appendCSV2(string line)
         {
-            double time = ts / 1000.0;
+
+            if (csvFile != null)
+            {;
+                using (StreamWriter sw = File.AppendText(@"C:\Temp\" + csvFile))
+                {
+                    sw.WriteLine(line);
+
+                }
+            }
+           
+        }
+        public async Task appendCSV(int ts, int fr, float acc_x, float acc_y, float acc_z, 
+            float gyr_x, float gyr_y, float gyr_z, 
+            float mag_x, float mag_y, float mag_z)
+        {
+            decimal time = (decimal)(ts / 1000.0);
+            time = Decimal.Round(time, 2);
             RawArgs rawArgs = device.rawData;
             //AngleArgs angleArgs = device.angleData;
             //double elapsed = stopwatchCSV.Elapsed.TotalSeconds;
