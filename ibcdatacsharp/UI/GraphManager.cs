@@ -14,6 +14,9 @@ namespace ibcdatacsharp.UI
     {
         private CaptureManager captureManager;
         private ReplayManager replayManager;
+        private Graphs.GraphWindow.GraphAccelerometer accelerometer;
+        private Graphs.GraphWindow.GraphGyroscope gyroscope;
+        private Graphs.GraphWindow.GraphMagnetometer magnetometer;
         public GraphManager()
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
@@ -44,6 +47,39 @@ namespace ibcdatacsharp.UI
                 replayManager = new ReplayManager(timeLine, graphs);
             }
             captureManager = new CaptureManager(graphs, virtualToolBar, device);
+            if (mainWindow.accelerometer.Content == null)
+            {
+                mainWindow.accelerometer.Navigated += delegate (object sender, NavigationEventArgs e)
+                {
+                    accelerometer = mainWindow.accelerometer.Content as Graphs.GraphWindow.GraphAccelerometer;
+                };
+            }
+            else
+            {
+                accelerometer = mainWindow.accelerometer.Content as Graphs.GraphWindow.GraphAccelerometer;
+            }
+            if (mainWindow.gyroscope.Content == null)
+            {
+                mainWindow.gyroscope.Navigated += delegate (object sender, NavigationEventArgs e)
+                {
+                    gyroscope = mainWindow.gyroscope.Content as Graphs.GraphWindow.GraphGyroscope;
+                };
+            }
+            else
+            {
+                gyroscope = mainWindow.gyroscope.Content as Graphs.GraphWindow.GraphGyroscope;
+            }
+            if (mainWindow.magnetometer.Content == null)
+            {
+                mainWindow.magnetometer.Navigated += delegate (object sender, NavigationEventArgs e)
+                {
+                    magnetometer = mainWindow.magnetometer.Content as Graphs.GraphWindow.GraphMagnetometer;
+                };
+            }
+            else
+            {
+                magnetometer = mainWindow.magnetometer.Content as Graphs.GraphWindow.GraphMagnetometer;
+            }
         }
         public void initReplay(GraphData data)
         {
@@ -59,6 +95,12 @@ namespace ibcdatacsharp.UI
             {
                 replayManager.reset(data);
             }
+        }
+        private void test()
+        {
+            accelerometer.test();
+            gyroscope.test();
+            magnetometer.test();
         }
         // Configura el modo capture
         public void initCapture()

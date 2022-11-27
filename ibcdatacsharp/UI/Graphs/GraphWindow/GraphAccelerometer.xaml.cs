@@ -1,5 +1,6 @@
 ﻿using ibcdatacsharp.UI.Device;
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -79,6 +80,10 @@ namespace ibcdatacsharp.UI.Graphs.GraphWindow
             {
                 model.render();
             });
+        }
+        public void test()
+        {
+            Trace.WriteLine("accelerometer funciona");
         }
     }
 }
