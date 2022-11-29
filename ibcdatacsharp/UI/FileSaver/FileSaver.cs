@@ -187,11 +187,14 @@ namespace ibcdatacsharp.UI.FileSaver
         {
             RawArgs rawArgs = device.rawData;
             //AngleArgs angleArgs = device.angleData;
+            Random random = new Random();
+            double[] lacc = new double[3] {random.NextDouble(), random.NextDouble(), random.NextDouble() };
             double elapsed = timeLine.elapsed; // Usar tiempo del timeLine para sincronizar.
             string newLine = "1 " + elapsed.ToString() + " " + frameCsv.ToString() + " " +
                 rawArgs.accelerometer[0].ToString() + " " + rawArgs.accelerometer[1].ToString() + " " + rawArgs.accelerometer[2].ToString() + " " +
                 rawArgs.gyroscope[0].ToString() + " " + rawArgs.gyroscope[1].ToString() + " " + rawArgs.gyroscope[2].ToString() + " " +
-                rawArgs.magnetometer[0].ToString() + " " + rawArgs.magnetometer[1].ToString() + " " + rawArgs.magnetometer[2].ToString() + "\n";
+                rawArgs.magnetometer[0].ToString() + " " + rawArgs.magnetometer[1].ToString() + " " + rawArgs.magnetometer[2].ToString() + " " +
+                lacc[0].ToString() + " " + lacc[1].ToString() + " " + lacc[2].ToString() + " " +"\n";
             csvData.Append(newLine);
             frameCsv++;
         }

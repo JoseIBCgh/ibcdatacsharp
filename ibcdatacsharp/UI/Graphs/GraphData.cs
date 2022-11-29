@@ -56,10 +56,6 @@ namespace ibcdatacsharp.UI.Graphs
         public FrameData(string csvLine)
         {
             string[] values = csvLine.Split(' ');
-            if(values.Length != 12)
-            {
-                throw new Exception("Deben haber 12 valores por fila");
-            }
             time = parseDouble(values[1]);
             frame = int.Parse(values[2]);
             accX = parseDouble(values[3]);
@@ -71,15 +67,17 @@ namespace ibcdatacsharp.UI.Graphs
             magX = parseDouble(values[9]);
             magY = parseDouble(values[10]);
             magZ = parseDouble(values[11]);
+            if (values.Length > 12) // Para que acepte los ficheros antiguos
+            {
+                double laccX = parseDouble(values[12]);
+                double laccY = parseDouble(values[13]);
+                double laccZ = parseDouble(values[14]);
+            }
         }
         private double parseDouble(string s)
         {
             string s_comma = s.Replace(",", ".");
             double result =  double.Parse(s_comma, CultureInfo.InvariantCulture);
-            if(Math.Abs(result) > 10000)
-            {
-                throw new Exception("Conversion a double incorrecta");
-            }
             return result;
         }
     }
