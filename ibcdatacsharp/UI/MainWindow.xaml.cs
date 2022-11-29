@@ -149,8 +149,8 @@ namespace ibcdatacsharp.UI
                 // Añade datos inventados quitar
                 deviceListClass.showIMUs();
                 deviceListClass.showInsoles();
-                deviceListClass.addIMU(new IMUInfo(1, "IMU", "AD:DS"));
-                deviceListClass.addIMU(new IMUInfo(2, "IMU", "AC:DE"));
+                deviceListClass.addIMU(new IMUInfo(10, "IMU-H3", "AB:CD:FE:11:22:33"));
+                deviceListClass.addIMU(new IMUInfo(200, "IMU", "AB:CD:FE:11:22:33"));
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
                 
             }
