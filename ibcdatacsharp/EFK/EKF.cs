@@ -1,5 +1,4 @@
 ﻿using ibcdatacsharp.UI.Common;
-using ibcdatacsharp.UI.Graphs;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Diagnostics;
@@ -14,13 +13,18 @@ namespace ibcdatacsharp.EFK
         private float deltaT;
         private Matrix<float>? spectralNoiseCovarianceMatrix;
         private float? spectralNoise;
+        private float var_acc;
+        private float var_mag;
         public Matrix<float> H { get; private set; }
         public MathNet.Numerics.LinearAlgebra.Vector<float> h { get; private set; }
 
         public EKF(float deltaT, MathNet.Numerics.LinearAlgebra.Vector<float> spectralDensity, 
-            float magnetic_dip_angle, bool NED = true)
+            float magnetic_dip_angle, bool NED = true, float var_acc = 0.5f * 0.5f, 
+            float var_mag = 0.8f * 0.8f)
         {
             magnetic_dip_angle = Helpers.ToRadians(magnetic_dip_angle);
+            this.var_acc = var_acc;
+            this.var_mag = var_mag;
             this.deltaT = deltaT;
             //this.spectralDensity = spectralDensity;
             this.spectralNoiseCovarianceMatrix = Matrix<float>.Build.DenseOfArray(
@@ -46,15 +50,18 @@ namespace ibcdatacsharp.EFK
                 g = MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[] { 0, 0, 1 });
                 r = MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]
                 {
-                    (float)Math.Cos(magnetic_dip_angle), 0, -(float)Math.Sin(magnetic_dip_angle)
+                    0, (float)Math.Cos(magnetic_dip_angle), -(float)Math.Sin(magnetic_dip_angle)
                 }) /
                 (float)Math.Sqrt(Math.Pow((float)Math.Cos(magnetic_dip_angle), 2) + Math.Pow((float)Math.Sin(magnetic_dip_angle), 2));
             }
         }
-        public EKF(float deltaT, float spectralNoise, float magnetic_dip_angle, bool NED = true)
+        public EKF(float deltaT, float spectralNoise, float magnetic_dip_angle, bool NED = true, 
+            float var_acc = 0.5f * 0.5f, float var_mag = 0.8f * 0.8f)
         {
             magnetic_dip_angle = Helpers.ToRadians(magnetic_dip_angle);
             this.deltaT = deltaT;
+            this.var_acc = var_acc;
+            this.var_mag = var_mag;
             //this.spectralDensity = spectralDensity;
             this.spectralNoiseCovarianceMatrix = null;
             this.spectralNoise = spectralNoise;
@@ -72,7 +79,7 @@ namespace ibcdatacsharp.EFK
                 g = MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[] { 0, 0, 1 });
                 r = MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]
                 {
-                    (float)Math.Cos(magnetic_dip_angle), 0, -(float)Math.Sin(magnetic_dip_angle)
+                    0, (float)Math.Cos(magnetic_dip_angle), -(float)Math.Sin(magnetic_dip_angle)
                 }) /
                 (float)Math.Sqrt(Math.Pow((float)Math.Cos(magnetic_dip_angle), 2) + Math.Pow((float)Math.Sin(magnetic_dip_angle), 2));
             }
@@ -114,7 +121,7 @@ namespace ibcdatacsharp.EFK
         }
         private MathNet.Numerics.LinearAlgebra.Vector<float> buildh(Quaternion q)
         {
-            Matrix<float> C = CreateFromQuaternion3x3(q);
+            Matrix<float> C = CreateFromQuaternionPy(q).Transpose();
             MathNet.Numerics.LinearAlgebra.Vector<float> a_hat = C * g;
             MathNet.Numerics.LinearAlgebra.Vector<float> m_hat = C * r;
             MathNet.Numerics.LinearAlgebra.Vector<float> result = CreateFromVectors(
@@ -122,7 +129,21 @@ namespace ibcdatacsharp.EFK
                 );
             return result;
         }
-        public static Matrix<float> CreateFromQuaternion3x3(Quaternion quaternion)
+        // Copia del repositorio de ekf de python, es diferente de la de system.numerics
+        public static Matrix<float> CreateFromQuaternionPy(Quaternion q)
+        {
+            Matrix<float> result = Matrix<float>.Build.DenseOfArray(
+                new float[,]
+                {
+                { 1 - 2 * (q.Y * q.Y + q.Z * q.Z), 2 * (q.X * q.Y - q.W * q.Z), 2 * (q.X * q.Z + q.W * q.Y) },
+                { 2 * (q.X * q.Y + q.W * q.Z), 1 - 2 * (q.X * q.X + q.Z * q.Z), 2 * (q.Y * q.Z - q.W * q.X) },
+                { 2 * (q.X * q.Z - q.W * q.Y), 2 * (q.W * q.X + q.Y * q.Z), 1 - 2 * (q.X * q.X + q.Y * q.Y) }
+                }
+                );
+
+            return result;
+        }
+        public static Matrix<float> CreateFromQuaternion(Quaternion quaternion)
         {
             Matrix4x4 m = Matrix4x4.CreateFromQuaternion(quaternion);
 
@@ -234,12 +255,12 @@ namespace ibcdatacsharp.EFK
             Matrix<float> result = Matrix<float>.Build.DenseOfArray(array) * 2;
             return result;
         }
-        private Matrix<float> buildR(float noiseVarianceA, float noiseVarianceW)
+        private Matrix<float> buildR()
         {
-            Matrix<float> M11 = Matrix<float>.Build.DenseDiagonal(3, noiseVarianceA);
+            Matrix<float> M11 = Matrix<float>.Build.DenseDiagonal(3, var_acc);
             Matrix<float> M12 = Matrix<float>.Build.Dense(3, 3, 0);
             Matrix<float> M21 = Matrix<float>.Build.Dense(3, 3, 0);
-            Matrix<float> M22 = Matrix<float>.Build.DenseDiagonal(3, noiseVarianceW);
+            Matrix<float> M22 = Matrix<float>.Build.DenseDiagonal(3, var_mag);
             Matrix<float> result = Matrix<float>.Build.DenseOfMatrixArray(
                 new Matrix<float>[,]
                 {
@@ -249,7 +270,7 @@ namespace ibcdatacsharp.EFK
                 );
             return result;
         }
-        public Quaternion update(Quaternion q, MathNet.Numerics.LinearAlgebra.Vector<float> gyr,
+        public Quaternion update(Quaternion q, Matrix<float> P, MathNet.Numerics.LinearAlgebra.Vector<float> gyr,
             MathNet.Numerics.LinearAlgebra.Vector<float> acc, MathNet.Numerics.LinearAlgebra.Vector<float> mag)
         {
             #region prediction
@@ -264,10 +285,12 @@ namespace ibcdatacsharp.EFK
                 Q = W * spectralNoiseCovarianceMatrix * W.Transpose();
             }
             Matrix<float> F = buildF(gyr);
-            Matrix<float> P_hat = F * CreateFromQuaternion4x4(q) * F.Transpose() + Q;
+            Matrix<float> P_hat = F * P * F.Transpose() + Q;
             Quaternion q_hat = buildqhat(q, gyr);
             #endregion prediction
             #region correction
+            acc = acc.Normalize(2);
+            mag = mag.Normalize(2);
             MathNet.Numerics.LinearAlgebra.Vector<float> z = CreateFromVectors(
                 new MathNet.Numerics.LinearAlgebra.Vector<float>[]
                 {
@@ -276,31 +299,30 @@ namespace ibcdatacsharp.EFK
             h = buildh(q_hat);
             MathNet.Numerics.LinearAlgebra.Vector<float> v = z - h;
             H = buildH(q_hat);
-            Matrix<float> R = buildR(0.5f * 0.5f, 0.3f * 0.3f);
+            Matrix<float> R = buildR();
             Matrix<float> S = H * P_hat * H.Transpose() + R;
             Matrix<float> K = P_hat * H.Transpose() * S.Inverse();
             MathNet.Numerics.LinearAlgebra.Vector<float> q_vector = ToVector(q_hat) + K * v;
-            Matrix<float> P = (Matrix<float>.Build.DenseIdentity(4) - K * H) * P_hat;
+            P = (Matrix<float>.Build.DenseIdentity(4) - K * H) * P_hat;
             q_vector = q_vector.Normalize(2); //2???
             #endregion correction
             return ToQuaternion(q_vector);
         }
         public static void test()
         {
-            void testh() //Funciona bien
+            Quaternion q0 = new Quaternion(0.0f, -0.7071f, 0.0f, 0.7071f);
+            void testh() // Funciona bien
             {
-                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: false);
-                Quaternion q0 = new Quaternion(0.7071f, 0.0f, -0.7071f, 0.0f);
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
                 Trace.WriteLine("h");
                 Trace.WriteLine("expected:");
                 Trace.WriteLine("[-1.00000000e+00  0.00000000e+00  2.22044605e-16  8.66025404e-01 0.00000000e+00 -5.00000000e-01]");
                 Trace.WriteLine("calculated:");
                 Trace.WriteLine(ekf.buildh(q0));
             }
-            void testH()
+            void testH() // Funciona bien
             {
-                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: false);
-                Quaternion q0 = new Quaternion(0.7071f, 0.0f, -0.7071f, 0.0f);
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
                 Trace.WriteLine("H");
                 Trace.WriteLine("expected:");
                 Trace.WriteLine(@"
@@ -316,8 +338,7 @@ namespace ibcdatacsharp.EFK
             }
             void testF() // Funciona bien
             {
-                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: false);
-                Quaternion q0 = new Quaternion(0.7071f, 0.0f, -0.7071f, 0.0f);
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
                 MathNet.Numerics.LinearAlgebra.Vector<float> gyr =
                     MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
                 196.55102539f, 555.07427979f, -756.51245117f
@@ -333,11 +354,10 @@ namespace ibcdatacsharp.EFK
                 Trace.WriteLine("calculated:");
                 Trace.WriteLine(ekf.buildF(gyr));
             }
-            void testFull()
+            void testFull() // Resultado incorrecto
             {
                 Trace.WriteLine("start EKF test");
-                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED:false);
-                Quaternion q0 = new Quaternion(0.7071f, 0.0f, -0.7071f, 0.0f);
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED:true);
                 MathNet.Numerics.LinearAlgebra.Vector<float> gyr =
                     MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
                 196.55102539f, 555.07427979f, -756.51245117f
@@ -350,7 +370,8 @@ namespace ibcdatacsharp.EFK
                     MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
                  -9.86029911f, -16.94231987f, 37.22705078f
                     });
-                Quaternion q = ekf.update(q0, gyr, acc, mag);
+                Matrix<float> P = Matrix<float>.Build.DenseIdentity(4);
+                Quaternion q = ekf.update(q0, P, gyr, acc, mag);
                 Trace.WriteLine("end EKF test");
                 Trace.WriteLine("calculated:");
                 Trace.WriteLine(q);
@@ -359,8 +380,7 @@ namespace ibcdatacsharp.EFK
             }
             void testToVQConversion() // Funciona bien
             {
-                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: false);
-                Quaternion q0 = new Quaternion(0.7071f, 0.0f, -0.7071f, 0.0f);
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
                 Trace.WriteLine("original quaternion: ");
                 Trace.WriteLine(q0);
                 MathNet.Numerics.LinearAlgebra.Vector<float> v = ToVector(q0);
@@ -371,10 +391,10 @@ namespace ibcdatacsharp.EFK
                 Trace.WriteLine(q);
             }
             testFull();
-            //testToVQConversion();
-            //testh();
+            testToVQConversion();
+            testh();
             testH();
-            //testF();
+            testF();
         }
     }
 }
