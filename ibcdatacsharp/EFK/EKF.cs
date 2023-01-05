@@ -84,15 +84,33 @@ namespace ibcdatacsharp.EFK
                 (float)Math.Sqrt(Math.Pow((float)Math.Cos(magnetic_dip_angle), 2) + Math.Pow((float)Math.Sin(magnetic_dip_angle), 2));
             }
         }
+        private Matrix<float> buildOmega(MathNet.Numerics.LinearAlgebra.Vector<float> v)
+        {
+            return Matrix<float>.Build.DenseOfArray(
+                new float[,]
+                {
+                    { 0, -v[0], -v[1], -v[2] },
+                    { v[0], 0, v[2], -v[1] },
+                    { v[1], -v[2], 0, v[0] },
+                    { v[2], v[1], -v[0], 0 }
+                }
+                );
+        }
         private Quaternion buildqhat(Quaternion q, 
             MathNet.Numerics.LinearAlgebra.Vector<float> w)
         {
+            Matrix<float> omega = buildOmega(w);
+            MathNet.Numerics.LinearAlgebra.Vector<float> qhat_vector =
+                (Matrix<float>.Build.DiagonalIdentity(4) + 0.5f * deltaT * omega) * ToVector(q);
+            return ToQuaternion(qhat_vector);
+            /*
             return new Quaternion(
                 q.X + deltaT / 2 * w[0] * q.W - deltaT / 2 * w[1] * q.Z + deltaT / 2 * w[2] * q.Y,
                 q.Y + deltaT / 2 * w[0] * q.Z + deltaT / 2 * w[1] * q.W - deltaT / 2 * w[2] * q.X,
                 q.Z - deltaT / 2 * w[0] * q.Y + deltaT / 2 * w[1] * q.X + deltaT / 2 * w[2] * q.W,
                 q.W - deltaT / 2 * w[0] * q.X - deltaT / 2 * w[1] * q.Y - deltaT / 2 * w[2] * q.Z
                 );
+            */
         }
         public Matrix<float> buildF(MathNet.Numerics.LinearAlgebra.Vector<float> w)
         {
@@ -204,12 +222,12 @@ namespace ibcdatacsharp.EFK
         {
             return MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]
             {
-                q.X, q.Y, q.Z, q.W
+                q.W, q.X, q.Y, q.Z
             });
         }
         public static Quaternion ToQuaternion(MathNet.Numerics.LinearAlgebra.Vector<float> v)
         {
-            return new Quaternion(v[0], v[1], v[2], v[3]);
+            return new Quaternion(v[1], v[2], v[3], v[0]);
         }
         private Matrix<float> buildH(Quaternion q)
         {
@@ -278,11 +296,11 @@ namespace ibcdatacsharp.EFK
             Matrix<float> Q;
             if (spectralNoiseCovarianceMatrix == null)
             {
-                Q = W * W.Transpose() * (float)spectralNoise;
+                Q = W * W.Transpose() * (float)spectralNoise * deltaT / 2;
             }
             else
             {
-                Q = W * spectralNoiseCovarianceMatrix * W.Transpose();
+                Q = W * spectralNoiseCovarianceMatrix * W.Transpose() * deltaT / 2;
             }
             Matrix<float> F = buildF(gyr);
             Matrix<float> P_hat = F * P * F.Transpose() + Q;
