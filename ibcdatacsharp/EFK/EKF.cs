@@ -97,11 +97,11 @@ namespace ibcdatacsharp.EFK
                 );
         }
         private Quaternion buildqhat(Quaternion q, 
-            MathNet.Numerics.LinearAlgebra.Vector<float> w)
+            MathNet.Numerics.LinearAlgebra.Vector<float> w, float dt)
         {
             Matrix<float> omega = buildOmega(w);
             MathNet.Numerics.LinearAlgebra.Vector<float> qhat_vector =
-                (Matrix<float>.Build.DiagonalIdentity(4) + 0.5f * deltaT * omega) * ToVector(q);
+                (Matrix<float>.Build.DiagonalIdentity(4) + (0.5f * dt * omega)) * ToVector(q);
             return ToQuaternion(qhat_vector);
             /*
             return new Quaternion(
@@ -304,7 +304,7 @@ namespace ibcdatacsharp.EFK
             }
             Matrix<float> F = buildF(gyr);
             Matrix<float> P_hat = F * P * F.Transpose() + Q;
-            Quaternion q_hat = buildqhat(q, gyr);
+            Quaternion q_hat = buildqhat(q, gyr, deltaT);
             #endregion prediction
             #region correction
             acc = acc.Normalize(2);
@@ -329,6 +329,18 @@ namespace ibcdatacsharp.EFK
         public static void test()
         {
             Quaternion q0 = new Quaternion(0.0f, -0.7071f, 0.0f, 0.7071f);
+            MathNet.Numerics.LinearAlgebra.Vector<float> gyr =
+                    MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
+                196.55102539f, 555.07427979f, -756.51245117f
+                    });
+            MathNet.Numerics.LinearAlgebra.Vector<float> acc =
+                MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
+                1.98162329f, -0.37048489f, -0.25054383f
+                });
+            MathNet.Numerics.LinearAlgebra.Vector<float> mag =
+                MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
+                 -9.86029911f, -16.94231987f, 37.22705078f
+                });
             void testh() // Funciona bien
             {
                 EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
@@ -357,10 +369,6 @@ namespace ibcdatacsharp.EFK
             void testF() // Funciona bien
             {
                 EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
-                MathNet.Numerics.LinearAlgebra.Vector<float> gyr =
-                    MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
-                196.55102539f, 555.07427979f, -756.51245117f
-                    });
                 Trace.WriteLine("F");
                 Trace.WriteLine("expected:");
                 Trace.WriteLine(@"
@@ -376,18 +384,6 @@ namespace ibcdatacsharp.EFK
             {
                 Trace.WriteLine("start EKF test");
                 EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED:true);
-                MathNet.Numerics.LinearAlgebra.Vector<float> gyr =
-                    MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
-                196.55102539f, 555.07427979f, -756.51245117f
-                    });
-                MathNet.Numerics.LinearAlgebra.Vector<float> acc =
-                    MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
-                1.98162329f, -0.37048489f, -0.25054383f
-                    });
-                MathNet.Numerics.LinearAlgebra.Vector<float> mag =
-                    MathNet.Numerics.LinearAlgebra.Vector<float>.Build.Dense(new float[]{
-                 -9.86029911f, -16.94231987f, 37.22705078f
-                    });
                 Matrix<float> P = Matrix<float>.Build.DenseIdentity(4);
                 Quaternion q = ekf.update(q0, P, gyr, acc, mag);
                 Trace.WriteLine("end EKF test");
@@ -408,11 +404,37 @@ namespace ibcdatacsharp.EFK
                 Trace.WriteLine("quaternion converted: ");
                 Trace.WriteLine(q);
             }
+            void testOmega() //Funciona bien
+            {
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
+                Trace.WriteLine("Omega");
+                Trace.WriteLine("expected:");
+                Trace.WriteLine(@"
+[[   0.         -196.55102539 -555.07427979  756.51245117]
+ [ 196.55102539    0.         -756.51245117 -555.07427979]
+ [ 555.07427979  756.51245117    0.          196.55102539]
+ [-756.51245117  555.07427979 -196.55102539    0.        ]]
+");
+                Trace.WriteLine("calculated:");
+                Trace.WriteLine(ekf.buildOmega(gyr));
+            }
+            void testqhat() // Funciona bien
+            {
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
+                Trace.WriteLine("qhat");
+                Trace.WriteLine("expected:");
+                Trace.WriteLine("[3.36958824  1.25537716 -1.97976261 2.66959072]");
+                Trace.WriteLine("calculated:");
+                //{X:3,369556 Y:1,2553649 Z:-1,9797436 W:2,669565}
+                Trace.WriteLine(ekf.buildqhat(q0, gyr, 0.01f));
+            }
             testFull();
-            testToVQConversion();
-            testh();
-            testH();
-            testF();
+            //testToVQConversion();
+            //testh();
+            //testH();
+            //testF();
+            //testOmega();
+            //testqhat();
         }
     }
 }
