@@ -26,7 +26,7 @@ namespace ibcdatacsharp
             //q = Quaternion.Normalize(q);
             Vector3 gRot = quaternionRotateVector(q, g);
             Vector3 result = gRot - acc;
-            result.Z *= -1;
+            result.Z *= -1; //Cambia el signo de la z
             return result;
         }
         public static void test(string filename = "C:\\Temp\\a1.csv")
