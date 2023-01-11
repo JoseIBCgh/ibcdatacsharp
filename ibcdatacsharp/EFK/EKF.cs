@@ -139,6 +139,7 @@ namespace ibcdatacsharp.EFK
         }
         private MathNet.Numerics.LinearAlgebra.Vector<float> buildh(Quaternion q)
         {
+            //q = Quaternion.Normalize(q);
             Matrix<float> C = CreateFromQuaternionPy(q).Transpose();
             MathNet.Numerics.LinearAlgebra.Vector<float> a_hat = C * g;
             MathNet.Numerics.LinearAlgebra.Vector<float> m_hat = C * r;
@@ -231,6 +232,7 @@ namespace ibcdatacsharp.EFK
         }
         private Matrix<float> buildH(Quaternion q)
         {
+            //q = Quaternion.Normalize(q);
             float[,] array = new float[,]
                 {
                     {
@@ -305,6 +307,7 @@ namespace ibcdatacsharp.EFK
             Matrix<float> F = buildF(gyr);
             Matrix<float> P_hat = F * P * F.Transpose() + Q;
             Quaternion q_hat = buildqhat(q, gyr, deltaT);
+            q_hat = Quaternion.Normalize(q_hat);
             #endregion prediction
             #region correction
             acc = acc.Normalize(2);
@@ -325,6 +328,167 @@ namespace ibcdatacsharp.EFK
             q_vector = q_vector.Normalize(2); //2???
             #endregion correction
             return ToQuaternion(q_vector);
+        }
+        // Esto es para combrobar que funcione bien
+        private Quaternion update_debug(Quaternion q, Matrix<float> P, MathNet.Numerics.LinearAlgebra.Vector<float> gyr,
+            MathNet.Numerics.LinearAlgebra.Vector<float> acc, MathNet.Numerics.LinearAlgebra.Vector<float> mag)
+        {
+            #region prediction
+            Matrix<float> W = buildW(q);
+            Matrix<float> Q;
+            if (spectralNoiseCovarianceMatrix == null)
+            {
+                Q = W * W.Transpose() * (float)spectralNoise * deltaT / 2;
+            }
+            else
+            {
+                Q = W * spectralNoiseCovarianceMatrix * W.Transpose() * deltaT / 2;
+            }
+            Trace.WriteLine("Q");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[5.62489211e-09 0.00000000e+00 5.62489211e-09 0.00000000e+00]
+ [0.00000000e+00 1.12497842e-08 0.00000000e+00 2.90943113e-25]
+ [5.62489211e-09 0.00000000e+00 5.62489211e-09 0.00000000e+00]
+ [0.00000000e+00 2.90943113e-25 0.00000000e+00 1.12497842e-08]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(Q);
+            Matrix<float> F = buildF(gyr);
+            Trace.WriteLine("F");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[ 1.         -0.98275513 -2.7753714   3.78256226]
+ [ 0.98275513  1.         -3.78256226 -2.7753714 ]
+ [ 2.7753714   3.78256226  1.          0.98275513]
+ [-3.78256226  2.7753714  -0.98275513  1.        ]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(F);
+            Matrix<float> P_hat = F * P * F.Transpose() + Q;
+            Trace.WriteLine("P_hat");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[ 2.39762713e+01  4.35579399e-16  5.62489217e-09  0.00000000e+00]
+ [ 4.35579399e-16  2.39762713e+01 -1.91929026e-16  2.90943113e-25]
+ [ 5.62489217e-09 -1.91929026e-16  2.39762713e+01 -4.44089210e-16]
+ [ 0.00000000e+00  2.90943113e-25 -4.44089210e-16  2.39762713e+01]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(P_hat);
+            Quaternion q_hat = buildqhat(q, gyr, deltaT);
+            Trace.WriteLine("q_hat");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine("[ 2.66956512  3.36955592  1.25536512 -1.97974362]");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(q_hat);
+            Trace.WriteLine(ToVector(q_hat));
+            q_hat = Quaternion.Normalize(q_hat);
+            #endregion prediction
+            #region correction
+            acc = acc.Normalize(2);
+            mag = mag.Normalize(2);
+            MathNet.Numerics.LinearAlgebra.Vector<float> z = CreateFromVectors(
+                new MathNet.Numerics.LinearAlgebra.Vector<float>[]
+                {
+                    acc, mag
+                });
+            Trace.WriteLine("z");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine("[ 0.97546371 -0.18237299 -0.12333142 -0.23436276 -0.40269051  0.88482453]");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(z);
+            h = buildh(q_hat);
+            Trace.WriteLine("h");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[ 0.83602057 - 0.54304297  0.07857444 - 0.45321799  0.86715055 - 0.20650275]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(h);
+            MathNet.Numerics.LinearAlgebra.Vector<float> v = z - h;
+            Trace.WriteLine("v");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[ 0.13944314  0.36066998 -0.20190586  0.21885523 -1.26984106  1.09132728]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(v);
+            H = buildH(q_hat);
+            Trace.WriteLine("H");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[ 0.51275912  0.80863455  1.09039502 -1.37630918]
+ [-1.37630918 -1.09039502  0.80863455 -0.51275912]
+ [ 0.          2.75261836  1.02551824  0.        ]
+ [-0.44406243 -0.70029806 -1.45706891  2.00055326]
+ [ 1.59623599  1.20068934 -0.01214347 -0.10113508]
+ [ 0.25637956 -2.7881547  -0.34292734  0.68815459]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(H);
+            Matrix<float> R = buildR();
+            Trace.WriteLine("R");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[0.25 0.   0.   0.   0.   0.  ]
+ [0.   0.25 0.   0.   0.   0.  ]
+ [0.   0.   0.25 0.   0.   0.  ]
+ [0.   0.   0.   0.64 0.   0.  ]
+ [0.   0.   0.   0.   0.64 0.  ]
+ [0.   0.   0.   0.   0.   0.64]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(R);
+            Matrix<float> S = H * P_hat * H.Transpose() + R;
+            Trace.WriteLine("S");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[ 9.61550851e+01 -7.09918852e-09  8.01786240e+01 -1.23145552e+02
+4.59230809e+01 -8.25785221e+01]
+ [-7.09918622e-09  9.61550851e+01 -5.20805819e+01 -1.98827900e+01
+  -8.30562400e+01  4.93233141e+01]
+ [ 8.01786240e+01 -5.20805819e+01  2.07131547e+02 -8.20444996e+01
+   7.89439397e+01 -1.92443242e+02]
+ [-1.23145552e+02 -1.98827900e+01 -8.20444996e+01  1.63987266e+02
+  -4.15820734e+01  8.90730341e+01]
+ [ 4.59230809e+01 -8.30562400e+01  7.89439397e+01 -4.15820734e+01
+   9.65450851e+01 -7.20222638e+01]
+ [-8.25785221e+01  4.93233141e+01 -1.92443242e+02  8.90730341e+01
+  -7.20222638e+01  2.02776583e+02]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(S);
+            Matrix<float> K = P_hat * H.Transpose() * S.Inverse();
+            Trace.WriteLine("K");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[ 0.19405421 -0.2847888   0.06118142 -0.04829303  0.24579322  0.34519077]
+ [-0.05456274 -0.11639976  0.09660976  0.01926712 -0.03537657 -0.25291987]
+ [ 0.17385278  0.36786833  0.68768931 -0.00926857  0.14989112  0.65072671]
+ [-0.22112065  0.08325712  0.60396859  0.19704567  0.11447141  0.49836008]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(K);
+            MathNet.Numerics.LinearAlgebra.Vector<float> q_vector = ToVector(q_hat) + K * v;
+            Trace.WriteLine("q");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine("[ 0.51121799  0.39217919  0.79224213 -0.08542955]");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(q_vector);
+            P = (Matrix<float>.Build.DenseIdentity(4) - K * H) * P_hat;
+            Trace.WriteLine("P");
+            Trace.WriteLine("expected:");
+            Trace.WriteLine(@"
+[[ 0.14986459 -0.05648494  0.16652736  0.11933061]
+ [-0.05648494  0.04936854 -0.10895984 -0.06845166]
+ [ 0.16652736 -0.10895984  0.46010607  0.33096772]
+ [ 0.11933061 -0.06845166  0.33096772  0.30661802]]
+");
+            Trace.WriteLine("calculated:");
+            Trace.WriteLine(P);
+            #endregion correction
+            return Quaternion.Normalize(ToQuaternion(q_vector));
         }
         public static void test()
         {
@@ -389,6 +553,7 @@ namespace ibcdatacsharp.EFK
                 Trace.WriteLine("end EKF test");
                 Trace.WriteLine("calculated:");
                 Trace.WriteLine(q);
+                Trace.WriteLine(ToVector(q));
                 Trace.WriteLine("expected:");
                 Trace.WriteLine("[ 0.4988753   0.38271055  0.77311449 -0.08336696]");
             }
@@ -425,8 +590,21 @@ namespace ibcdatacsharp.EFK
                 Trace.WriteLine("expected:");
                 Trace.WriteLine("[3.36958824  1.25537716 -1.97976261 2.66959072]");
                 Trace.WriteLine("calculated:");
-                //{X:3,369556 Y:1,2553649 Z:-1,9797436 W:2,669565}
                 Trace.WriteLine(ekf.buildqhat(q0, gyr, 0.01f));
+            }
+            void testW() //Funciona bien
+            {
+                EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
+                Trace.WriteLine("W");
+                Trace.WriteLine("expected:");
+                Trace.WriteLine(@"
+[[-0.          0.00353553 -0.        ]
+ [ 0.00353553  0.         -0.00353553]
+ [ 0.          0.00353553  0.        ]
+ [ 0.00353553  0.          0.00353553]]
+");
+                Trace.WriteLine("calculated:");
+                Trace.WriteLine(ekf.buildW(q0));
             }
             testFull();
             //testToVQConversion();
@@ -435,6 +613,10 @@ namespace ibcdatacsharp.EFK
             //testF();
             //testOmega();
             //testqhat();
+            //testW();
+            //EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED: true);
+            //Matrix<float> P = Matrix<float>.Build.DenseIdentity(4);
+            //ekf.update_debug(q0, P, gyr, acc, mag);
         }
     }
 }
