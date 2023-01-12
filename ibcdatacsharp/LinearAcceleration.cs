@@ -22,6 +22,7 @@ namespace ibcdatacsharp
             //Quaternion qvq = MultNorm(MultNorm(Quaternion.Conjugate(q), new Quaternion(v, 0)), q);
             return new Vector3(qvq.X, qvq.Y, qvq.Z);
         }
+        // acc tiene que estar en m/s^2
         public static Vector3 calcLinAcc(Quaternion q, Vector3 acc)
         {
             //q = Quaternion.Normalize(q);
@@ -32,6 +33,35 @@ namespace ibcdatacsharp
             //Vector3 result = acc - gRot;
             //result.Z *= -1; //Cambia el signo de la z
             return result;
+        }
+        public static Vector3 calcLinAcc(Quaternion q, Vector3 acc, bool inputG, bool outputG)
+        {
+            if (inputG)
+            {
+                g = new Vector3(0, 0, -1);
+            }
+            else
+            {
+                g = new Vector3(0, 0, -G);
+            }
+            //q = Quaternion.Normalize(q);
+            Vector3 gRot = quaternionRotateVector(q, g);
+            Trace.WriteLine("gRot");
+            Trace.WriteLine(gRot);
+            Vector3 result = gRot - acc;
+            //Vector3 result = acc - gRot;
+            //result.Z *= -1; //Cambia el signo de la z
+            if (inputG == outputG) {
+                return result;
+            }
+            if (outputG) //input m/s2 output G
+            {
+                return result / G;
+            }
+            else //input G output m/s^2
+            {
+                return result * G;
+            }  
         }
         public static void test(string filename = "C:\\Temp\\a1.csv")
         {
@@ -65,7 +95,7 @@ namespace ibcdatacsharp
                     qsensor = Quaternion.Conjugate(qsensor);
                     Vector3 acc = new Vector3(accx, accy, accz);
                     Vector3 lacc = new Vector3(laccx, laccy, laccz);
-                    Vector3 lacc_cal = calcLinAcc(qsensor, acc);
+                    Vector3 lacc_cal = calcLinAcc(qsensor, acc, true, true);
                     float diference =  Math.Abs(lacc.X - lacc_cal.X) + Math.Abs(lacc.Y - lacc_cal.Y) +
                         Math.Abs(lacc.Z - lacc_cal.Z);
                     float total = Math.Abs(lacc.X + lacc.Y + lacc.Z);

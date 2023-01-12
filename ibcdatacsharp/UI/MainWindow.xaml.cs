@@ -140,7 +140,7 @@ namespace ibcdatacsharp.UI
             //End Wisewalk API
             //EKF.EKF.test();
             //Test linear acceleration
-            LinearAcceleration.testms();
+            LinearAcceleration.test();
         }
 
         /** 
