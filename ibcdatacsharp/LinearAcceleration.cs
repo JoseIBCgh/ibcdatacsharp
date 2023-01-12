@@ -11,7 +11,7 @@ namespace ibcdatacsharp
     public struct LinearAcceleration
     {
         private const float G = 9.80665f;
-        private static Vector3 g = new Vector3(0, 0, -1f);
+        private static Vector3 g = new Vector3(0, 0, -G);
         private static Quaternion MultNorm(Quaternion q1, Quaternion q2)
         {
             return Quaternion.Normalize(q1 * q2);
