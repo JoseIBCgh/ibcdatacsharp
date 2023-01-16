@@ -10,22 +10,23 @@ namespace ibcdatacsharp
 {
     public struct LinearAcceleration
     {
-        private static Vector3 g = new Vector3(0, 0, 9.8f);
+        private static Vector3 g = new Vector3(0, 0, -9.81f);
         private static Quaternion MultNorm(Quaternion q1, Quaternion q2)
         {
             return Quaternion.Normalize(q1 * q2);
         }
         private static Vector3 quaternionRotateVector(Quaternion q, Vector3 v)
         {
-            Quaternion qvq = Quaternion.Conjugate(q) * new Quaternion(v, 0) * q;
-            //Quaternion qvq = MultNorm(MultNorm(Quaternion.Conjugate(q), new Quaternion(v, 0)), q);
+            Quaternion qvq = q * new Quaternion(v, 0) * Quaternion.Conjugate(q);
             return new Vector3(qvq.X, qvq.Y, qvq.Z);
         }
         public static Vector3 calcLinAcc(Quaternion q, Vector3 acc)
         {
             //q = Quaternion.Normalize(q);
-            Vector3 gRot = quaternionRotateVector(q, g);
-            return gRot - acc;
+            acc = acc * 9.81f;
+            Vector3 aRot = quaternionRotateVector(q, acc);
+            Vector3 aUser = aRot - g;
+            return aUser / 9.81f;
         }
         public static void test(string filename = "C:\\Temp\\a1.csv")
         {
