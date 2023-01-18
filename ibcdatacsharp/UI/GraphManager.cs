@@ -22,6 +22,8 @@ using Quaternion = System.Numerics.Quaternion;
 using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.DeviceList.TreeClasses;
 using ibcdatacsharp.UI.Filters;
+using Microsoft.VisualBasic.ApplicationServices;
+using System.Linq;
 
 namespace ibcdatacsharp.UI
 {
@@ -164,6 +166,9 @@ namespace ibcdatacsharp.UI
         Quaternion refq = new Quaternion();
         Quaternion[] q_lower = new Quaternion[4];
         Quaternion[] q_upper = new Quaternion[4];
+
+        byte handler_lower;
+        byte handler_upper;
 
         Vector3 prev_angle = new Vector3(0, 0, 0);
         Vector3 prev_angle_vel = new Vector3(0, 0, 0);
@@ -409,7 +414,20 @@ namespace ibcdatacsharp.UI
                 quaternions = mainWindow.quaternions.Content as GraphQuaternion;
             }
         }
-
+        private void saveHandlers()
+        {
+            byte handlerFromMAC(string mac)
+            {
+                string handler = mainWindow.devices_list.Where(z => z.Value.Id == mac).FirstOrDefault().Key;
+                return byte.Parse(handler);
+            }
+            List<IMUInfo> imus = deviceList.IMUsUsed;
+            if(imus.Count == 2)
+            {
+                handler_lower = handlerFromMAC(imus[0].address);
+                handler_upper = handlerFromMAC(imus[1].address);
+            }
+        }
 
         public void activate()
         {
@@ -420,6 +438,7 @@ namespace ibcdatacsharp.UI
                 timeLine.endReplay(); // De momento cuando empieza a stremear apaga el replay
                 //timerRender = new System.Timers.Timer(RENDER_MS);
                 //timerRender.AutoReset = true;
+
 
                 // Se puede poner esta linea para quitar el evento si havia 
                 // alguno en caso que haya problemas de que el csv tenga el doble de
@@ -464,6 +483,7 @@ namespace ibcdatacsharp.UI
 
                     else if (numIMUs == 2)
                     {
+                        saveHandlers();
                         foreach (Frame frame in graphs2IMU)
                         {
                             if (frame.Content == null)
@@ -600,6 +620,7 @@ namespace ibcdatacsharp.UI
                     }
                     else if (numIMUs == 2)
                     {
+                        saveHandlers();
                         foreach (Frame frame in graphs2IMU)
                         {
                             if (frame.Content == null)
@@ -761,10 +782,7 @@ namespace ibcdatacsharp.UI
             }
             else if(numIMUs == 2)
             {
-                List<IMUInfo> imus = deviceList.IMUsUsed;
-                int id_lower = imus[0].id;
-                int id_upper = imus[1].id;
-                if (deviceHandler == id_lower)
+                if (deviceHandler == handler_lower)
                 {
                     for(int i = 0; i < 4; i++)
                     {
@@ -777,7 +795,7 @@ namespace ibcdatacsharp.UI
                     anglequat++;
 
                 }
-                else if (deviceHandler == id_upper)
+                else if (deviceHandler == handler_upper)
                 {
                     for (int i = 0; i < 4; i++)
                     {
