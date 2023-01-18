@@ -167,8 +167,8 @@ namespace ibcdatacsharp.UI
         Quaternion[] q_lower = new Quaternion[4];
         Quaternion[] q_upper = new Quaternion[4];
 
-        byte handler_lower;
-        byte handler_upper;
+        byte handler_lower; // issue #100
+        byte handler_upper; // issue #100
 
         Vector3 prev_angle = new Vector3(0, 0, 0);
         Vector3 prev_angle_vel = new Vector3(0, 0, 0);
@@ -414,6 +414,7 @@ namespace ibcdatacsharp.UI
                 quaternions = mainWindow.quaternions.Content as GraphQuaternion;
             }
         }
+        // issue #100
         private void saveHandlers()
         {
             byte handlerFromMAC(string mac)
@@ -483,7 +484,7 @@ namespace ibcdatacsharp.UI
 
                     else if (numIMUs == 2)
                     {
-                        saveHandlers();
+                        saveHandlers(); // issue #100
                         foreach (Frame frame in graphs2IMU)
                         {
                             if (frame.Content == null)
@@ -620,7 +621,7 @@ namespace ibcdatacsharp.UI
                     }
                     else if (numIMUs == 2)
                     {
-                        saveHandlers();
+                        saveHandlers(); // issue #100
                         foreach (Frame frame in graphs2IMU)
                         {
                             if (frame.Content == null)
@@ -782,7 +783,14 @@ namespace ibcdatacsharp.UI
             }
             else if(numIMUs == 2)
             {
-                if (deviceHandler == handler_lower)
+                // codigo anterior issue #100
+                /*
+                List<IMUInfo> imus = deviceList.IMUsUsed;
+                int id_lower = imus[0].id;
+                int id_upper = imus[1].id;
+                if (deviceHandler == id_lower)
+                */
+                if (deviceHandler == handler_lower) // issue #100
                 {
                     for(int i = 0; i < 4; i++)
                     {
