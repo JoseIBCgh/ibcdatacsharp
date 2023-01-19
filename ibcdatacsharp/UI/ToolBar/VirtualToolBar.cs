@@ -10,6 +10,8 @@ using ibcdatacsharp.UI.Graphs;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using System.Linq;
+using static System.Net.WebRequestMethods;
 
 namespace ibcdatacsharp.UI.ToolBar
 {
@@ -35,7 +37,12 @@ namespace ibcdatacsharp.UI.ToolBar
         // Se lanza cuando se configuran los ficheros de grabar
         public event EventHandler<SaveArgs> saveEvent;
 
+        public delegate void FileOpenHandler(object sender, string? csv, string? video);
+        public event FileOpenHandler fileOpenEvent;
+
         private bool buttonsEnabled = false;
+
+        string error = "";
 
         public VirtualToolBar()
         {
@@ -129,8 +136,17 @@ namespace ibcdatacsharp.UI.ToolBar
         // Se ejecuta al clicar el boton pause
         public void pauseClick()
         {
-            if(pauseState == PauseState.Play)
+            
+
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+           
+
+            if (pauseState == PauseState.Play)
             {
+
+                //Para parar el streaming
+                mainWindow.api.StopStream(out error);
+
                 pauseState = PauseState.Pause;
                 toolBar.changePauseState(PauseState.Play);
                 menuBar.changePauseState(PauseState.Play);
@@ -141,6 +157,10 @@ namespace ibcdatacsharp.UI.ToolBar
             }
             else if(pauseState == PauseState.Pause)
             {
+
+                //Para reaunadar el streaming
+                mainWindow.startActiveDevices();
+
                 pauseState = PauseState.Play;
                 toolBar.changePauseState(PauseState.Pause);
                 menuBar.changePauseState(PauseState.Pause);
@@ -156,11 +176,21 @@ namespace ibcdatacsharp.UI.ToolBar
             if(recordState == RecordState.RecordStopped)
             {
                 toolBar.savingMenu.Visibility = Visibility.Visible;
+                if (!Directory.Exists(saveMenu.route.Text))
+                {
+                    saveMenu.route.Text = "";
+                    MessageBox.Show("La carpeta " + saveMenu.route.Text + " no existe, selecciona otra", caption:null, button: MessageBoxButton.OK, icon: MessageBoxImage.Warning);
+                }
                 saveMenu.ok.Click += continueRecord;
             }
         }
         private void continueRecord(object sender, RoutedEventArgs e)
         {
+            if (!Directory.Exists(saveMenu.route.Text))
+            {
+                MessageBox.Show("La carpeta " + saveMenu.route.Text + " no existe, selecciona otra", caption: null, button: MessageBoxButton.OK, icon: MessageBoxImage.Error);
+                return;
+            }
             if(saveEvent != null)
             {
                 saveEvent?.Invoke(this, new SaveArgs { directory = saveMenu.route.Text, csv = (bool)saveMenu.csv.IsChecked, video = (bool)saveMenu.video.IsChecked });
@@ -177,9 +207,14 @@ namespace ibcdatacsharp.UI.ToolBar
         {
             if(pauseState == PauseState.Pause)
             {
+                MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+
+                mainWindow.api.StopStream(out error);
+
                 pauseState = PauseState.Play;
                 toolBar.changePauseState(PauseState.Pause);
                 menuBar.changePauseState(PauseState.Pause);
+                
             }
             if(recordState == RecordState.Recording)
             {
@@ -207,21 +242,56 @@ namespace ibcdatacsharp.UI.ToolBar
             } 
             GraphData extractCSV(string filename)
             {
+                // Deberia dar un valor proporcional a como de diferentes son 2 strings
+                int diference(string s1, string s2)
+                {
+                    int value1 = 0;
+                    foreach (char c in s1)
+                    {
+                        int tmp = c;
+                        value1 += c;
+                    }
+                    int value2 = 0;
+                    foreach (char c in s2)
+                    {
+                        int tmp = c;
+                        value2 += c;
+                    }
+                    return Math.Abs(value1 - value2);
+                }
                 using (var reader = new StreamReader(filename))
                 {
-                    List<FrameData> data = new List<FrameData>();
-                    int linesToSkip = Config.csvHeader.Split('\n').Length - 1; //Hay un salto de linea al final del header
-                    Trace.WriteLine("linesToSkip", linesToSkip.ToString());
-                    for(int i = 0; i < linesToSkip; i++)
+                    int headerLines = Config.csvHeader1IMU.Split('\n').Length - 1; //Hay un salto de linea al final del header
+                    string header = "";
+                    for(int _ = 0; _ < headerLines; _++)
                     {
-                        reader.ReadLine();
+                        header += reader.ReadLine() + "\n";
                     }
-                    while (!reader.EndOfStream)
+                    Trace.WriteLine(header);
+                    int diference1IMU = diference(header, Config.csvHeader1IMU);
+                    int diference2IMUs = diference(header, Config.csvHeader2IMUs);
+                    Trace.WriteLine("diference 1 IMU " + diference1IMU);
+                    Trace.WriteLine("diference 2 IMUs " + diference2IMUs);
+                    if(diference1IMU < diference2IMUs)
                     {
-                        string line = reader.ReadLine();
-                        data.Add(new FrameData(line));
+                        List<FrameData1IMU> data = new List<FrameData1IMU>();
+                        while (!reader.EndOfStream)
+                        {
+                            string line = reader.ReadLine();
+                            data.Add(new FrameData1IMU(line));
+                        }
+                        return new GraphData(data.ToArray());
                     }
-                    return new GraphData(data);
+                    else
+                    {
+                        List<FrameData2IMUs> data = new List<FrameData2IMUs>();
+                        while (!reader.EndOfStream)
+                        {
+                            string line = reader.ReadLine();
+                            data.Add(new FrameData2IMUs(line));
+                        }
+                        return new GraphData(data.ToArray());
+                    }
                 }
             }
             void setTimeLineLimits(GraphData csvData, string videoPath)
@@ -242,6 +312,7 @@ namespace ibcdatacsharp.UI.ToolBar
             }
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = true;
+            openFileDialog.InitialDirectory = Config.INITIAL_PATH;
             openFileDialog.Filter = "Allowed Files(*.txt;*.csv;*.avi)|*.txt;*.csv;*.avi";
             if(openFileDialog.ShowDialog() == true)
             {
@@ -260,6 +331,7 @@ namespace ibcdatacsharp.UI.ToolBar
                             setTimeLineLimits(csvData, videoPath);
                             graphManager.initReplay(csvData);
                             camaraViewport.initReplay(videoPath);
+                            fileOpenEvent?.Invoke(this, file2, file1);
                             MessageBox.Show("Ficheros " + file1 + " " + file2 + "cargados.");
                         }
                         else
@@ -277,6 +349,7 @@ namespace ibcdatacsharp.UI.ToolBar
                             setTimeLineLimits(csvData, videoPath);
                             graphManager.initReplay(csvData);
                             camaraViewport.initReplay(videoPath);
+                            fileOpenEvent?.Invoke(this, file1, file2);
                             MessageBox.Show("Ficheros " + file1 + " " + file2 + " cargados.");
                         }
                         else
@@ -298,6 +371,7 @@ namespace ibcdatacsharp.UI.ToolBar
                         string videoPath = file;
                         timeLine.model.updateLimits(0, getVideoDuration(videoPath));
                         camaraViewport.initReplay(videoPath);
+                        fileOpenEvent?.Invoke(this, null, file);
                         MessageBox.Show("Fichero " + file + " cargado.");
                     }
                     else if(extension == ".csv" || extension == ".txt")
@@ -305,6 +379,7 @@ namespace ibcdatacsharp.UI.ToolBar
                         GraphData csvData = extractCSV(file);
                         timeLine.model.updateLimits(0, csvData.maxTime);
                         graphManager.initReplay(csvData);
+                        fileOpenEvent?.Invoke(this, file, null);
                         MessageBox.Show("Fichero " + file + " cargado.");
                     }
                     else

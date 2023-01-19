@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ibcdatacsharp.UI.DeviceList"
       xmlns:class="clr-namespace:ibcdatacsharp.DeviceList.TreeClasses"
-      xmlns:converter="clr-namespace:ibcdatacsharp.UI.DeviceList.Converters"
+      xmlns:converter="clr-namespace:ibcdatacsharp.UI.DeviceList.Converters" xmlns:controls="clr-namespace:System.Windows.Controls;assembly=MultiSelectTreeView"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="DeviceList">
@@ -15,75 +15,88 @@
     <Page.Resources>
         <converter:ConnectedConverter x:Key="connectedConverter"/>
         <converter:BatteryConverter x:Key="batteryConverter"/>
-        <Style x:Key="TreeViewItemStyle" TargetType="TreeViewItem">
+        <Style x:Key="TreeViewItemStyle" TargetType="controls:MultiSelectTreeViewItem">
             <Setter Property="Margin" Value="5 5 5 5" />
         </Style>
     </Page.Resources>
 
-    <TreeView BorderThickness="0" ItemContainerStyle="{StaticResource TreeViewItemStyle}" x:Name="treeView">
-        <TreeView.Resources>
+    <controls:MultiSelectTreeView BorderThickness="0" ItemContainerStyle="{StaticResource TreeViewItemStyle}" x:Name="treeView">
+        <controls:MultiSelectTreeView.Resources>
             <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
                         Color="LightSkyBlue" />
             <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"
                         Color="LightSkyBlue" />
-        </TreeView.Resources>
-        <TreeViewItem x:Name="baseItem">
-            <TreeViewItem.Header>
-                <TextBlock>IBC DA System</TextBlock>
-            </TreeViewItem.Header>
-            <TreeViewItem ItemsSource="{Binding IMUs}" Visibility="Collapsed" x:Name="IMUs" Padding="0 10 0 2.5">
-                <TreeViewItem.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
+        </controls:MultiSelectTreeView.Resources>
+        <controls:MultiSelectTreeViewItem x:Name="baseItem">
+            <controls:MultiSelectTreeViewItem.Header>
+                <TextBlock>DAT System</TextBlock>
+            </controls:MultiSelectTreeViewItem.Header>
+            <controls:MultiSelectTreeViewItem ItemsSource="{Binding IMUs}" Visibility="Collapsed" x:Name="IMUs" Padding="0 10 0 2.5">
+                <controls:MultiSelectTreeViewItem.ItemContainerStyle>
+                    <Style TargetType="{x:Type controls:MultiSelectTreeViewItem}">
                         <EventSetter Event="MouseDoubleClick" Handler="onIMUDoubleClick" />
                     </Style>
-                </TreeViewItem.ItemContainerStyle>
-                <TreeViewItem.Header>
-                    <Grid Width="350">
+                </controls:MultiSelectTreeViewItem.ItemContainerStyle>
+                <controls:MultiSelectTreeViewItem.Header>
+                    <Grid Width="380">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition Width="0.5*"/>
                             <ColumnDefinition Width="0.5*"/>
                             <ColumnDefinition Width="1.5*"/>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0" Source="pack://application:,,,/UI/DeviceList/Icons/imu-blue-icon-small.png" Height="20" Width="20"/>
-                        <TextBlock Text="Id" Grid.Column="1" TextAlignment="Center"/>
-                        <TextBlock Text="IMU" Grid.Column="2" TextAlignment="Center"/>
-                        <TextBlock Text="Address" Grid.Column="3" TextAlignment="Center"/>
-                        <TextBlock Text="Battery" Grid.Column="4" TextAlignment="Center"/>
-                        <TextBlock Text="Connected" Grid.Column="5" TextAlignment="Center"/>
+                        <TextBlock Text="JA" Grid.Column="1" TextAlignment="Center"/>
+                        <TextBlock Text="Con" Grid.Column="2" TextAlignment="Center"/>
+                        <TextBlock Text="Id" Grid.Column="3" TextAlignment="Center"/>
+                        <TextBlock Text="IMU" Grid.Column="4" TextAlignment="Center"/>
+                        <TextBlock Text="Address" Grid.Column="5" TextAlignment="Center"/>
+                        <TextBlock Text="Battery" Grid.Column="6" TextAlignment="Center"/>
+                        <TextBlock Text="FW" Grid.Column="7" TextAlignment="Center"/>
                     </Grid>
-                </TreeViewItem.Header>
-                <TreeViewItem.ItemTemplate>
+                </controls:MultiSelectTreeViewItem.Header>
+                <controls:MultiSelectTreeViewItem.ItemTemplate>
                     <DataTemplate DataType="{x:Type class:IMUInfo}">
-                        <Grid Margin="-19,0,0,0" Width="350">
+                        <Grid Margin="-19,0,0,0" Width="380">
+                            <Grid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem IsEnabled="{Binding Path=used}" Header="Set as Reference" Click="setIMUasReference" />
+                                </ContextMenu>
+                            </Grid.ContextMenu>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="15"/>
                                 <ColumnDefinition Width="15"/>
                                 <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
+                                <ColumnDefinition Width="0.5*"/>
                                 <ColumnDefinition Width="1.5*"/>
                                 <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Image Grid.Column="1" Height="15" Width="15" Source="pack://application:,,,/UI/DeviceList/Icons/arrow-icon.png"/>
-                            <TextBlock Text="{Binding Path=id}" Grid.Column="2" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding Path=name}" Grid.Column="3" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding Path=adress}" Grid.Column="4" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding Path=battery, Converter={StaticResource batteryConverter}}" Grid.Column="5" TextAlignment="Center"/>
-                            <Image Grid.Column="6" Height="15" Width="15" Source="{Binding Path=connected, Converter={StaticResource connectedConverter}}"/>
+                            <CheckBox IsEnabled="{Binding Path=connected}" Grid.Column="2" Height="15" Width="15" IsChecked="{Binding Path=used}" Checked="onCheckIMU"/>
+                            <Image Grid.Column="3" Height="15" Width="15" Source="{Binding Path=connected, Converter={StaticResource connectedConverter}}"/>
+                            <TextBlock Text="{Binding Path=id}" Grid.Column="4" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding Path=name}" Grid.Column="5" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding Path=address}" Grid.Column="6" TextAlignment="Center" />
+                            <TextBlock Text="{Binding Path=battery, Converter={StaticResource batteryConverter}}" Grid.Column="7" TextAlignment="Center"/>
+                            <TextBlock Text="{Binding Path=fw}" Grid.Column="8" TextAlignment="Center" />
                         </Grid>
                     </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-            <TreeViewItem ItemsSource="{Binding cameras}" Visibility="Collapsed" x:Name="cameras" Padding="0 10 0 2.5">
-                <TreeViewItem.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
+                </controls:MultiSelectTreeViewItem.ItemTemplate>
+            </controls:MultiSelectTreeViewItem>
+            <controls:MultiSelectTreeViewItem ItemsSource="{Binding cameras}" Visibility="Collapsed" x:Name="cameras" Padding="0 10 0 2.5">
+                <controls:MultiSelectTreeViewItem.ItemContainerStyle>
+                    <Style TargetType="{x:Type controls:MultiSelectTreeViewItem}">
                         <EventSetter Event="MouseDoubleClick" Handler="onCameraDoubleClick" />
                     </Style>
-                </TreeViewItem.ItemContainerStyle>
-                <TreeViewItem.Header>
+                </controls:MultiSelectTreeViewItem.ItemContainerStyle>
+                <controls:MultiSelectTreeViewItem.Header>
                     <Grid Width="280">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30"/>
@@ -98,8 +111,8 @@
                         <TextBlock Text="FPS" Grid.Column="3" TextAlignment="Center"/>
                         <TextBlock Text="" Grid.Column="4" TextAlignment="Center"/>
                     </Grid>
-                </TreeViewItem.Header>
-                <TreeViewItem.ItemTemplate>
+                </controls:MultiSelectTreeViewItem.Header>
+                <controls:MultiSelectTreeViewItem.ItemTemplate>
                     <DataTemplate DataType="{x:Type class:CameraInfo}">
                         <Grid Margin="-19,0,0,0" Width="280">
                             <Grid.ColumnDefinitions>
@@ -116,10 +129,10 @@
                             <TextBlock Text="{Binding Path=fps}" Grid.Column="4" TextAlignment="Center"/>
                         </Grid>
                     </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-            <TreeViewItem ItemsSource="{Binding insoles}" Visibility="Collapsed" x:Name="insoles" Padding="0 10 0 2.5">
-                <TreeViewItem.Header>
+                </controls:MultiSelectTreeViewItem.ItemTemplate>
+            </controls:MultiSelectTreeViewItem>
+            <controls:MultiSelectTreeViewItem ItemsSource="{Binding insoles}" Visibility="Collapsed" x:Name="insoles" Padding="0 10 0 2.5">
+                <controls:MultiSelectTreeViewItem.Header>
                     <Grid Width="280">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="30"/>
@@ -134,8 +147,8 @@
                         <TextBlock Text="" Grid.Column="3" TextAlignment="Center"/>
                         <TextBlock Text="" Grid.Column="4" TextAlignment="Center"/>
                     </Grid>
-                </TreeViewItem.Header>
-                <TreeViewItem.ItemTemplate>
+                </controls:MultiSelectTreeViewItem.Header>
+                <controls:MultiSelectTreeViewItem.ItemTemplate>
                     <DataTemplate DataType="{x:Type class:InsolesInfo}">
                         <Grid Margin="-19,0,0,0" Width="280">
                             <Grid.ColumnDefinitions>
@@ -151,8 +164,8 @@
                             <TextBlock Text="{Binding Path=side}" Grid.Column="3" TextAlignment="Center"/>
                         </Grid>
                     </DataTemplate>
-                </TreeViewItem.ItemTemplate>
-            </TreeViewItem>
-        </TreeViewItem>
-    </TreeView>
+                </controls:MultiSelectTreeViewItem.ItemTemplate>
+            </controls:MultiSelectTreeViewItem>
+        </controls:MultiSelectTreeViewItem>
+    </controls:MultiSelectTreeView>
 </Page>

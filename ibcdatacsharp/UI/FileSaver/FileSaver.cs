@@ -3,15 +3,18 @@ using ibcdatacsharp.UI.ToolBar;
 using ibcdatacsharp.UI.ToolBar.Enums;
 using OpenCvSharp;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Navigation;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace ibcdatacsharp.UI.FileSaver
 {
-    internal class FileSaver
+    public class FileSaver
     {
         private const int RECORD_CSV_MS = 10;
         private const int RECORD_VIDEO_MS = 1000 / Config.VIDEO_FPS_SAVE;
@@ -25,12 +28,17 @@ namespace ibcdatacsharp.UI.FileSaver
         private VirtualToolBar virtualToolBar;
         private Device.Device device;
         private VideoWriter? videoWriter;
+        private DeviceList.DeviceList deviceList;
 
         private string? path;
         private string? csvFile;
+        private string? videoFile;
         private bool recordCSV;
         private bool recordVideo;
-        private StringBuilder? csvData;
+        private StringBuilder? csvData = new StringBuilder();
+
+        public delegate void filesAddedEvent(object sender, List<string> files);
+        public event filesAddedEvent filesAdded;
         public FileSaver()
         {
             recordCSV = false;
@@ -63,6 +71,17 @@ namespace ibcdatacsharp.UI.FileSaver
             else
             {
                 timeLine = mainWindow.timeLine.Content as TimeLine.TimeLine;
+            }
+            if (mainWindow.deviceList.Content == null)
+            {
+                mainWindow.deviceList.Navigated += delegate (object sender, NavigationEventArgs e)
+                {
+                    deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
+                };
+            }
+            else
+            {
+                deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
             }
             virtualToolBar = mainWindow.virtualToolBar;
             device = mainWindow.device;
@@ -97,8 +116,10 @@ namespace ibcdatacsharp.UI.FileSaver
         private void initRecordCsv()
         {
             timerCsv = new System.Timers.Timer();
-            timerCsv.Interval = RECORD_CSV_MS;
-            timerCsv.Elapsed += (sender, e) => appendCSV();
+
+            //Eliminar estas líneas para grabar manualmente
+            //timerCsv.Interval = RECORD_CSV_MS;
+            //timerCsv.Elapsed += (sender, e) => appendCSV();
 
             virtualToolBar.pauseEvent += onPauseCsv;
 
@@ -131,16 +152,22 @@ namespace ibcdatacsharp.UI.FileSaver
         private void onStopRecording(object sender)
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+            string message = "";
+            bool show = false;
+            List<string> files = new List<string>();
             if (recordCSV)
             {
-                timerCsv.Stop();
-                timerCsv = null;
-                mainWindow.virtualToolBar.pauseEvent -= onPauseCsv;
+                //timerCsv.Stop();
+                //timerCsv = null;
+                //mainWindow.virtualToolBar.pauseEvent -= onPauseCsv;
                 saveCsvFile();
                 recordCSV = false;
+                message += "Csv grabado en " + csvFile + ". ";
+                show = true;
+                files.Add(path + Path.DirectorySeparatorChar + csvFile);
             }
             if (recordVideo)
-            { 
+            {
                 timerVideo.Stop();
                 timerVideo = null;
                 mainWindow.virtualToolBar.pauseEvent -= onPauseVideo;
@@ -148,6 +175,14 @@ namespace ibcdatacsharp.UI.FileSaver
                 videoWriter = null;
 
                 recordVideo = false;
+                message += "Video grabado en " + videoFile + ". ";
+                show=true;
+                files.Add(path + Path.DirectorySeparatorChar + videoFile);
+            }
+            if (show)
+            {
+                MessageBox.Show(message, caption: null, button: MessageBoxButton.OK, icon: MessageBoxImage.Information);
+                filesAdded?.Invoke(this, files);
             }
         }
         // inicializa los ficheros para guardar csv y video
@@ -169,19 +204,39 @@ namespace ibcdatacsharp.UI.FileSaver
             string baseFilename = fileName();
             if (recordCSV)
             {
-                csvFile = baseFilename + ".csv";
+                csvFile = baseFilename + ".txt";
                 csvData = new StringBuilder();
-                csvData.Append(Config.csvHeader);
-                initRecordCsv();
+                if(deviceList.numIMUsUsed == 1)
+                {
+                    csvData.Append(Config.csvHeader1IMU);
+                }
+                else if(deviceList.numIMUsUsed == 2)
+                {
+                    csvData.Append(Config.csvHeader2IMUs);
+                }
+                else
+                {
+                    throw new Exception("try to record with " + deviceList.numIMUsUsed.ToString() + " IMUs");
+                }
+                //initRecordCsv();
             }
             if (recordVideo)
             {
-                string videoFile = baseFilename + ".avi";
-                string pathVideoFile = path + "\\" + videoFile;
+                videoFile = baseFilename + ".avi";
+                string pathVideoFile = path + Path.DirectorySeparatorChar + videoFile;
                 videoWriter = new VideoWriter(pathVideoFile, FourCC.DIVX, Config.VIDEO_FPS_SAVE, new OpenCvSharp.Size(Config.FRAME_WIDTH, Config.FRAME_HEIGHT));
                 initRecordVideo();
             }
         }
+
+        //Añadde fila en un csv de forma manual
+
+        public void appendCSVManual(string dataline)
+        {
+           csvData.Append(dataline);
+           
+        }
+
         // Añade una fila al csv
         private void appendCSV()
         {
@@ -222,7 +277,7 @@ namespace ibcdatacsharp.UI.FileSaver
         // Guarda el csv
         private async void saveCsvFile()
         {
-            string filePath = path + "\\" + csvFile;
+            string filePath = path + Path.DirectorySeparatorChar + csvFile;
             await File.WriteAllTextAsync(filePath, csvData.ToString());
         }
         // Se llama al seleccionar las opciones de grabacion
