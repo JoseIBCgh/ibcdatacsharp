@@ -881,13 +881,28 @@ namespace ibcdatacsharp.UI
                     }
                     prev_angle_vel = angularVelocity[3];
 
+                    float offsetX = (float)this.angleX.model.offset;
+                    float offsetY = (float)this.angleY.model.offset;
+                    float offsetZ = (float)this.angleZ.model.offset;
+
                     if (virtualToolBar.recordState == RecordState.Recording)
                     {
+                        dataline = "";
+                        for(int i = 0; i < 4; i++)
+                        {
+                            dataline += "1 " + (fakets + 0.01 * i).ToString("F2") + " " + (frame + i).ToString() + " " + 
+                                (angleX[i] + offsetX).ToString("F3") + " " + (angleY[i] + offsetY).ToString("F3") + " " + 
+                                (angleZ[i] + offsetZ).ToString("F3") + " " + angularVelocity[i].X.ToString("F3") + " " + 
+                                angularVelocity[i].Y.ToString("F3") + " " + angularVelocity[i].Z.ToString("F3") + " " + 
+                                angularAcceleration[i].X.ToString("F3") + " " + angularAcceleration[i].Y.ToString("F3") + " " + 
+                                angularAcceleration[i].Z.ToString("F3") + "\n";
+                        }
+                        /*
                         dataline = "1 " + (fakets).ToString("F2") + " " + frame.ToString() + " " + angleX[0].ToString("F3") + " " + angleY[0].ToString("F3") + " " + angleZ[0].ToString("F3") + " " + angularVelocity[0].X.ToString("F3") + " " + angularVelocity[0].Y.ToString("F3") + " " + angularVelocity[0].Z.ToString("F3") + " " + angularAcceleration[0].X.ToString("F3") + " " + angularAcceleration[0].Y.ToString("F3") + " " + angularAcceleration[0].Z.ToString("F3") + "\n" +
                         "1 " + (fakets + 0.01).ToString("F2") + " " + (frame + 1).ToString() + " " + angleX[1].ToString("F3") + " " + angleY[1].ToString("F3") + " " + angleZ[1].ToString("F3") + " " + angularVelocity[1].X.ToString("F3") + " " + angularVelocity[1].Y.ToString("F3") + " " + angularVelocity[1].Z.ToString("F3") + " " + angularAcceleration[1].X.ToString("F3") + " " + angularAcceleration[1].Y.ToString("F3") + " " + angularAcceleration[1].Z.ToString("F3") + "\n" +
                         "1 " + (fakets + 0.02).ToString("F2") + " " + (frame + 2).ToString() + " " + angleX[2].ToString("F3") + " " + angleY[2].ToString("F3") + " " + angleZ[2].ToString("F3") + " " + angularVelocity[2].X.ToString("F3") + " " + angularVelocity[2].Y.ToString("F3") + " " + angularVelocity[2].Z.ToString("F3") + " " + angularAcceleration[2].X.ToString("F3") + " " + angularAcceleration[2].Y.ToString("F3") + " " + angularAcceleration[2].Z.ToString("F3") + "\n" +
                         "1 " + (fakets + 0.03).ToString("F2") + " " + (frame + 3).ToString() + " " + angleX[3].ToString("F3") + " " + angleY[3].ToString("F3") + " " + angleZ[3].ToString("F3") + " " + angularVelocity[3].X.ToString("F3") + " " + angularVelocity[3].Y.ToString("F3") + " " + angularVelocity[3].Z.ToString("F3") + " " + angularAcceleration[3].X.ToString("F3") + " " + angularAcceleration[3].Y.ToString("F3") + " " + angularAcceleration[3].Z.ToString("F3") + "\n";
-
+                        */
                         mainWindow.fileSaver.appendCSVManual(dataline);
                     }
                     Application.Current.Dispatcher.InvokeAsync(() =>
