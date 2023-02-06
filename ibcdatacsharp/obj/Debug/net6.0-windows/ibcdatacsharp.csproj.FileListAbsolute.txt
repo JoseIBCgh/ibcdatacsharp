@@ -92,6 +92,12 @@ C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\GeneratedInternalTypeHelper.g.cs
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp_MarkupCompile.cache
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp_MarkupCompile.lref
+<<<<<<< HEAD
+=======
+C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.dll
+C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\refint\ibcdatacsharp.dll
+C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.pdb
+>>>>>>> v1.0.0_main_bernat_no_IMUs
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdatacsharp.exe
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdatacsharp.deps.json
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdatacsharp.runtimeconfig.json
@@ -173,9 +179,14 @@ C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.AssemblyInfo.cs
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.csproj.CoreCompileInputs.cache
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.csproj.CopyComplete
+<<<<<<< HEAD
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.dll
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\refint\ibcdatacsharp.dll
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.pdb
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.genruntimeconfig.cache
 C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ref\ibcdatacsharp.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\runtimes\win-x86\native\OpenCvSharpExtern.dll
+=======
+C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ibcdatacsharp.genruntimeconfig.cache
+C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\obj\Debug\net6.0-windows\ref\ibcdatacsharp.dll
+>>>>>>> v1.0.0_main_bernat_no_IMUs

@@ -18,8 +18,33 @@ namespace ibcdatacsharp.UI.ToolBar
     // Mantiene el estado para la ToolBar y la MenuBar
     public class VirtualToolBar
     {
-        public PauseState pauseState { get; set; } 
-        public RecordState recordState { get; set; }
+        public VirtualToolBarProperties properties;
+        public PauseState pauseState { get; set; }
+        private RecordState _recordState;
+        public RecordState recordState { 
+            get
+            {
+                return _recordState;
+            } 
+            set 
+            { 
+                _recordState = value;
+                recordChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public bool _capturing;
+        public bool capturing
+        {
+            get
+            {
+                return _capturing;
+            }
+            set
+            {
+                _capturing = value;
+                captureChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
 
         private ToolBar toolBar;
         private MenuBar.MenuBar menuBar;
@@ -37,17 +62,22 @@ namespace ibcdatacsharp.UI.ToolBar
         // Se lanza cuando se configuran los ficheros de grabar
         public event EventHandler<SaveArgs> saveEvent;
 
+        public event EventHandler buttonsEnabledChanged;
+        public event EventHandler recordChanged;
+        public event EventHandler captureChanged;
+
         public delegate void FileOpenHandler(object sender, string? csv, string? video);
         public event FileOpenHandler fileOpenEvent;
 
-        private bool buttonsEnabled = false;
+        public bool buttonsEnabled = false;
 
         string error = "";
 
         public VirtualToolBar()
         {
             pauseState = PauseState.Play;
-            recordState = RecordState.RecordStopped;
+            _recordState = RecordState.RecordStopped;
+            properties = new VirtualToolBarProperties(this);
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.initialized += (sender, args) => finishInit();
         }
@@ -128,10 +158,14 @@ namespace ibcdatacsharp.UI.ToolBar
         {
             if (!buttonsEnabled)
             {
-                toolBar.activateButtons();
                 menuBar.activateButtons();
                 buttonsEnabled = true;
+                buttonsEnabledChanged?.Invoke(this, EventArgs.Empty);
             }
+        }
+        public void captureClick()
+        {
+            capturing = true;
         }
         // Se ejecuta al clicar el boton pause
         public void pauseClick()
@@ -170,6 +204,26 @@ namespace ibcdatacsharp.UI.ToolBar
                 }
             }
         }
+        private void disablePause()
+        {
+            toolBar.pause.IsEnabled = false;
+            menuBar.pause.IsEnabled = false;
+        }
+        private void enablePause()
+        {
+            toolBar.pause.IsEnabled = true;
+            menuBar.pause.IsEnabled = true;
+        }
+        private void disableCapture()
+        {
+            toolBar.capture.IsEnabled = false;
+            menuBar.capture.IsEnabled = false;
+        }
+        private void enableCapture()
+        {
+            toolBar.capture.IsEnabled = true;
+            menuBar.capture.IsEnabled = true;
+        }
         // Se ejecuta al clicar record
         public void recordClick()
         {
@@ -202,9 +256,20 @@ namespace ibcdatacsharp.UI.ToolBar
             menuBar.changeRecordState(RecordState.Recording);
             timeLine.startRecord();
         }
+        private void disableDisconnect()
+        {
+            toolBar.disconnect.IsEnabled = false;
+            menuBar.disconnect.IsEnabled = false;
+        }
+        private void enableDisconnect()
+        {
+            toolBar.disconnect.IsEnabled = true;
+            menuBar.disconnect.IsEnabled = true;
+        }
         // Se ejecuta al clicar stop
         public void stopClick()
         {
+            capturing = false;
             if(pauseState == PauseState.Pause)
             {
                 MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
@@ -332,7 +397,7 @@ namespace ibcdatacsharp.UI.ToolBar
                             graphManager.initReplay(csvData);
                             camaraViewport.initReplay(videoPath);
                             fileOpenEvent?.Invoke(this, file2, file1);
-                            MessageBox.Show("Ficheros " + file1 + " " + file2 + "cargados.");
+                            MessageBox.Show("Ficheros " + file1 + " " + file2 + " cargados.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
@@ -350,7 +415,7 @@ namespace ibcdatacsharp.UI.ToolBar
                             graphManager.initReplay(csvData);
                             camaraViewport.initReplay(videoPath);
                             fileOpenEvent?.Invoke(this, file1, file2);
-                            MessageBox.Show("Ficheros " + file1 + " " + file2 + " cargados.");
+                            MessageBox.Show("Ficheros " + file1 + " " + file2 + " cargados.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
@@ -372,7 +437,7 @@ namespace ibcdatacsharp.UI.ToolBar
                         timeLine.model.updateLimits(0, getVideoDuration(videoPath));
                         camaraViewport.initReplay(videoPath);
                         fileOpenEvent?.Invoke(this, null, file);
-                        MessageBox.Show("Fichero " + file + " cargado.");
+                        MessageBox.Show("Fichero " + file + " cargado.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else if(extension == ".csv" || extension == ".txt")
                     {
@@ -380,7 +445,7 @@ namespace ibcdatacsharp.UI.ToolBar
                         timeLine.model.updateLimits(0, csvData.maxTime);
                         graphManager.initReplay(csvData);
                         fileOpenEvent?.Invoke(this, file, null);
-                        MessageBox.Show("Fichero " + file + " cargado.");
+                        MessageBox.Show("Fichero " + file + " cargado.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {

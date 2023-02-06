@@ -1,0 +1,10 @@
+ibcdatacsharp/obj/
+ibcdatacsharp/bin/
+bin
+obj
+<<<<<<< HEAD
+.vs
+*.cache
+=======
+.vs
+>>>>>>> v1.0.0_main_bernat_no_IMUs
