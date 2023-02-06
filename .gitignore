@@ -3,3 +3,4 @@ ibcdatacsharp/bin/
 bin
 obj
 .vs
+*.cache
