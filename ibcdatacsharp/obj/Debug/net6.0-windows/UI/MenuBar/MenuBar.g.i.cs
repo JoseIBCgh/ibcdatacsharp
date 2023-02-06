@@ -9,6 +9,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using AvalonDock;
+using AvalonDock.Controls;
+using AvalonDock.Converters;
+using AvalonDock.Layout;
+using AvalonDock.Themes;
+using ScottPlot;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -31,8 +37,6 @@ using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Shell;
-using ibcdatacsharp.UI;
-using ibcdatacsharp.UI.Graphs;
 using ibcdatacsharp.UI.MenuBar;
 using ibcdatacsharp.UI.MenuBar.View;
 

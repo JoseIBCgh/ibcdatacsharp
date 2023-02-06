@@ -9,7 +9,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using OxyPlot.Wpf;
+using AvalonDock;
+using AvalonDock.Controls;
+using AvalonDock.Converters;
+using AvalonDock.Layout;
+using AvalonDock.Themes;
+using ScottPlot;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -32,8 +37,6 @@ using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Shell;
-using ibcdatacsharp.UI.Subjects;
-using ibcdatacsharp.UI.TimeLine;
 using ibcdatacsharp.UI.ToolBar;
 
 
