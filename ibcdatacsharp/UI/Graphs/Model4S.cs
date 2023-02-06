@@ -33,10 +33,10 @@ namespace ibcdatacsharp.UI.Graphs
         private VLine lineFrame;
         private const float verticalLineWidth = 0.5f;
 
-        private Color wColor = Color.Blue;
-        private Color xColor = Color.Green;
-        private Color yColor = Color.Red;
-        private Color zColor = Color.Magenta;
+        private Color wColor = Config.colorW;
+        private Color xColor = Config.colorX;
+        private Color yColor = Config.colorY;
+        private Color zColor = Config.colorZ;
 
         public Model4S(WpfPlot plot, double minY, double maxY, string title = "", string units = "")
         {
@@ -195,7 +195,7 @@ namespace ibcdatacsharp.UI.Graphs
             signalPlotX.Label = "X= " + data[data.Length - 1].X.ToString("0.##");
             signalPlotY.Label = "Y= " + data[data.Length - 1].Y.ToString("0.##");
             signalPlotZ.Label = "Z= " + data[data.Length - 1].Z.ToString("0.##");
-            nextIndex++;
+            nextIndex += data.Length;
             if (render)
             {
                 this.render();

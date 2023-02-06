@@ -21,6 +21,9 @@ using System.Windows.Threading;
 using Quaternion = System.Numerics.Quaternion;
 using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.DeviceList.TreeClasses;
+using ibcdatacsharp.UI.Filters;
+using Microsoft.VisualBasic.ApplicationServices;
+using System.Linq;
 
 namespace ibcdatacsharp.UI
 {
@@ -44,6 +47,7 @@ namespace ibcdatacsharp.UI
         {
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             VirtualToolBar virtualToolBar = mainWindow.virtualToolBar;
+            FilterManager filterManager = mainWindow.filterManager;
             Device.Device device = mainWindow.device;
             graphs1IMU = new List<Frame>();
             graphs2IMU = new List<Frame>();
@@ -76,13 +80,13 @@ namespace ibcdatacsharp.UI
                 mainWindow.deviceList.Navigated += delegate (object sender, NavigationEventArgs e)
                 {
                     DeviceList.DeviceList deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
-                    captureManager = new CaptureManager(graphs1IMU, graphs2IMU, virtualToolBar, device, deviceList);
+                    captureManager = new CaptureManager(graphs1IMU, graphs2IMU, virtualToolBar, device, deviceList, filterManager);
                 };
             }
             else
             {
                 DeviceList.DeviceList deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
-                captureManager = new CaptureManager(graphs1IMU, graphs2IMU, virtualToolBar, device, deviceList);
+                captureManager = new CaptureManager(graphs1IMU, graphs2IMU, virtualToolBar, device, deviceList, filterManager);
             }
         }
         public void initReplay(GraphData data)
@@ -128,6 +132,7 @@ namespace ibcdatacsharp.UI
         private Device.Device device;
         private DeviceList.DeviceList deviceList;
         private TimeLine.TimeLine timeLine;
+        private FilterManager filterManager;
 
         public GraphAccelerometer accelerometer;
         public GraphGyroscope gyroscope;
@@ -161,6 +166,9 @@ namespace ibcdatacsharp.UI
         Quaternion refq = new Quaternion();
         Quaternion[] q_lower = new Quaternion[4];
         Quaternion[] q_upper = new Quaternion[4];
+
+        byte handler_lower; // issue #100
+        byte handler_upper; // issue #100
 
         Vector3 prev_angle = new Vector3(0, 0, 0);
         Vector3 prev_angle_vel = new Vector3(0, 0, 0);
@@ -196,7 +204,7 @@ namespace ibcdatacsharp.UI
         public delegate void QuaternionEventHandler(object sender, byte handler, Quaternion q);
         public event QuaternionEventHandler quaternionEvent;
         //End Wise
-        public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU, VirtualToolBar virtualToolBar, Device.Device device, DeviceList.DeviceList deviceList)
+        public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU, VirtualToolBar virtualToolBar, Device.Device device, DeviceList.DeviceList deviceList, FilterManager filterManager)
         { 
             active = false;
             this.graphs1IMU = graphs1IMU;
@@ -204,6 +212,7 @@ namespace ibcdatacsharp.UI
             this.virtualToolBar = virtualToolBar;
             this.device = device;
             this.deviceList = deviceList;
+            this.filterManager = filterManager;
             saveGraphs();
             saveTimeLine();
 
@@ -405,7 +414,21 @@ namespace ibcdatacsharp.UI
                 quaternions = mainWindow.quaternions.Content as GraphQuaternion;
             }
         }
-
+        // issue #100
+        private void saveHandlers()
+        {
+            byte handlerFromMAC(string mac)
+            {
+                string handler = mainWindow.devices_list.Where(z => z.Value.Id == mac).FirstOrDefault().Key;
+                return byte.Parse(handler);
+            }
+            List<IMUInfo> imus = deviceList.IMUsUsed;
+            if(imus.Count == 2)
+            {
+                handler_lower = handlerFromMAC(imus[0].address);
+                handler_upper = handlerFromMAC(imus[1].address);
+            }
+        }
 
         public void activate()
         {
@@ -416,6 +439,7 @@ namespace ibcdatacsharp.UI
                 timeLine.endReplay(); // De momento cuando empieza a stremear apaga el replay
                 //timerRender = new System.Timers.Timer(RENDER_MS);
                 //timerRender.AutoReset = true;
+
 
                 // Se puede poner esta linea para quitar el evento si havia 
                 // alguno en caso que haya problemas de que el csv tenga el doble de
@@ -460,6 +484,7 @@ namespace ibcdatacsharp.UI
 
                     else if (numIMUs == 2)
                     {
+                        saveHandlers(); // issue #100
                         foreach (Frame frame in graphs2IMU)
                         {
                             if (frame.Content == null)
@@ -596,6 +621,7 @@ namespace ibcdatacsharp.UI
                     }
                     else if (numIMUs == 2)
                     {
+                        saveHandlers(); // issue #100
                         foreach (Frame frame in graphs2IMU)
                         {
                             if (frame.Content == null)
@@ -653,6 +679,7 @@ namespace ibcdatacsharp.UI
         //Callback para recoger datas del IMU
         public void Api_dataReceived(byte deviceHandler, WisewalkSDK.WisewalkData data)
         {
+            filterManager.filter(ref data);
             int index = 3;
             Quaternion q = new Quaternion((float)data.Quat[index].X, (float)data.Quat[index].Y, (float)data.Quat[index].Z, (float)data.Quat[index].W);
             quaternionEvent?.Invoke(this, deviceHandler, q);
@@ -756,10 +783,14 @@ namespace ibcdatacsharp.UI
             }
             else if(numIMUs == 2)
             {
+                // codigo anterior issue #100
+                /*
                 List<IMUInfo> imus = deviceList.IMUsUsed;
                 int id_lower = imus[0].id;
                 int id_upper = imus[1].id;
                 if (deviceHandler == id_lower)
+                */
+                if (deviceHandler == handler_lower) // issue #100
                 {
                     for(int i = 0; i < 4; i++)
                     {
@@ -772,7 +803,7 @@ namespace ibcdatacsharp.UI
                     anglequat++;
 
                 }
-                else if (deviceHandler == id_upper)
+                else if (deviceHandler == handler_upper)
                 {
                     for (int i = 0; i < 4; i++)
                     {
@@ -850,15 +881,35 @@ namespace ibcdatacsharp.UI
                     }
                     prev_angle_vel = angularVelocity[3];
 
+                    float offsetX = (float)this.angleX.model.offset;
+                    float offsetY = (float)this.angleY.model.offset;
+                    float offsetZ = (float)this.angleZ.model.offset;
+
                     if (virtualToolBar.recordState == RecordState.Recording)
                     {
+                        dataline = "";
+                        for(int i = 0; i < 4; i++)
+                        {
+                            dataline += "1 " + (fakets + 0.01 * i).ToString("F2") + " " + (frame + i).ToString() + " " + 
+                                (angleX[i] + offsetX).ToString("F3") + " " + (angleY[i] + offsetY).ToString("F3") + " " + 
+                                (angleZ[i] + offsetZ).ToString("F3") + " " + angularVelocity[i].X.ToString("F3") + " " + 
+                                angularVelocity[i].Y.ToString("F3") + " " + angularVelocity[i].Z.ToString("F3") + " " + 
+                                angularAcceleration[i].X.ToString("F3") + " " + angularAcceleration[i].Y.ToString("F3") + " " + 
+                                angularAcceleration[i].Z.ToString("F3") + "\n";
+                        }
+                        /*
                         dataline = "1 " + (fakets).ToString("F2") + " " + frame.ToString() + " " + angleX[0].ToString("F3") + " " + angleY[0].ToString("F3") + " " + angleZ[0].ToString("F3") + " " + angularVelocity[0].X.ToString("F3") + " " + angularVelocity[0].Y.ToString("F3") + " " + angularVelocity[0].Z.ToString("F3") + " " + angularAcceleration[0].X.ToString("F3") + " " + angularAcceleration[0].Y.ToString("F3") + " " + angularAcceleration[0].Z.ToString("F3") + "\n" +
                         "1 " + (fakets + 0.01).ToString("F2") + " " + (frame + 1).ToString() + " " + angleX[1].ToString("F3") + " " + angleY[1].ToString("F3") + " " + angleZ[1].ToString("F3") + " " + angularVelocity[1].X.ToString("F3") + " " + angularVelocity[1].Y.ToString("F3") + " " + angularVelocity[1].Z.ToString("F3") + " " + angularAcceleration[1].X.ToString("F3") + " " + angularAcceleration[1].Y.ToString("F3") + " " + angularAcceleration[1].Z.ToString("F3") + "\n" +
                         "1 " + (fakets + 0.02).ToString("F2") + " " + (frame + 2).ToString() + " " + angleX[2].ToString("F3") + " " + angleY[2].ToString("F3") + " " + angleZ[2].ToString("F3") + " " + angularVelocity[2].X.ToString("F3") + " " + angularVelocity[2].Y.ToString("F3") + " " + angularVelocity[2].Z.ToString("F3") + " " + angularAcceleration[2].X.ToString("F3") + " " + angularAcceleration[2].Y.ToString("F3") + " " + angularAcceleration[2].Z.ToString("F3") + "\n" +
                         "1 " + (fakets + 0.03).ToString("F2") + " " + (frame + 3).ToString() + " " + angleX[3].ToString("F3") + " " + angleY[3].ToString("F3") + " " + angleZ[3].ToString("F3") + " " + angularVelocity[3].X.ToString("F3") + " " + angularVelocity[3].Y.ToString("F3") + " " + angularVelocity[3].Z.ToString("F3") + " " + angularAcceleration[3].X.ToString("F3") + " " + angularAcceleration[3].Y.ToString("F3") + " " + angularAcceleration[3].Z.ToString("F3") + "\n";
+<<<<<<< HEAD
 
                         mainWindow.fileSaver.appendCSVManual(dataline)
                         
+=======
+                        */
+                        mainWindow.fileSaver.appendCSVManual(dataline);
+>>>>>>> v1.0.0_main_bernat_no_IMUs
                     }
                     Application.Current.Dispatcher.InvokeAsync(() =>
                     {
