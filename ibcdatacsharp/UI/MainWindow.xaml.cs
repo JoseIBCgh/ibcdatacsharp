@@ -26,10 +26,9 @@ using System.Drawing;
 using MessageBox = System.Windows.MessageBox;
 using System.Numerics;
 using static WisewalkSDK.Wisewalk;
-<<<<<<< HEAD
-=======
+
 using ibcdatacsharp.EKF;
->>>>>>> v1.0.0_main_bernat_no_IMUs
+
 using Microsoft.VisualBasic.ApplicationServices;
 using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.UI.Filters;
@@ -145,11 +144,7 @@ namespace ibcdatacsharp.UI
             api.deviceDisconnected += Api_onDisconnect;
 
             //End Wisewalk API
-<<<<<<< HEAD
-            EKF.EKF.test();
-=======
             //EKF.EKF.test();
->>>>>>> v1.0.0_main_bernat_no_IMUs
             //Test linear acceleration
             //LinearAcceleration.test();
         }

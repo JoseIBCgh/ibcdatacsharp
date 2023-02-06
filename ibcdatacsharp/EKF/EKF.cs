@@ -15,10 +15,9 @@ namespace ibcdatacsharp.EKF
         private float? spectralNoise;
         private float var_acc;
         private float var_mag;
-<<<<<<< HEAD
-=======
+
         private Matrix<float> P;
->>>>>>> v1.0.0_main_bernat_no_IMUs
+
         public Matrix<float> H { get; private set; }
         public MathNet.Numerics.LinearAlgebra.Vector<float> h { get; private set; }
 
@@ -296,7 +295,7 @@ namespace ibcdatacsharp.EKF
                 );
             return result;
         }
-        public Quaternion update(Quaternion q, Matrix<float> P, MathNet.Numerics.LinearAlgebra.Vector<float> gyr,
+        public Quaternion update(Quaternion q, MathNet.Numerics.LinearAlgebra.Vector<float> gyr,
             MathNet.Numerics.LinearAlgebra.Vector<float> acc, MathNet.Numerics.LinearAlgebra.Vector<float> mag)
         {
             #region prediction
@@ -555,11 +554,8 @@ namespace ibcdatacsharp.EKF
                 Trace.WriteLine("start EKF test");
                 EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED:true);
                 Matrix<float> P = Matrix<float>.Build.DenseIdentity(4);
-<<<<<<< HEAD
-                Quaternion q = ekf.update(q0, P, gyr, acc, mag);
-=======
+
                 Quaternion q = ekf.update(q0, gyr, acc, mag);
->>>>>>> v1.0.0_main_bernat_no_IMUs
                 Trace.WriteLine("end EKF test");
                 Trace.WriteLine("calculated:");
                 Trace.WriteLine(q);
