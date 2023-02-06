@@ -1,2 +1,5 @@
 ibcdatacsharp/obj/
 ibcdatacsharp/bin/
+bin
+obj
+.vs
