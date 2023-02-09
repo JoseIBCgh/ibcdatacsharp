@@ -115,6 +115,31 @@ namespace ibcdatacsharp.UI
         public SagitalAngles.SagitalAngles sagitalAngles;
 
         //end Wiseware API
+
+        // Start LPMSB2 API
+        bool isRunning = false;
+
+
+        struct SensorListResult
+        {
+            public string IoType;
+            public string Identifier;
+            public uint BaudRate;
+
+        }
+
+        public enum OpenZenIoTypes { SiUsb, Bluetooth };
+
+        public OpenZenIoTypes OpenZenIoType = OpenZenIoTypes.Bluetooth;
+
+        ZenClientHandle_t mZenHandle = new ZenClientHandle_t();
+        List<SensorListResult> mFoundSensor = new List<SensorListResult>();
+        ZenSensorHandle_t mSensorHandle = new ZenSensorHandle_t();
+        ZenComponentHandle_t mComponent = new ZenComponentHandle_t();
+
+        public bool mSearchDone = false;
+        // end LPMSB2 API
+
         public MainWindow()
         {
             InitializeComponent();
@@ -418,6 +443,51 @@ namespace ibcdatacsharp.UI
                 func();
             }
         }
+
+        //Scanning de LPMSB2
+
+        public async void scanLP()
+        {
+
+
+            while (true)
+            {
+                ZenEvent zenEvent = new ZenEvent();
+
+                if (!OpenZen.ZenWaitForNextEvent(mZenHandle, zenEvent))
+                    break;
+
+                if (zenEvent.component.handle == 0)
+                {
+                    switch (zenEvent.eventType)
+                    {
+                        case ZenEventType.ZenEventType_SensorFound:
+                            SensorListResult localDesc = new SensorListResult();
+                            localDesc.Identifier = zenEvent.data.sensorFound.identifier;
+                            localDesc.IoType = zenEvent.data.sensorFound.ioType;
+                            localDesc.BaudRate = zenEvent.data.sensorFound.baudRate;
+                            mFoundSensor.Add(localDesc);
+
+                            break;
+
+                        case ZenEventType.ZenEventType_SensorListingProgress:
+
+                            if (zenEvent.data.sensorListingProgress.progress == 1.0)
+                            {
+                                mSearchDone = true;
+
+                                Trace.WriteLine(mFoundSensor[0].Identifier);
+                                Trace.WriteLine("Devices Scanned");
+
+                            }
+                            break;
+                    }
+                }
+
+            }
+
+        }
+
         // Conecta el boton scan
         private void onScan(object sender, EventArgs e)
         {
@@ -458,6 +528,7 @@ namespace ibcdatacsharp.UI
                         }
                         return cameraNames;
                     }
+
                     // Devuelve una lista de indice OpenCV de las camaras disponibles
                      List<int> cameraIndices(int maxIndex = 10)
                     {
@@ -474,11 +545,27 @@ namespace ibcdatacsharp.UI
                         }
                         return indices;
                     }
+
+                    //Estas son las tareas asíncronas de búsquedas
+
                     List<string> names = await Task.Run(() => cameraNames());
                     //names.ForEach(n => Trace.WriteLine(n));
                     List<int> indices = await Task.Run(() => cameraIndices(names.Count));
                     //indices.ForEach(i => Trace.WriteLine(i));
+
+                    //Esta es para imus Actisense
                     await Task.Run(() => getIMUs()); //necesario para escanear IMUs
+
+                    OpenZen.ZenInit(mZenHandle);
+
+                    //Esta es para imu LPMSB2
+                    await Task.Run(() => scanLP());
+                    //Task thr = new Task(() => { Scanning(); });
+                    //thr.Start();
+
+                    OpenZen.ZenListSensorsAsync(mZenHandle);
+
+                   
 
                     List<CameraInfo> cameras = new List<CameraInfo>();
                     for (int i = 0; i < names.Count; i++)
@@ -503,6 +590,10 @@ namespace ibcdatacsharp.UI
                     imus.Add(new IMUInfo("ActiSense", random.NextSingle().ToString()));
                     imus.Add(new IMUInfo("ActiSense2", random.NextSingle().ToString()));
                     */
+
+                    
+
+
 
                     deviceListClass.setIMUs(imus);
                     MessageBox.Show(scanDevices.Count + " IMUs encontrados", "Scan Devices", MessageBoxButton.OK, MessageBoxImage.Information);
