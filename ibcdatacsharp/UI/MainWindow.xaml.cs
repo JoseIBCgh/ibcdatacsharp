@@ -31,6 +31,7 @@ using Microsoft.VisualBasic.ApplicationServices;
 using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.UI.Filters;
 using ibcdatacsharp.UI.Graphs;
+using System.Runtime.CompilerServices;
 
 namespace ibcdatacsharp.UI
 {
@@ -119,6 +120,7 @@ namespace ibcdatacsharp.UI
         // Start LPMSB2 API
         bool isRunning = false;
 
+        public bool mSearchDone = false;
 
         struct SensorListResult
         {
@@ -137,7 +139,6 @@ namespace ibcdatacsharp.UI
         ZenSensorHandle_t mSensorHandle = new ZenSensorHandle_t();
         ZenComponentHandle_t mComponent = new ZenComponentHandle_t();
 
-        public bool mSearchDone = false;
         // end LPMSB2 API
 
         public MainWindow()
@@ -556,16 +557,21 @@ namespace ibcdatacsharp.UI
                     //Esta es para imus Actisense
                     await Task.Run(() => getIMUs()); //necesario para escanear IMUs
 
+                    //Esta es para imu LPMSB2
+                    //Esto tiene que ser así por ahora, no se ha probado con más formas que funcionen.
+
                     OpenZen.ZenInit(mZenHandle);
 
-                    //Esta es para imu LPMSB2
-                    await Task.Run(() => scanLP());
-                    //Task thr = new Task(() => { Scanning(); });
-                    //thr.Start();
+                    Task thr = new Task(() => { scanLP(); });
+                    thr.Start();
+                    //await Task.Run(() =>
+                    //{
+                    //    scanLP();
+
+                    //});
 
                     OpenZen.ZenListSensorsAsync(mZenHandle);
 
-                   
 
                     List<CameraInfo> cameras = new List<CameraInfo>();
                     for (int i = 0; i < names.Count; i++)
@@ -584,6 +590,12 @@ namespace ibcdatacsharp.UI
                     {
                         imus.Add(new IMUInfo("ActiSense", GetMacAddress(scanDevices, i)));
                     }
+
+                   
+                     imus.Add(new IMUInfo("LPMSB2", "00:04:3E:9B:A2:F1"));
+                    
+
+                    
                     /* 
                     //IMUS falsos
                     Random random = new Random();
@@ -618,6 +630,36 @@ namespace ibcdatacsharp.UI
         {
             return scanDevices.FirstOrDefault(de => GetMacAddress(de) == imuInfo.address);
         }
+
+        //Configure LPMSB2
+        public async Task Configure()
+        {
+            OpenZen.ZenSensorComponentsByNumber(mZenHandle, mSensorHandle, OpenZen.g_zenSensorType_Imu, 0, mComponent);
+
+            OpenZen.ZenSensorComponentSetBoolProperty(mZenHandle, mSensorHandle, mComponent, (int)EZenImuProperty.ZenImuProperty_StreamData, true);
+
+            OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
+                (int)EZenImuProperty.ZenImuProperty_SamplingRate, 100);
+
+            OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
+                (int)EZenImuProperty.ZenImuProperty_FilterMode, 2);
+
+            OpenZen.ZenSensorComponentSetBoolProperty(mZenHandle, mSensorHandle, mComponent,
+                (int)EZenImuProperty.ZenImuProperty_OutputQuat, true);
+
+            OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle, 
+                (int)EZenSensorProperty.ZenSensorProperty_TimeOffset, 0);
+
+            Trace.WriteLine("Configured device");
+
+            var sensorInitError = OpenZen.ZenObtainSensorByName(mZenHandle,
+                     mFoundSensor[0].IoType,
+                     mFoundSensor[0].Identifier,
+                     mFoundSensor[0].BaudRate,
+                     mSensorHandle);
+            Trace.WriteLine("Device Connected");
+        }
+
         // Conecta el boton connect
         private void onConnect(object sender, EventArgs e)
         {
@@ -628,9 +670,10 @@ namespace ibcdatacsharp.UI
                 IList<object> selectedItems = (IList<object>)deviceListClass.treeView.SelectedItems;
                 List<IMUInfo> connectedIMUs = new List<IMUInfo>();
                 List<object> selectedIMUs = new List<object>(); // Necesario porque deviceListClass.treeView.SelectedItems puede cambiar despues de clicar connect
+                
                 foreach (object selected in selectedItems)
                 {
-                    if (selected != null) // No se si se puede quitar
+                    if (selected != null) // No sé si se puede quitar
                     {
                         if (selected is IMUInfo)
                         {
@@ -650,8 +693,9 @@ namespace ibcdatacsharp.UI
                 }
 
                 //Trace.WriteLine("::OnConnect::: Imu seleccionado: " + imuInfo.id.ToString());
-
+                await Configure();
                 conn_list_dev = new List<Dev>();
+
                 // Operación atómica de conexión
                 foreach (IMUInfo imu in connectedIMUs)
                 {
@@ -662,26 +706,7 @@ namespace ibcdatacsharp.UI
                 {
                     Trace.WriteLine("Connect error " + error);
                 }
-                //api.SetDeviceConfiguration((byte)imuInfo.id, 100, 3, out error);
-                /*
-                await Task.Delay(4000);
-                foreach (IMUInfo imu in connectedIMUs)
-                {
-                    api.SetDeviceConfiguration((byte)imu.id, 100, 3, out error);
-                }
-                await Task.Delay(1000);
-                foreach (IMUInfo imu in connectedIMUs)
-                {
-                    api.SetRTCDevice((byte)imu.id, GetDateTime(), out error);
-                }
-                await Task.Delay(1000);
-
-                deviceListClass.connectIMUs(selectedIMUs);
-                */
-                //api.SetRTCDevice((byte)imuInfo.id, GetDateTime(), out error);
-                //await Task.Delay(1000);
-
-                // Fin Operación atómica de conexión
+                
 
                 //EndWise
 
