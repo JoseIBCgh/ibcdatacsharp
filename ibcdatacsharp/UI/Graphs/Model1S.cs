@@ -4,8 +4,11 @@ using ScottPlot.Drawing.Colormaps;
 using ScottPlot.Plottable;
 using System;
 using System.Drawing;
+using System.Windows;
 using System.Windows.Markup;
 using static Microsoft.WindowsAPICodePack.Shell.PropertySystem.SystemProperties.System;
+
+using Style = ScottPlot.Style;
 
 namespace ibcdatacsharp.UI.Graphs
 {

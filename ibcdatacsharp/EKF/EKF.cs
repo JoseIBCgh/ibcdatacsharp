@@ -17,6 +17,7 @@ namespace ibcdatacsharp.EKF
         private float var_mag;
 
         private Matrix<float> P;
+
         public Matrix<float> H { get; private set; }
         public MathNet.Numerics.LinearAlgebra.Vector<float> h { get; private set; }
 
@@ -552,7 +553,8 @@ namespace ibcdatacsharp.EKF
             {
                 Trace.WriteLine("start EKF test");
                 EKF ekf = new EKF(deltaT: 0.01f, spectralNoise: 0.3f * 0.3f, magnetic_dip_angle: 60f, NED:true);
-                //Matrix<float> P = Matrix<float>.Build.DenseIdentity(4);
+
+                Matrix<float> P = Matrix<float>.Build.DenseIdentity(4);
 
                 Quaternion q = ekf.update(q0, gyr, acc, mag);
                 Trace.WriteLine("end EKF test");

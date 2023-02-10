@@ -4,6 +4,8 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
+using System.Windows;
+using Style = ScottPlot.Style;
 
 namespace ibcdatacsharp.UI.Graphs
 {
