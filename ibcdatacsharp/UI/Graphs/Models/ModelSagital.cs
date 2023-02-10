@@ -80,9 +80,9 @@ namespace ibcdatacsharp.UI.Graphs.Models
             replayModel.updateIndex(index);
         }
         #endregion Replay
-        public void updateData(float[] data, bool render = true)
+        public void updateData(float[] data, bool render = false)
         {
-            captureModel.updateData(data, render);
+            captureModel.updateData(data, false);
         }
         // Actualiza el renderizado
         public void render()

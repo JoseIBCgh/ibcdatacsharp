@@ -99,9 +99,9 @@ namespace ibcdatacsharp.UI.Graphs.Models
             clear();
             captureModel.updateData(data);
         }
-        public async void updateData(Vector3[] data, bool render = true)
+        public async void updateData(Vector3[] data, bool render = false)
         {
-            captureModel.updateData(data, render);
+            captureModel.updateData(data, false);
         }
         // Actualiza el renderizado
         public async void render()

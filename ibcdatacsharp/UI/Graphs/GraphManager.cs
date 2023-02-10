@@ -17,6 +17,7 @@ using ibcdatacsharp.UI.Graphs.Sagital;
 using ibcdatacsharp.UI.SagitalAngles;
 using System.Linq;
 using System.Net;
+using System.Windows.Threading;
 
 namespace ibcdatacsharp.UI.Graphs
 {
@@ -126,7 +127,8 @@ namespace ibcdatacsharp.UI.Graphs
     {
         public bool active { get; private set; }
         private const int RENDER_MS = Config.RENDER_MS_CAPTUE;
-        //private System.Timers.Timer timerRender;
+        private DispatcherTimer timerRender;
+        List<Frame>? graphs = null;
         private List<Frame> graphs1IMU;
         private List<Frame> graphs2IMU;
         private List<Frame> graphsSagital;
@@ -495,7 +497,7 @@ namespace ibcdatacsharp.UI.Graphs
                 {
                     numIMUs = (mainWindow.deviceList.Content as DeviceList.DeviceList).numIMUsUsed;
                     Trace.WriteLine(numIMUs);
-                    List<Frame>? graphs = null;
+                    graphs = null;
                     switch (numIMUs)
                     {
                         case 1:
@@ -512,6 +514,7 @@ namespace ibcdatacsharp.UI.Graphs
                     }
                     if (graphs != null)
                     {
+                        timerRender = new DispatcherTimer();
                         foreach (Frame frame in graphs)
                         {
                             if (frame.Content == null)
@@ -522,88 +525,20 @@ namespace ibcdatacsharp.UI.Graphs
                                     GraphInterface graph = frame.Content as GraphInterface;
 
                                     graph.initCapture();
+                                    timerRender.Tick += graph.onRender;
                                 };
                             }
                             else
                             {
                                 GraphInterface graph = frame.Content as GraphInterface;
                                 graph.initCapture();
+                                timerRender.Tick += graph.onRender;
                             }
                         }
                         virtualToolBar.stopEvent += onStop;
+                        timerRender.Interval = TimeSpan.FromMilliseconds(RENDER_MS);
+                        timerRender.Start();
                     }
-
-                    /*
-                    if (numIMUs == 1)
-                    {
-                        foreach (Frame frame in graphs1IMU)
-                        {
-                            if (frame.Content == null)
-                            {
-                                frame.Navigated += delegate (object sender, NavigationEventArgs e)
-                                {
-                                    // Todos los grafos deberian implementar esta interface
-                                    GraphInterface graph = frame.Content as GraphInterface;
-
-                                    graph.initCapture();
-
-
-
-                                    //timerCapture.Elapsed += graph.onTick;
-                                    //timerRender.Elapsed += graph.onRender;
-                                };
-                            }
-                            else
-                            {
-                                GraphInterface graph = frame.Content as GraphInterface;
-                                graph.initCapture();
-
-
-                                //timerCapture.Elapsed += graph.onTick;
-                                //timerRender.Elapsed += graph.onRender;
-                            }
-                        }
-                    }
-
-                    else if (numIMUs == 2)
-                    {
-                        foreach (Frame frame in graphs2IMU)
-                        {
-                            if (frame.Content == null)
-                            {
-                                frame.Navigated += delegate (object sender, NavigationEventArgs e)
-                                {
-                                    // Todos los grafos deberian implementar esta interface
-                                    GraphInterface graph = frame.Content as GraphInterface;
-
-                                    graph.initCapture();
-
-
-
-                                    //timerCapture.Elapsed += graph.onTick;
-                                    //timerRender.Elapsed += graph.onRender;
-                                };
-                            }
-                            else
-                            {
-                                GraphInterface graph = frame.Content as GraphInterface;
-                                graph.initCapture();
-
-
-                                //timerCapture.Elapsed += graph.onTick;
-                                //timerRender.Elapsed += graph.onRender;
-                            }
-                        }
-                    }
-
-
-                    //virtualToolBar.pauseEvent += onPause; //funcion local
-                    virtualToolBar.stopEvent += onStop; //funcion local
-                                                        //if (virtualToolBar.pauseState == PauseState.Play)
-                                                        //{
-                                                        //timerRender.Start();
-                                                        //}
-                    */
 
                 });
             }
@@ -672,56 +607,6 @@ namespace ibcdatacsharp.UI.Graphs
                     mainWindow.api.StopStream(out error);
                 }
                 */
-
-                /*
-                foreach (Frame frame in graphs1IMU)
-                {
-                    if (frame.Content == null)
-                    {
-                        frame.Navigated += delegate (object sender, NavigationEventArgs e)
-                        {
-                            // Todos los grafos deberian implementar esta interface
-                            GraphInterface graph = frame.Content as GraphInterface;
-                            graph.clearData();
-                            graph.initCapture();
-                            //timerRender.Elapsed -= graph.onRender;
-                        };
-                    }
-                    else
-                    {
-                        GraphInterface graph = frame.Content as GraphInterface;
-                        graph.clearData();
-                        graph.initCapture();
-                        //timerRender.Elapsed -= graph.onRender;
-                    }
-                }
-                foreach (Frame frame in graphs2IMU)
-                {
-                    if (frame.Content == null)
-                    {
-                        frame.Navigated += delegate (object sender, NavigationEventArgs e)
-                        {
-                            // Todos los grafos deberian implementar esta interface
-                            GraphInterface graph = frame.Content as GraphInterface;
-                            graph.clearData();
-                            graph.initCapture();
-                            //timerRender.Elapsed -= graph.onRender;
-                        };
-                    }
-                    else
-                    {
-                        GraphInterface graph = frame.Content as GraphInterface;
-                        graph.clearData();
-                        graph.initCapture();
-                        //timerRender.Elapsed -= graph.onRender;
-                    }
-                }
-                //virtualToolBar.pauseEvent -= onPause; //funcion local
-                virtualToolBar.stopEvent -= onStop; //funcion local
-                //timerRender.Dispose();
-
-                mainWindow.api.StopStream(out error);
-                */
             }
         }
         public void reset()
@@ -773,57 +658,6 @@ namespace ibcdatacsharp.UI.Graphs
                             mainWindow.startActiveDevices();
                         }
                     }
-                    /*
-                    if (numIMUs == 1)
-                    {
-                        foreach (Frame frame in graphs1IMU)
-                        {
-                            if (frame.Content == null)
-                            {
-                                frame.Navigated += delegate (object sender, NavigationEventArgs e)
-                                {
-                                    // Todos los grafos deberian implementar esta interface
-                                    GraphInterface graph = frame.Content as GraphInterface;
-                                    graph.clearData();
-                                    graph.initCapture();
-                                };
-                            }
-                            else
-                            {
-                                GraphInterface graph = frame.Content as GraphInterface;
-                                graph.clearData();
-                                graph.initCapture();
-                            }
-                        }
-                    }
-                    else if (numIMUs == 2)
-                    {
-                        foreach (Frame frame in graphs2IMU)
-                        {
-                            if (frame.Content == null)
-                            {
-                                frame.Navigated += delegate (object sender, NavigationEventArgs e)
-                                {
-                                    // Todos los grafos deberian implementar esta interface
-                                    GraphInterface graph = frame.Content as GraphInterface;
-                                    graph.clearData();
-                                    graph.initCapture();
-                                };
-                            }
-                            else
-                            {
-                                GraphInterface graph = frame.Content as GraphInterface;
-                                graph.clearData();
-                                graph.initCapture();
-                            }
-                        }
-                    }
-                    mainWindow.api.StopStream(out error);
-                    if (virtualToolBar.pauseState == PauseState.Play)
-                    {
-                        mainWindow.startActiveDevices();
-                    }
-                    */
                 });
             }
         }
@@ -851,6 +685,13 @@ namespace ibcdatacsharp.UI.Graphs
             fakets = 0;
             frame = 0;
             sagitalAngles.initRecord();
+        }
+        public void renderCallback()
+        {
+            foreach (GraphInterface graph in graphs)
+            {
+                graph.render();
+            }
         }
 
         //Begin Wise

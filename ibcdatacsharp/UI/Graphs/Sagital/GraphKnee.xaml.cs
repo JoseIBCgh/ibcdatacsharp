@@ -84,5 +84,16 @@ namespace ibcdatacsharp.UI.Graphs.Sagital
             model.offset = 0;
             offset.Text = INITIAL_OFFSET;
         }
+        public async void render()
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                model.render();
+            });
+        }
+        public void onRender(object sender, EventArgs e)
+        {
+            model.render();
+        }
     }
 }

@@ -77,27 +77,17 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
                 model.clear();
             });
         }
-        // Actualiza el renderizado
-        public async void onRender(object sender, EventArgs e)
+        public void onRender(object sender, EventArgs e)
         {
-            if (hasToRender)
-            {
-                await Application.Current.Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-                {
-                    model.render();
-                });
-            }
+            model.render();
         }
 
         public async void render()
         {
-            if (hasToRender)
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    model.render();
-                });
-            }
+                model.render();
+            });
         }
 
         public async void drawRealTimeData(double accX, double accY, double accZ)

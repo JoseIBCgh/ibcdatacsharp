@@ -95,9 +95,9 @@ namespace ibcdatacsharp.UI.Graphs.Models
         {
             captureModel.updateData(data);
         }
-        public async void updateData(Quaternion[] data, bool render = true)
+        public async void updateData(Quaternion[] data, bool render = false)
         {
-            captureModel.updateData(data, render);
+            captureModel.updateData(data, false);
         }
         // Actualiza el renderizado
         public async void render()

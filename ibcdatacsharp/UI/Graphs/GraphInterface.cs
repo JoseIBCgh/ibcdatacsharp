@@ -14,5 +14,7 @@ namespace ibcdatacsharp.UI.Graphs
         // Se ejecuta cuando hay que añadir nuevos puntos al grafo
         // Borra los datos
         public void clearData();
+        public void render();
+        public void onRender(object sender, EventArgs e);
     }
 }

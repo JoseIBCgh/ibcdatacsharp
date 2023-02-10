@@ -88,5 +88,18 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
                 model.clear();
             });
         }
+
+        public async void render()
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                model.render();
+            });
+        }
+
+        public void onRender(object sender, EventArgs e)
+        {
+            model.render();
+        }
     }
 }

@@ -83,16 +83,16 @@ namespace ibcdatacsharp.UI.Graphs.TwoIMU
                 model.clear();
             });
         }
-        // Actualiza el render de los grafos
-        public async void onRender(object sender, EventArgs e)
+        public void onRender(object sender, EventArgs e)
         {
-            if (hasToRender)
+            model.render();
+        }
+        public async void render()
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                await Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
-                {
-                    model.render();
-                });
-            }
+                model.render();
+            });
         }
 
         public async void drawRealTimeData(double angle)

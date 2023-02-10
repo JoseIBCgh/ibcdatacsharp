@@ -123,25 +123,15 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
 
         public async void render()
         {
-            if (hasToRender)
+            await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    model.render();
-                });
-            }
+                model.render();
+            });
         }
 
-        // Actualiza el render
-        public async void onRender(object sender, EventArgs e)
+        public void onRender(object sender, EventArgs e)
         {
-            if (hasToRender)
-            {
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    model.render();
-                });
-            }
+            model.render();
         }
     }
 }

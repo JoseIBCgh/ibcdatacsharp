@@ -81,9 +81,9 @@ namespace ibcdatacsharp.UI.Graphs.Models
         {
             captureModel.updateData(data);
         }
-        public void updateData(float[] data, bool render = true)
+        public void updateData(float[] data, bool render = false)
         {
-            captureModel.updateData(data, render);
+            captureModel.updateData(data, false);
         }
         // Actualiza el renderizado
         public void render()
