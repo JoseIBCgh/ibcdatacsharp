@@ -96,7 +96,7 @@ namespace ibcdatacsharp.UI.Graphs.Models
         // Actualiza los datos
         public async void updateData(double[] data)
         {
-            clear();
+            //clear();
             captureModel.updateData(data);
         }
         public async void updateData(Vector3[] data, bool render = true)
@@ -124,7 +124,7 @@ namespace ibcdatacsharp.UI.Graphs.Models
             SignalPlot signalPlotX;
             SignalPlot signalPlotY;
             SignalPlot signalPlotZ;
-            private int nextIndex = 0;
+            public int nextIndex = 0;
 
             public CaptureModel(Model3S model)
             {
@@ -165,13 +165,21 @@ namespace ibcdatacsharp.UI.Graphs.Models
             }
             public void updateData(double[] data)
             {
+           
+
+                valuesX = new double[data.Length];
+                valuesY = new double[data.Length];
+                valuesZ = new double[data.Length];
+
+
+
                 valuesX[nextIndex] = data[0];
                 valuesY[nextIndex] = data[1];
                 valuesZ[nextIndex] = data[2];
-                signalPlotX.Label = "X= " + data[0].ToString("0.##");
-                signalPlotY.Label = "Y= " + data[1].ToString("0.##");
-                signalPlotZ.Label = "Z= " + data[2].ToString("0.##");
-                nextIndex++;
+                signalPlotX.Label = "X= "; // + data[0].ToString("0.##");
+                signalPlotY.Label = "Y= "; // + data[1].ToString("0.##");
+                signalPlotZ.Label = "Z= "; // + data[2].ToString("0.##");
+                nextIndex += data.Length;
                 model.lineFrame.X = nextIndex % CAPACITY;
                 model.plot.Render();
             }
@@ -179,9 +187,9 @@ namespace ibcdatacsharp.UI.Graphs.Models
         class ReplayModel
         {
             Model3S model;
-            double[] valuesX;
-            double[] valuesY;
-            double[] valuesZ;
+            public double[] valuesX;
+            public double[] valuesY;
+            public double[] valuesZ;
             SignalPlot signalPlotX;
             SignalPlot signalPlotY;
             SignalPlot signalPlotZ;

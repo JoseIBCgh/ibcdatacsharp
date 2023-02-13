@@ -17,6 +17,8 @@ using ibcdatacsharp.UI.Graphs.Sagital;
 using ibcdatacsharp.UI.SagitalAngles;
 using System.Linq;
 using System.Net;
+using System.Windows.Markup;
+using System.Threading.Tasks;
 
 namespace ibcdatacsharp.UI.Graphs
 {
@@ -29,6 +31,8 @@ namespace ibcdatacsharp.UI.Graphs
         public List<Frame> graphs2IMU;
         public List<Frame> graphsSagital;
         private SagitalAngles.SagitalAngles sagitalAngles;
+        public MainWindow mainWindow;
+
 
 
         public GraphManager()
@@ -106,7 +110,7 @@ namespace ibcdatacsharp.UI.Graphs
             }
         }
         // Configura el modo capture
-        public void initCapture()
+        public async void initCapture()
         {
             if (replayManager.active)
             {
@@ -125,6 +129,8 @@ namespace ibcdatacsharp.UI.Graphs
     public class CaptureManager
     {
         public bool active { get; private set; }
+        public double[] livedata = new double[200];
+
         private const int RENDER_MS = Config.RENDER_MS_CAPTUE;
         //private System.Timers.Timer timerRender;
         private List<Frame> graphs1IMU;
@@ -475,7 +481,9 @@ namespace ibcdatacsharp.UI.Graphs
                 handler_upper = handlerFromMAC(imus[1].address);
             }
         }
-        public void activate()
+
+       
+        public async void activate()
         {
 
             if (!active)
@@ -491,8 +499,10 @@ namespace ibcdatacsharp.UI.Graphs
                 //mainWindow.api.dataReceived -= Api_dataReceived;
                 mainWindow.api.dataReceived += Api_dataReceived;
 
-                Application.Current.Dispatcher.InvokeAsync(() =>
+                await Task.Run(() => StreamLP());
+                Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
+                    
                     numIMUs = (mainWindow.deviceList.Content as DeviceList.DeviceList).numIMUsUsed;
                     Trace.WriteLine(numIMUs);
                     List<Frame>? graphs = null;
@@ -510,6 +520,11 @@ namespace ibcdatacsharp.UI.Graphs
                             sagitalAngles.initIMUs();
                             break;
                     }
+
+
+                    //LMPSB2
+                 
+
                     if (graphs != null)
                     {
                         foreach (Frame frame in graphs)
@@ -731,6 +746,7 @@ namespace ibcdatacsharp.UI.Graphs
                 // Puede que haya que cambiar esto
                 Application.Current.Dispatcher.InvokeAsync(() =>
                 {
+                   
                     numIMUs = (mainWindow.deviceList.Content as DeviceList.DeviceList).numIMUsUsed;
                     List<Frame>? graphs = null;
                     switch (numIMUs)
@@ -1292,10 +1308,65 @@ namespace ibcdatacsharp.UI.Graphs
                     fakets += 0.04f;
                 }
                 */
-            }
+        } //End Wise
 
+        //Start LPSMB2
+        public async Task StreamLP()
+        {
+           
+            while (true )
+            {
+                ZenEvent zenEvent = new ZenEvent();
+
+                if (!OpenZen.ZenWaitForNextEvent(mainWindow.mZenHandle, zenEvent))
+                    break;
+
+                if (zenEvent.component.handle != 0)
+                {
+                    switch (zenEvent.eventType)
+                    {
+                        case ZenEventType.ZenEventType_ImuData:
+
+                            OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
+                            OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
+                            string ts = zenEvent.data.imuData.timestamp.ToString();
+
+                            Application.Current.Dispatcher.InvokeAsync(() =>
+                            {
+                                GraphAccelerometer acc = accelerometer;
+
+
+                                double[] acc_data = new double[3];
+
+
+
+                                acc_data[0] = Convert.ToDouble(fa.getitem(0));
+                                acc_data[1] = Convert.ToDouble(fa.getitem(1));
+                                acc_data[2] = Convert.ToDouble(fa.getitem(2));
+                                acc.drawData(acc_data);
+
+                            });
+
+                            break;       
+                    }
+                }
+
+            }
+           
         }
-        //End Wise
+
+
+    }
+
+  
+
+
+
+
+
+
+    //End LPSMB2
+
     public class ReplayManager
     {
         public bool active { get; private set; }

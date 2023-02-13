@@ -134,9 +134,9 @@ namespace ibcdatacsharp.UI
 
         public OpenZenIoTypes OpenZenIoType = OpenZenIoTypes.Bluetooth;
 
-        ZenClientHandle_t mZenHandle = new ZenClientHandle_t();
+        public ZenClientHandle_t mZenHandle = new ZenClientHandle_t();
         List<SensorListResult> mFoundSensor = new List<SensorListResult>();
-        ZenSensorHandle_t mSensorHandle = new ZenSensorHandle_t();
+        public ZenSensorHandle_t mSensorHandle = new ZenSensorHandle_t();
         ZenComponentHandle_t mComponent = new ZenComponentHandle_t();
 
         // end LPMSB2 API
@@ -176,6 +176,11 @@ namespace ibcdatacsharp.UI
             //Test linear acceleration
             //LinearAcceleration.test();
         }
+
+        /** 
+         * Métodos LPMSB2
+         */
+
 
         /** 
          * Métodos de Wiseware
@@ -824,7 +829,7 @@ namespace ibcdatacsharp.UI
             deviceListLoadedCheck(onOpenCameraFunction);
         }
         // Funcion que se ejecuta al clicar el boton Capture
-        private void onCapture(object sender, EventArgs e)
+        private async void onCapture(object sender, EventArgs e)
         {
             virtualToolBar.captureClick();
             graphManager.initCapture(); 
