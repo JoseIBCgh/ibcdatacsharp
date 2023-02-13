@@ -165,21 +165,22 @@ namespace ibcdatacsharp.UI.Graphs.Models
             }
             public void updateData(double[] data)
             {
-           
-
+                int index = nextIndex % CAPACITY;
+                /*
                 valuesX = new double[data.Length];
                 valuesY = new double[data.Length];
                 valuesZ = new double[data.Length];
+                */
 
 
 
-                valuesX[nextIndex] = data[0];
-                valuesY[nextIndex] = data[1];
-                valuesZ[nextIndex] = data[2];
+                valuesX[index] = data[0];
+                valuesY[index] = data[1];
+                valuesZ[index] = data[2];
                 signalPlotX.Label = "X= "; // + data[0].ToString("0.##");
                 signalPlotY.Label = "Y= "; // + data[1].ToString("0.##");
                 signalPlotZ.Label = "Z= "; // + data[2].ToString("0.##");
-                nextIndex += data.Length;
+                nextIndex += 1;
                 model.lineFrame.X = nextIndex % CAPACITY;
                 model.plot.Render();
             }
