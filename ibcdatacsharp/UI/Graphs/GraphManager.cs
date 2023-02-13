@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net;
 using System.Windows.Markup;
 using System.Threading.Tasks;
+using System.Windows.Media.Animation;
 
 namespace ibcdatacsharp.UI.Graphs
 {
@@ -597,7 +598,7 @@ namespace ibcdatacsharp.UI.Graphs
                 virtualToolBar.stopEvent -= onStop; //funcion local
                 mainWindow.api.StopStream(out error);
                 //Opcion 2 desactivar solo los graficos que toquen no se si funciona
-                /*
+
                 List<Frame>? graphs = null;
                 switch (numIMUs)
                 {
@@ -611,15 +612,15 @@ namespace ibcdatacsharp.UI.Graphs
                         graphs = graphsSagital;
                         break;
                 }
-                if(graphs != null)
+                if (graphs != null)
                 {
                     deactivateGraphs(graphs);
                     virtualToolBar.stopEvent -= onStop; //funcion local
                     mainWindow.api.StopStream(out error);
                 }
-                */
 
-                /*
+
+
                 foreach (Frame frame in graphs1IMU)
                 {
                     if (frame.Content == null)
@@ -667,7 +668,7 @@ namespace ibcdatacsharp.UI.Graphs
                 //timerRender.Dispose();
 
                 mainWindow.api.StopStream(out error);
-                */
+
             }
         }
         public void reset()
@@ -1260,16 +1261,70 @@ namespace ibcdatacsharp.UI.Graphs
 
                             OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
                             OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
+                            OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
+                            OpenZenFloatArray lb= OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
+                            OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
+
+
                             string ts = zenEvent.data.imuData.timestamp.ToString();
                
+                            //Plotear el gráfico del accelerométro
+
                             GraphAccelerometer acc = accelerometer;
 
                             double[] acc_data = new double[3];
 
-                            acc_data[0] = Convert.ToDouble(fa.getitem(0));
-                            acc_data[1] = Convert.ToDouble(fa.getitem(1));
-                            acc_data[2] = Convert.ToDouble(fa.getitem(2));
+                            acc_data[0] = Convert.ToDouble(fa.getitem(0)) * G;
+                            acc_data[1] = Convert.ToDouble(fa.getitem(1)) * G;
+                            acc_data[2] = Convert.ToDouble(fa.getitem(2)) * G;
                             acc.drawData(acc_data);
+
+                            //Plotear aceleración lineal
+
+                            GraphLinAcc lacc = linAcc;
+
+                            double[] lacc_data = new double[3];
+
+                            lacc_data[0] = Convert.ToDouble(la.getitem(0)) * G;
+                            lacc_data[1] = Convert.ToDouble(la.getitem(1)) * G;
+                            lacc_data[2] = Convert.ToDouble(la.getitem(2)) * G;
+
+                            lacc.drawData(lacc_data);
+
+                            //Plotear giroscopio
+
+                            GraphGyroscope gyr = gyroscope;
+
+                            double[] gyr_data = new double[3];
+
+                            gyr_data[0] = Convert.ToDouble(lg.getitem(0));
+                            gyr_data[1] = Convert.ToDouble(lg.getitem(0));
+                            gyr_data[2] = Convert.ToDouble(lg.getitem(0));
+
+                            gyr.drawData(gyr_data);
+
+                            //Plotear magnetómetro
+
+                            GraphMagnetometer mag = magnetometer;
+
+                            double[] mag_data = new double[3];
+                            mag_data[0] = lb.getitem(0);
+                            mag_data[1] = lb.getitem(1);
+                            mag_data[2] = lb.getitem(2);
+
+                            mag.drawData(mag_data);
+
+                            //Plotear quaterniones
+
+                            GraphQuaternion quat = quaternions;
+                            Quaternion[] quat_data = new Quaternion[1];
+
+                            quat_data[0].W = lq.getitem(0);
+                            quat_data[0].X = lq.getitem(1);
+                            quat_data[0].Y = lq.getitem(2);
+                            quat_data[0].Z = lq.getitem(3);
+
+                            quat.drawData(quat_data);
 
                             break;       
                     }

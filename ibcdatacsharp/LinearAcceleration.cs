@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Globalization;
 using System;
 using System.Diagnostics;
+using ibcdatacsharp.UI.Graphs.OneIMU;
 
 namespace ibcdatacsharp
 {
@@ -81,6 +82,11 @@ namespace ibcdatacsharp
                 Trace.WriteLine("Error medio " + (errorMedio * 100).ToString() + " %");
                 Trace.WriteLine("Max error " + lacc_max_error + " " + lacc_cal_max_error);
             }
+        }
+
+        public static implicit operator LinearAcceleration(GraphLinAcc v)
+        {
+            throw new NotImplementedException();
         }
 #else
         // Version 2

@@ -70,6 +70,15 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
                 model.updateData(acc);
             });
         }
+
+        //Para LP
+        public async void drawData(double[] acc)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                model.updateData(acc);
+            });
+        }
         public async void drawData(GraphData data)
         {
             double[] accX = new double[data.length];

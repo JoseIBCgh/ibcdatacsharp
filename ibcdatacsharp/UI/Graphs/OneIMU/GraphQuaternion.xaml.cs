@@ -63,6 +63,14 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
             });
 
         }
+        //Para LP
+        public async void drawData(double[] q)
+        {
+            await Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                model.updateData(q);
+            });
+        }
         public async void drawData(Quaternion[] q)
         {
             await Application.Current.Dispatcher.InvokeAsync(() =>

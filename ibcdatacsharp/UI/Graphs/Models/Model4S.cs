@@ -147,6 +147,7 @@ namespace ibcdatacsharp.UI.Graphs.Models
             }
             public void updateData(Quaternion[] data, bool render = true)
             {
+                if (valuesW == null & valuesY == null & valuesX == null & valuesZ == null) return;
                 for (int i = 0; i < data.Length; i++)
                 {
                     int index = (nextIndex + i) % CAPACITY;
@@ -168,17 +169,25 @@ namespace ibcdatacsharp.UI.Graphs.Models
             }
             public void updateData(double[] data)
             {
-                valuesW[nextIndex] = data[0];
-                valuesX[nextIndex] = data[1];
-                valuesY[nextIndex] = data[2];
-                valuesZ[nextIndex] = data[3];
-                signalPlotW.Label = "W= " + data[0].ToString("0.##");
-                signalPlotX.Label = "X= " + data[1].ToString("0.##");
-                signalPlotY.Label = "Y= " + data[2].ToString("0.##");
-                signalPlotZ.Label = "Z= " + data[3].ToString("0.##");
-                nextIndex++;
-                model.lineFrame.X = nextIndex % CAPACITY;
-                model.plot.Render();
+                if (valuesW != null & valuesX != null & valuesY != null & valuesZ != null)
+                {
+                    valuesW[nextIndex] = data[0];
+                    valuesX[nextIndex] = data[1];
+                    valuesY[nextIndex] = data[2];
+                    valuesZ[nextIndex] = data[3];
+                    signalPlotW.Label = "W= " + data[0].ToString("0.##");
+                    signalPlotX.Label = "X= " + data[1].ToString("0.##");
+                    signalPlotY.Label = "Y= " + data[2].ToString("0.##");
+                    signalPlotZ.Label = "Z= " + data[3].ToString("0.##");
+                    nextIndex++;
+                    model.lineFrame.X = nextIndex % CAPACITY;
+                    model.plot.Render();
+                }
+                else
+                {
+                    initCapture();
+                }
+
             }
         }
         class ReplayModel
