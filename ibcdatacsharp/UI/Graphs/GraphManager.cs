@@ -1267,17 +1267,17 @@ namespace ibcdatacsharp.UI.Graphs
 
 
                             string ts = zenEvent.data.imuData.timestamp.ToString();
-               
+
                             //Plotear el gráfico del accelerométro
 
-                            GraphAccelerometer acc = accelerometer;
+                            //GraphAccelerometer acc = accelerometer;
 
-                            double[] acc_data = new double[3];
+                            //double[] acc_data = new double[3];
 
-                            acc_data[0] = Convert.ToDouble(fa.getitem(0)) * G;
-                            acc_data[1] = Convert.ToDouble(fa.getitem(1)) * G;
-                            acc_data[2] = Convert.ToDouble(fa.getitem(2)) * G;
-                            acc.drawData(acc_data);
+                            //acc_data[0] = Convert.ToDouble(fa.getitem(0)) * G;
+                            //acc_data[1] = Convert.ToDouble(fa.getitem(1)) * G;
+                            //acc_data[2] = Convert.ToDouble(fa.getitem(2)) * G;
+                            //acc.drawData(acc_data);
 
                             //Plotear aceleración lineal
 
@@ -1293,26 +1293,26 @@ namespace ibcdatacsharp.UI.Graphs
 
                             //Plotear giroscopio
 
-                            GraphGyroscope gyr = gyroscope;
+                            //GraphGyroscope gyr = gyroscope;
 
-                            double[] gyr_data = new double[3];
+                            //double[] gyr_data = new double[3];
 
-                            gyr_data[0] = Convert.ToDouble(lg.getitem(0));
-                            gyr_data[1] = Convert.ToDouble(lg.getitem(0));
-                            gyr_data[2] = Convert.ToDouble(lg.getitem(0));
+                            //gyr_data[0] = Convert.ToDouble(lg.getitem(0));
+                            //gyr_data[1] = Convert.ToDouble(lg.getitem(0));
+                            //gyr_data[2] = Convert.ToDouble(lg.getitem(0));
 
-                            gyr.drawData(gyr_data);
+                            //gyr.drawData(gyr_data);
 
                             //Plotear magnetómetro
 
-                            GraphMagnetometer mag = magnetometer;
+                            //GraphMagnetometer mag = magnetometer;
 
-                            double[] mag_data = new double[3];
-                            mag_data[0] = lb.getitem(0);
-                            mag_data[1] = lb.getitem(1);
-                            mag_data[2] = lb.getitem(2);
+                            //double[] mag_data = new double[3];
+                            //mag_data[0] = lb.getitem(0);
+                            //mag_data[1] = lb.getitem(1);
+                            //mag_data[2] = lb.getitem(2);
 
-                            mag.drawData(mag_data);
+                            //mag.drawData(mag_data);
 
                             //Plotear quaterniones
 
