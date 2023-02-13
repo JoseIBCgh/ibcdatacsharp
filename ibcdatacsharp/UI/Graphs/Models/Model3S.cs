@@ -1,4 +1,5 @@
-﻿using ScottPlot;
+﻿using OpenCvSharp.Flann;
+using ScottPlot;
 using ScottPlot.Plottable;
 using System;
 using System.Diagnostics;
@@ -165,7 +166,8 @@ namespace ibcdatacsharp.UI.Graphs.Models
             }
             public void updateData(double[] data)
             {
-                try
+                
+                if (valuesX != null & valuesY != null & valuesZ != null)
                 {
                     int index = nextIndex % CAPACITY;
                     valuesX[index] = data[0];
@@ -178,11 +180,12 @@ namespace ibcdatacsharp.UI.Graphs.Models
                     model.lineFrame.X = nextIndex % CAPACITY;
                     model.plot.Render();
                 }
-                catch
+
+                else
                 {
                     initCapture();
-                    updateData(data);
                 }
+                
             }
         }
         class ReplayModel

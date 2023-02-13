@@ -498,9 +498,9 @@ namespace ibcdatacsharp.UI.Graphs
                 // duracion si no se encuentra otra solucion
                 //mainWindow.api.dataReceived -= Api_dataReceived;
                 mainWindow.api.dataReceived += Api_dataReceived;
+                
 
-               /*
-                await Application.Current.Dispatcher.BeginInvoke( () =>
+                await Application.Current.Dispatcher.BeginInvoke(() =>
                 {
                     
                     numIMUs = (mainWindow.deviceList.Content as DeviceList.DeviceList).numIMUsUsed;
@@ -523,7 +523,7 @@ namespace ibcdatacsharp.UI.Graphs
 
 
                     //LMPSB2
-                 
+
 
                     if (graphs != null)
                     {
@@ -547,11 +547,11 @@ namespace ibcdatacsharp.UI.Graphs
                         }
                         virtualToolBar.stopEvent += onStop;
                     }
-                 
+
                 });
-               */
-            
+
                 await Task.Run(() => StreamLP());
+
             }
 
 
