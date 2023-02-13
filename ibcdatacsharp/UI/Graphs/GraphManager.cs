@@ -499,8 +499,8 @@ namespace ibcdatacsharp.UI.Graphs
                 //mainWindow.api.dataReceived -= Api_dataReceived;
                 mainWindow.api.dataReceived += Api_dataReceived;
 
-                await Task.Run(() => StreamLP());
-                await Application.Current.Dispatcher.InvokeAsync(async () =>
+               
+                await Application.Current.Dispatcher.BeginInvoke( () =>
                 {
                     
                     numIMUs = (mainWindow.deviceList.Content as DeviceList.DeviceList).numIMUsUsed;
@@ -619,8 +619,9 @@ namespace ibcdatacsharp.UI.Graphs
                                                         //timerRender.Start();
                                                         //}
                     */
-
+                 
                 });
+                await Task.Run(() => StreamLP());
             }
 
 
@@ -1330,22 +1331,15 @@ namespace ibcdatacsharp.UI.Graphs
                             OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
                             OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
                             string ts = zenEvent.data.imuData.timestamp.ToString();
+               
+                            GraphAccelerometer acc = accelerometer;
 
-                            Application.Current.Dispatcher.InvokeAsync(() =>
-                            {
-                                GraphAccelerometer acc = accelerometer;
+                            double[] acc_data = new double[3];
 
-
-                                double[] acc_data = new double[3];
-
-
-
-                                acc_data[0] = Convert.ToDouble(fa.getitem(0));
-                                acc_data[1] = Convert.ToDouble(fa.getitem(1));
-                                acc_data[2] = Convert.ToDouble(fa.getitem(2));
-                                acc.drawData(acc_data);
-
-                            });
+                            acc_data[0] = Convert.ToDouble(fa.getitem(0));
+                            acc_data[1] = Convert.ToDouble(fa.getitem(1));
+                            acc_data[2] = Convert.ToDouble(fa.getitem(2));
+                            acc.drawData(acc_data);
 
                             break;       
                     }
