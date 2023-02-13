@@ -500,7 +500,7 @@ namespace ibcdatacsharp.UI.Graphs
                 mainWindow.api.dataReceived += Api_dataReceived;
 
                 await Task.Run(() => StreamLP());
-                Application.Current.Dispatcher.InvokeAsync(async () =>
+                await Application.Current.Dispatcher.InvokeAsync(async () =>
                 {
                     
                     numIMUs = (mainWindow.deviceList.Content as DeviceList.DeviceList).numIMUsUsed;
