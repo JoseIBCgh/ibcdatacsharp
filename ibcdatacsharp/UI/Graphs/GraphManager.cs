@@ -24,6 +24,7 @@ using System.Windows.Media.Animation;
 namespace ibcdatacsharp.UI.Graphs
 {
     // Se encarga de manejar los grafos
+  
     public class GraphManager
     {
         public CaptureManager captureManager;
@@ -130,6 +131,8 @@ namespace ibcdatacsharp.UI.Graphs
     public class CaptureManager
     {
         public bool active { get; private set; }
+        public volatile bool isRunning = true;
+
         public double[] livedata = new double[200];
 
         private const int RENDER_MS = Config.RENDER_MS_CAPTUE;
@@ -213,12 +216,13 @@ namespace ibcdatacsharp.UI.Graphs
 
 
         Vector3 v0, v1, v2, v3;
-
+        
         const float G = 9.8f;
 
         public delegate void QuaternionEventHandler(object sender, byte handler, Quaternion q);
         public event QuaternionEventHandler quaternionEvent;
         //End Wise
+    
         public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU, List<Frame> graphsSagital,
             VirtualToolBar virtualToolBar, Device.Device device, DeviceList.DeviceList deviceList, 
             FilterManager filterManager, SagitalAngles.SagitalAngles sagitalAngles)
@@ -241,6 +245,7 @@ namespace ibcdatacsharp.UI.Graphs
             refq.X = -0.189621f;
             refq.Y = 0.693031f;
             refq.Z = -0.672846f;
+
         }
         public void setReference(Quaternion q)
         {
@@ -523,7 +528,6 @@ namespace ibcdatacsharp.UI.Graphs
                     }
 
 
-                    //LMPSB2
 
 
                     if (graphs != null)
@@ -550,11 +554,11 @@ namespace ibcdatacsharp.UI.Graphs
                     }
 
                 });
-
+                
                 await Task.Run(() => StreamLP());
+                
 
             }
-
 
             Trace.WriteLine("Imu seleccionado en el graphmanager: ", mainWindow.imuInfo.id.ToString());
 
@@ -1242,11 +1246,27 @@ namespace ibcdatacsharp.UI.Graphs
                 */
         } //End Wise
 
+
+
         //Start LPSMB2
+
+        public async Task CloseLP()
+
+        {
+            if (mainWindow.mSensorHandle != null)
+            {
+                OpenZen.ZenReleaseSensor(mainWindow.mZenHandle, mainWindow.mSensorHandle);
+            }
+
+            OpenZen.ZenShutdown(mainWindow.mZenHandle);
+
+            Trace.WriteLine("Device disconnected");
+
+        }
         public async Task StreamLP()
         {
            
-            while (true )
+            while ( isRunning )
             {
                 ZenEvent zenEvent = new ZenEvent();
 
@@ -1264,24 +1284,14 @@ namespace ibcdatacsharp.UI.Graphs
                             OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
                             OpenZenFloatArray lb= OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
                             OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
-
-
-                            string ts = zenEvent.data.imuData.timestamp.ToString();
-
-                            //Plotear el gráfico del accelerométro
-
-                            //GraphAccelerometer acc = accelerometer;
-
-                            //double[] acc_data = new double[3];
-
-                            //acc_data[0] = Convert.ToDouble(fa.getitem(0)) * G;
-                            //acc_data[1] = Convert.ToDouble(fa.getitem(1)) * G;
-                            //acc_data[2] = Convert.ToDouble(fa.getitem(2)) * G;
-                            //acc.drawData(acc_data);
+                            string ts = (zenEvent.data.imuData.timestamp).ToString("F2");
+                      
+   
 
                             //Plotear aceleración lineal
 
                             GraphLinAcc lacc = linAcc;
+                          
 
                             double[] lacc_data = new double[3];
 
@@ -1291,40 +1301,31 @@ namespace ibcdatacsharp.UI.Graphs
 
                             lacc.drawData(lacc_data);
 
-                            //Plotear giroscopio
 
-                            //GraphGyroscope gyr = gyroscope;
+                            if (virtualToolBar.recordState == RecordState.Recording)
+                            {
+                
 
-                            //double[] gyr_data = new double[3];
+                               
+                                string dataline = "";
+                               
+                                    dataline += "1 " + ts + " " + (frame).ToString() + " " +
+                                        la.getitem(0).ToString("F3") + " " + la.getitem(1).ToString("F3") + " " +
+                                        la.getitem(2).ToString("F3") + " " + lg.getitem(0).ToString("F3") + " " +
+                                        lg.getitem(1).ToString("F3") + " " + lg.getitem(2).ToString("F3") + " " +
+                                        lq.getitem(0).ToString("F3") + " " + lq.getitem(1).ToString("F3") + " " +
+                                        lq.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
+                                        lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
+                                        lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
+                                        lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";
 
-                            //gyr_data[0] = Convert.ToDouble(lg.getitem(0));
-                            //gyr_data[1] = Convert.ToDouble(lg.getitem(0));
-                            //gyr_data[2] = Convert.ToDouble(lg.getitem(0));
+                                frame++;
+                                fakets += 0.01f;
 
-                            //gyr.drawData(gyr_data);
+                                Trace.WriteLine(dataline);
 
-                            //Plotear magnetómetro
-
-                            //GraphMagnetometer mag = magnetometer;
-
-                            //double[] mag_data = new double[3];
-                            //mag_data[0] = lb.getitem(0);
-                            //mag_data[1] = lb.getitem(1);
-                            //mag_data[2] = lb.getitem(2);
-
-                            //mag.drawData(mag_data);
-
-                            //Plotear quaterniones
-
-                            GraphQuaternion quat = quaternions;
-                            Quaternion[] quat_data = new Quaternion[1];
-
-                            quat_data[0].W = lq.getitem(0);
-                            quat_data[0].X = lq.getitem(1);
-                            quat_data[0].Y = lq.getitem(2);
-                            quat_data[0].Z = lq.getitem(3);
-
-                            quat.drawData(quat_data);
+                                mainWindow.fileSaver.appendCSVManual(dataline);
+                            }
 
                             break;       
                     }

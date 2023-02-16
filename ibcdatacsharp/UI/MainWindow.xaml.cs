@@ -698,7 +698,10 @@ namespace ibcdatacsharp.UI
                 }
 
                 //Trace.WriteLine("::OnConnect::: Imu seleccionado: " + imuInfo.id.ToString());
+                //LP
                 await Configure();
+                
+
                 conn_list_dev = new List<Dev>();
 
                 // Operación atómica de conexión
@@ -734,6 +737,8 @@ namespace ibcdatacsharp.UI
         }
         public void startActiveDevices()
         {
+            //LP
+            graphManager.captureManager.isRunning = true;
             Trace.WriteLine("startActiveDevices");
             Helpers.printDevicesConnected();
             List<IMUInfo> activeIMUs = (deviceList.Content as DeviceList.DeviceList).IMUsUsed;
@@ -748,6 +753,7 @@ namespace ibcdatacsharp.UI
                     Trace.WriteLine("error: " + error);
                 }
             }
+            
         }
         // Conecta el boton disconnect
         private void onDisconnect(object sender, EventArgs e)

@@ -335,8 +335,9 @@ namespace ibcdatacsharp.UI.DeviceList
         {
             get
             {
-                return IMUsUsed.Count;
+                return 1; // IMUsUsed.Count;
             }
+
         }
         public List<IMUInfo> IMUsUsed
         {

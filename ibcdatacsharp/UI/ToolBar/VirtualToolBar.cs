@@ -81,6 +81,7 @@ namespace ibcdatacsharp.UI.ToolBar
             properties = new VirtualToolBarProperties(this);
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             mainWindow.initialized += (sender, args) => finishInit();
+            
         }
         // Para solucionar problemas de dependencias
         private void finishInit()
@@ -180,8 +181,12 @@ namespace ibcdatacsharp.UI.ToolBar
             {
 
                 //Para parar el streaming
+                //Wise
                 mainWindow.api.StopStream(out error);
 
+                //LP
+                graphManager.captureManager.isRunning = false;
+               
                 pauseState = PauseState.Pause;
                 toolBar.changePauseState(PauseState.Play);
                 menuBar.changePauseState(PauseState.Play);
@@ -193,6 +198,8 @@ namespace ibcdatacsharp.UI.ToolBar
             else if(pauseState == PauseState.Pause)
             {
 
+               
+
                 //Para reaunadar el streaming
                 mainWindow.startActiveDevices();
 
@@ -202,7 +209,9 @@ namespace ibcdatacsharp.UI.ToolBar
                 if (pauseEvent != null)
                 {
                     pauseEvent?.Invoke(this, PauseState.Play);
+                    
                 }
+               
             }
         }
         private void disablePause()
@@ -271,11 +280,15 @@ namespace ibcdatacsharp.UI.ToolBar
         public void stopClick()
         {
             capturing = false;
-            if(pauseState == PauseState.Pause)
+            //LP
+            graphManager.captureManager.CloseLP();
+            if (pauseState == PauseState.Pause)
             {
                 MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
 
                 mainWindow.api.StopStream(out error);
+
+               
 
                 pauseState = PauseState.Play;
                 toolBar.changePauseState(PauseState.Pause);

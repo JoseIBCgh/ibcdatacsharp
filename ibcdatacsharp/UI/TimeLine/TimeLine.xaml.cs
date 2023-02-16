@@ -329,6 +329,7 @@ namespace ibcdatacsharp.UI.TimeLine
         {
             if (!active)
             {
+                
                 active = true;
                 timer = new System.Timers.Timer();
                 timer.Interval = TICK_MS;
