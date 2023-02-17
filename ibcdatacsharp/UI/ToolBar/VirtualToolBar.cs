@@ -173,9 +173,7 @@ namespace ibcdatacsharp.UI.ToolBar
         public void pauseClick()
         {
             
-
-            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-           
+            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;         
 
             if (pauseState == PauseState.Play)
             {

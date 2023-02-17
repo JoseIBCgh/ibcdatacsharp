@@ -32,8 +32,8 @@
                             </dock:LayoutAnchorable>
                         </dock:LayoutAnchorablePane>
                         <dock:LayoutAnchorablePaneGroup Orientation="Vertical" DockHeight="*" DockWidth="4*">
-                            <dock:LayoutAnchorablePaneGroup Orientation="Horizontal" DockHeight="1.5*" DockWidth="*">
-                                <dock:LayoutAnchorablePane DockHeight="*" DockWidth="1.8*">
+                            <dock:LayoutAnchorablePaneGroup Orientation="Horizontal" DockHeight="*" DockWidth="*">
+                                <dock:LayoutAnchorablePane DockHeight="*" DockWidth="1*">
                                     <dock:LayoutAnchorable x:Name="angleXAnchorable" CanClose="False" CanFloat="True" CanHide="True" CanAutoHide="False" Title="Joint Angle X">
                                         <Frame Source="pack://application:,,,/UI/Graphs/TwoIMU/AngleGraphX.xaml" x:Name="angleX"/>
                                     </dock:LayoutAnchorable>
@@ -58,6 +58,9 @@
                             </dock:LayoutAnchorablePaneGroup>
                             <dock:LayoutAnchorablePaneGroup Orientation="Horizontal" DockHeight="*" DockWidth="*">
                                 <dock:LayoutAnchorablePane DockHeight="*" DockWidth="*">
+                                    <dock:LayoutAnchorable x:Name="linAccAnchorable" IsSelected="True" CanClose="False" CanFloat="True" CanHide="True" CanAutoHide="False" Title="Linear Acceleration">
+                                        <Frame Source="pack://application:,,,/UI/Graphs/OneIMU/GraphLinAcc.xaml" x:Name="linAcc"/>
+                                    </dock:LayoutAnchorable>
                                     <dock:LayoutAnchorable x:Name="accelerometerAnchorable" CanClose="False" CanFloat="True" CanHide="True" CanAutoHide="False" Title="Accelerometer">
                                         <Frame Source="pack://application:,,,/UI/Graphs/OneIMU/GraphAccelerometer.xaml" x:Name="accelerometer"/>
                                     </dock:LayoutAnchorable>
@@ -66,9 +69,6 @@
                                     </dock:LayoutAnchorable>
                                     <dock:LayoutAnchorable x:Name="magnetometerAnchorable" CanClose="False" CanFloat="True" CanHide="True" CanAutoHide="False" Title="Magnetometer">
                                         <Frame Source="pack://application:,,,/UI/Graphs/OneIMU/GraphMagnetometer.xaml" x:Name="magnetometer"/>
-                                    </dock:LayoutAnchorable>
-                                    <dock:LayoutAnchorable x:Name="linAccAnchorable" CanClose="False" CanFloat="True" CanHide="True" CanAutoHide="False" Title="Linear Acceleration">
-                                        <Frame Source="pack://application:,,,/UI/Graphs/OneIMU/GraphLinAcc.xaml" x:Name="linAcc"/>
                                     </dock:LayoutAnchorable>
                                     <dock:LayoutAnchorable x:Name="quaternionAnchorable" CanClose="False" CanFloat="True" CanHide="True" CanAutoHide="False" Title="Quaternions">
                                         <Frame Source="pack://application:,,,/UI/Graphs/OneIMU/GraphQuaternion.xaml" x:Name="quaternions"/>

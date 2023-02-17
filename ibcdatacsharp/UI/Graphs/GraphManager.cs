@@ -131,7 +131,7 @@ namespace ibcdatacsharp.UI.Graphs
     public class CaptureManager
     {
         public bool active { get; private set; }
-        public volatile bool isRunning = true;
+        public volatile bool isRunning = false;
 
         public double[] livedata = new double[200];
 
@@ -499,12 +499,14 @@ namespace ibcdatacsharp.UI.Graphs
                 //timerRender = new System.Timers.Timer(RENDER_MS);
                 //timerRender.AutoReset = true;
 
-                // Se puede poner esta linea para quitar el evento si havia 
+                // Se puede poner esta linea para quitar el evento si había 
                 // alguno en caso que haya problemas de que el csv tenga el doble de
                 // duracion si no se encuentra otra solucion
                 //mainWindow.api.dataReceived -= Api_dataReceived;
+
                 mainWindow.api.dataReceived += Api_dataReceived;
-                
+
+                await Task.Run(() => StreamLP());
 
                 await Application.Current.Dispatcher.BeginInvoke(() =>
                 {
@@ -526,9 +528,6 @@ namespace ibcdatacsharp.UI.Graphs
                             sagitalAngles.initIMUs();
                             break;
                     }
-
-
-
 
                     if (graphs != null)
                     {
@@ -554,8 +553,7 @@ namespace ibcdatacsharp.UI.Graphs
                     }
 
                 });
-                
-                await Task.Run(() => StreamLP());
+        
                 
 
             }
@@ -725,7 +723,7 @@ namespace ibcdatacsharp.UI.Graphs
                             mainWindow.startActiveDevices();
                         }
                     }
-                    /*
+
                     if (numIMUs == 1)
                     {
                         foreach (Frame frame in graphs1IMU)
@@ -775,7 +773,7 @@ namespace ibcdatacsharp.UI.Graphs
                     {
                         mainWindow.startActiveDevices();
                     }
-                    */
+
                 });
             }
         }
@@ -1265,73 +1263,73 @@ namespace ibcdatacsharp.UI.Graphs
         }
         public async Task StreamLP()
         {
+            isRunning = true;
            
-            while ( isRunning )
-            {
-                ZenEvent zenEvent = new ZenEvent();
-
-                if (!OpenZen.ZenWaitForNextEvent(mainWindow.mZenHandle, zenEvent))
-                    break;
-
-                if (zenEvent.component.handle != 0)
+            while (isRunning)
                 {
-                    switch (zenEvent.eventType)
+                    ZenEvent zenEvent = new ZenEvent();
+
+                    if (OpenZen.ZenWaitForNextEvent(mainWindow.mZenHandle, zenEvent))
                     {
-                        case ZenEventType.ZenEventType_ImuData:
-
-                            OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
-                            OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
-                            OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
-                            OpenZenFloatArray lb= OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
-                            OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
-                            string ts = (zenEvent.data.imuData.timestamp).ToString("F2");
-                      
-   
-
-                            //Plotear aceleración lineal
-
-                            GraphLinAcc lacc = linAcc;
-                          
-
-                            double[] lacc_data = new double[3];
-
-                            lacc_data[0] = Convert.ToDouble(la.getitem(0)) * G;
-                            lacc_data[1] = Convert.ToDouble(la.getitem(1)) * G;
-                            lacc_data[2] = Convert.ToDouble(la.getitem(2)) * G;
-
-                            lacc.drawData(lacc_data);
-
-
-                            if (virtualToolBar.recordState == RecordState.Recording)
+                       
+                            switch (zenEvent.eventType)
                             {
-                
+                                case ZenEventType.ZenEventType_ImuData:
 
-                               
-                                string dataline = "";
-                               
-                                    dataline += "1 " + ts + " " + (frame).ToString() + " " +
-                                        la.getitem(0).ToString("F3") + " " + la.getitem(1).ToString("F3") + " " +
-                                        la.getitem(2).ToString("F3") + " " + lg.getitem(0).ToString("F3") + " " +
-                                        lg.getitem(1).ToString("F3") + " " + lg.getitem(2).ToString("F3") + " " +
-                                        lq.getitem(0).ToString("F3") + " " + lq.getitem(1).ToString("F3") + " " +
-                                        lq.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
-                                        lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
-                                        lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
-                                        lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";
+                                    OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
+                                    OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
+                                    OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
+                                    OpenZenFloatArray lb = OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
+                                    OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
+                                    string ts = (zenEvent.data.imuData.timestamp).ToString("F2");
 
-                                frame++;
-                                fakets += 0.01f;
+                                    //Plotear aceleración lineal
 
-                                Trace.WriteLine(dataline);
+                                    GraphLinAcc lacc = linAcc;
 
-                                mainWindow.fileSaver.appendCSVManual(dataline);
+
+                                    double[] lacc_data = new double[3];
+
+                                    lacc_data[0] = Convert.ToDouble(la.getitem(0)) * G;
+                                    lacc_data[1] = Convert.ToDouble(la.getitem(1)) * G;
+                                    lacc_data[2] = Convert.ToDouble(la.getitem(2)) * G;
+
+                                    lacc.drawData(lacc_data);
+
+
+                                    if (virtualToolBar.recordState == RecordState.Recording)
+                                    {
+
+                                        string dataline = "";
+
+                                        dataline += "1 " + fakets.ToString("F2") + " " + (frame).ToString() + " " +
+                                            la.getitem(0).ToString("F3") + " " + la.getitem(1).ToString("F3") + " " +
+                                            la.getitem(2).ToString("F3") + " " + lg.getitem(0).ToString("F3") + " " +
+                                            lg.getitem(1).ToString("F3") + " " + lg.getitem(2).ToString("F3") + " " +
+                                            lq.getitem(0).ToString("F3") + " " + lq.getitem(1).ToString("F3") + " " +
+                                            lq.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
+                                            lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
+                                            lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
+                                            lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";
+
+                                        frame++;
+                                        fakets += 0.01f;
+
+                                        Trace.WriteLine(dataline);
+
+                                        mainWindow.fileSaver.appendCSVManual(dataline);
+                                    }
+
+                                    break;
                             }
+                        
 
-                            break;       
                     }
-                }
 
-            }
+
+                }
+            
+           
            
         }
 

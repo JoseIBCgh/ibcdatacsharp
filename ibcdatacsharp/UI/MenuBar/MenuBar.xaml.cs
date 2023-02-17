@@ -34,14 +34,14 @@ namespace ibcdatacsharp.UI.MenuBar
             ViewVM.Add(new WindowInfo(mainWindow.magnetometerAnchorable));
             ViewVM.Add(new WindowInfo(mainWindow.linAccAnchorable));
             ViewVM.Add(new WindowInfo(mainWindow.quaternionAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.angleXAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.angleYAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.angleZAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.angularVelocityAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.angularAccelerationAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.kneeAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.hipAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.ankleAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.angleXAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.angleYAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.angleZAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.angularVelocityAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.angularAccelerationAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.kneeAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.hipAnchorable));
+            //ViewVM.Add(new WindowInfo(mainWindow.ankleAnchorable));
             ViewVM.Add(new WindowInfo(mainWindow.camaraAnchorable));
         }
         private void deactivateButtons()

@@ -275,7 +275,6 @@ namespace ibcdatacsharp.UI
             }
         }
 
-
         private void Api_scanFinished(List<Wisewalk.Dev> devices)
         {
             scanDevices = devices;
@@ -636,14 +635,14 @@ namespace ibcdatacsharp.UI
             return scanDevices.FirstOrDefault(de => GetMacAddress(de) == imuInfo.address);
         }
 
-        //Configure LPMSB2
-        public async Task Configure()
+        //ConfigureLP LPMSB2
+        public async Task ConfigureLP()
         {
             OpenZen.ZenSensorComponentsByNumber(mZenHandle, mSensorHandle, OpenZen.g_zenSensorType_Imu, 0, mComponent);
 
             OpenZen.ZenSensorComponentSetBoolProperty(mZenHandle, mSensorHandle, mComponent, (int)EZenImuProperty.ZenImuProperty_StreamData, true);
 
-            OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
+            ZenError freq_error = OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
                 (int)EZenImuProperty.ZenImuProperty_SamplingRate, 100);
 
             OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
@@ -655,7 +654,7 @@ namespace ibcdatacsharp.UI
             OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle, 
                 (int)EZenSensorProperty.ZenSensorProperty_TimeOffset, 0);
 
-            Trace.WriteLine("Configured device");
+            Trace.WriteLine("Configured device: freq error: " + freq_error.ToString());
 
             var sensorInitError = OpenZen.ZenObtainSensorByName(mZenHandle,
                      mFoundSensor[0].IoType,
@@ -699,7 +698,7 @@ namespace ibcdatacsharp.UI
 
                 //Trace.WriteLine("::OnConnect::: Imu seleccionado: " + imuInfo.id.ToString());
                 //LP
-                await Configure();
+                await ConfigureLP();
                 
 
                 conn_list_dev = new List<Dev>();
