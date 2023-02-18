@@ -642,8 +642,10 @@ namespace ibcdatacsharp.UI
 
             OpenZen.ZenSensorComponentSetBoolProperty(mZenHandle, mSensorHandle, mComponent, (int)EZenImuProperty.ZenImuProperty_StreamData, true);
 
-            ZenError freq_error = OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
-                (int)EZenImuProperty.ZenImuProperty_SamplingRate, 100);
+
+
+            //ZenError freq_error = OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
+            //    (int)EZenImuProperty.ZenImuProperty_SamplingRate, 100);
 
             OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
                 (int)EZenImuProperty.ZenImuProperty_FilterMode, 2);
@@ -651,10 +653,10 @@ namespace ibcdatacsharp.UI
             OpenZen.ZenSensorComponentSetBoolProperty(mZenHandle, mSensorHandle, mComponent,
                 (int)EZenImuProperty.ZenImuProperty_OutputQuat, true);
 
-            OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle, 
+            OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
                 (int)EZenSensorProperty.ZenSensorProperty_TimeOffset, 0);
 
-            Trace.WriteLine("Configured device: freq error: " + freq_error.ToString());
+            //Trace.WriteLine("Configured device: freq error: " + freq_error.ToString());
 
             var sensorInitError = OpenZen.ZenObtainSensorByName(mZenHandle,
                      mFoundSensor[0].IoType,
