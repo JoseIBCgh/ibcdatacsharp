@@ -1,3 +1,4 @@
 ibcdatacsharp/obj/
 ibcdatacsharp/bin/
-.vs
+.vs/
+*.vsidx
