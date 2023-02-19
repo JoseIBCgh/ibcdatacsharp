@@ -642,11 +642,6 @@ namespace ibcdatacsharp.UI
 
             OpenZen.ZenSensorComponentSetBoolProperty(mZenHandle, mSensorHandle, mComponent, (int)EZenImuProperty.ZenImuProperty_StreamData, true);
 
-
-
-            //ZenError freq_error = OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
-            //    (int)EZenImuProperty.ZenImuProperty_SamplingRate, 100);
-
             OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
                 (int)EZenImuProperty.ZenImuProperty_FilterMode, 2);
 
@@ -655,6 +650,10 @@ namespace ibcdatacsharp.UI
 
             OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
                 (int)EZenSensorProperty.ZenSensorProperty_TimeOffset, 0);
+
+            // set the sampling rate to 100 Hz
+            //OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
+            //   (int)EZenImuProperty.ZenImuProperty_SamplingRate, 200);
 
             //Trace.WriteLine("Configured device: freq error: " + freq_error.ToString());
 
