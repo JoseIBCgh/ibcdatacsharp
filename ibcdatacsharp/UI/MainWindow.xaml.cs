@@ -138,7 +138,7 @@ namespace ibcdatacsharp.UI
         List<SensorListResult> mFoundSensor = new List<SensorListResult>();
         public ZenSensorHandle_t mSensorHandle = new ZenSensorHandle_t();
         ZenComponentHandle_t mComponent = new ZenComponentHandle_t();
-
+        List<IMUInfo> imus = new List<IMUInfo>();
         // end LPMSB2 API
 
         public MainWindow()
@@ -450,12 +450,12 @@ namespace ibcdatacsharp.UI
         }
 
         //Scanning de LPMSB2
-
-        public async void scanLP()
+        public async Task scanLP()
         {
 
+            
 
-            while (true)
+            while (!mSearchDone)
             {
                 ZenEvent zenEvent = new ZenEvent();
 
@@ -483,13 +483,15 @@ namespace ibcdatacsharp.UI
 
                                 Trace.WriteLine(mFoundSensor[0].Identifier);
                                 Trace.WriteLine("Devices Scanned");
-
+                               
                             }
                             break;
                     }
                 }
 
             }
+            
+            
 
         }
 
@@ -535,11 +537,11 @@ namespace ibcdatacsharp.UI
                     }
 
                     // Devuelve una lista de indice OpenCV de las camaras disponibles
-                     List<int> cameraIndices(int maxIndex = 10)
+                    List<int> cameraIndices(int maxIndex = 10)
                     {
                         List<int> indices = new List<int>();
                         VideoCapture capture = new VideoCapture();
-                        for(int index = 0; index < maxIndex; index++)
+                        for (int index = 0; index < maxIndex; index++)
                         {
                             capture.Open(index, VideoCaptureAPIs.DSHOW);
                             if (capture.IsOpened())
@@ -568,14 +570,8 @@ namespace ibcdatacsharp.UI
 
                     Task thr = new Task(() => { scanLP(); });
                     thr.Start();
-                    //await Task.Run(() =>
-                    //{
-                    //    scanLP();
-
-                    //});
 
                     OpenZen.ZenListSensorsAsync(mZenHandle);
-
 
                     List<CameraInfo> cameras = new List<CameraInfo>();
                     for (int i = 0; i < names.Count; i++)
@@ -589,26 +585,21 @@ namespace ibcdatacsharp.UI
 
                     await Task.Delay(4000);
 
-                    List<IMUInfo> imus = new List<IMUInfo>();
+               
+                    imus.Add(new IMUInfo("LPMSB2", "TEST"));
+
                     for (int i = 0; i < scanDevices.Count; i++)
                     {
                         imus.Add(new IMUInfo("ActiSense", GetMacAddress(scanDevices, i)));
                     }
 
                    
-                     imus.Add(new IMUInfo("LPMSB2", "00:04:3E:9B:A2:F1"));
-                    
-
-                    
                     /* 
                     //IMUS falsos
                     Random random = new Random();
                     imus.Add(new IMUInfo("ActiSense", random.NextSingle().ToString()));
                     imus.Add(new IMUInfo("ActiSense2", random.NextSingle().ToString()));
                     */
-
-                    
-
 
 
                     deviceListClass.setIMUs(imus);
@@ -626,6 +617,8 @@ namespace ibcdatacsharp.UI
                 
                 deviceListClass.addInsole(new InsolesInfo("Insole", "Left"));
                 
+                
+
             }
             deviceListLoadedCheck(onScanFunction);
             virtualToolBar.onScanClick();
@@ -651,7 +644,7 @@ namespace ibcdatacsharp.UI
             OpenZen.ZenSensorSetInt32Property(mZenHandle, mSensorHandle,
                 (int)EZenSensorProperty.ZenSensorProperty_TimeOffset, 0);
 
-            // set the sampling rate to 100 Hz
+            //set the sampling rate to 100 Hz
             //OpenZen.ZenSensorComponentSetInt32Property(mZenHandle, mSensorHandle, mComponent,
             //   (int)EZenImuProperty.ZenImuProperty_SamplingRate, 200);
 

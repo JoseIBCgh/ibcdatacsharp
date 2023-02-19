@@ -218,6 +218,7 @@ namespace ibcdatacsharp.UI.Graphs
         Vector3 v0, v1, v2, v3;
         
         const float G = 9.8f;
+        const float toDegrees = 57.29577f;
 
         public delegate void QuaternionEventHandler(object sender, byte handler, Quaternion q);
         public event QuaternionEventHandler quaternionEvent;
@@ -1266,66 +1267,80 @@ namespace ibcdatacsharp.UI.Graphs
             isRunning = true;
            
             while (isRunning)
-                {
-                    ZenEvent zenEvent = new ZenEvent();
+            {
+                ZenEvent zenEvent = new ZenEvent();
 
                     if (OpenZen.ZenWaitForNextEvent(mainWindow.mZenHandle, zenEvent))
                     {
                        
-                            switch (zenEvent.eventType)
-                            {
-                                case ZenEventType.ZenEventType_ImuData:
+                        switch (zenEvent.eventType)
+                        {
+                            case ZenEventType.ZenEventType_ImuData:
 
-                                    OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
-                                    OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
-                                    OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
-                                    OpenZenFloatArray lb = OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
-                                    OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
-                                    string ts = (zenEvent.data.imuData.timestamp).ToString("F2");
+                                OpenZenFloatArray fa = OpenZenFloatArray.frompointer(zenEvent.data.imuData.a);
+                                OpenZenFloatArray la = OpenZenFloatArray.frompointer(zenEvent.data.imuData.linAcc);
+                                OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
+                                OpenZenFloatArray lb = OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
+                                OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
+                                string ts = (zenEvent.data.imuData.timestamp).ToString("F2");
 
-                                    //Plotear aceleración lineal
+                                //Plotear aceleración lineal
 
-                                    GraphLinAcc lacc = linAcc;
-
-
-                                    double[] lacc_data = new double[3];
-
-                                    lacc_data[0] = Convert.ToDouble(la.getitem(0)) * G;
-                                    lacc_data[1] = Convert.ToDouble(la.getitem(1)) * G;
-                                    lacc_data[2] = Convert.ToDouble(la.getitem(2)) * G;
-
-                                    lacc.drawData(lacc_data);
+                                GraphLinAcc lacc = linAcc;
+                                //GraphAccelerometer acc = accelerometer;
+                                //GraphGyroscope gyr = gyroscope;
 
 
-                                    if (virtualToolBar.recordState == RecordState.Recording)
-                                    {
+                                double[] lacc_data = new double[3];
 
-                                        string dataline = "";
+                                lacc_data[0] = Convert.ToDouble(la.getitem(0)) * G;
+                                lacc_data[1] = Convert.ToDouble(la.getitem(1)) * G;
+                                lacc_data[2] = Convert.ToDouble(la.getitem(2)) * G;
 
-                                        dataline += "1 " + fakets.ToString("F2") + " " + (frame).ToString() + " " +
-                                            la.getitem(0).ToString("F3") + " " + la.getitem(1).ToString("F3") + " " +
-                                            la.getitem(2).ToString("F3") + " " + lg.getitem(0).ToString("F3") + " " +
-                                            lg.getitem(1).ToString("F3") + " " + lg.getitem(2).ToString("F3") + " " +
-                                            lq.getitem(0).ToString("F3") + " " + lq.getitem(1).ToString("F3") + " " +
-                                            lq.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
-                                            lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
-                                            lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
-                                            lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";
+                                lacc.drawData(lacc_data);
 
-                                        frame++;
-                                        fakets += 0.01f;
+                                double[] acc_data = new double[3];
 
-                                        Trace.WriteLine(dataline);
+                                acc_data[0] = Convert.ToDouble(fa.getitem(0)) * G;
+                                acc_data[1] = Convert.ToDouble(fa.getitem(1)) * G;
+                                acc_data[2] = Convert.ToDouble(fa.getitem(2)) * G;
 
-                                        mainWindow.fileSaver.appendCSVManual(dataline);
-                                    }
+                                //acc.drawData(acc_data);
 
-                                    break;
-                            }
+                                double[] gyr_data = new double[3];
+                                gyr_data[0] = Convert.ToDouble(lg.getitem(0)) * toDegrees;
+                                gyr_data[1] = Convert.ToDouble(lg.getitem(1)) * toDegrees;
+                                gyr_data[2] = Convert.ToDouble(lg.getitem(2)) * toDegrees;
+
+                                //gyr.drawData(gyr_data);
+
+                                if (virtualToolBar.recordState == RecordState.Recording)
+                                {
+
+                                    string dataline = "";
+
+                                    dataline += "1 " + fakets.ToString("F2") + " " + (frame).ToString() + " " +
+                                        acc_data[0].ToString("F3") + " " + acc_data[1].ToString("F3") + " " +
+                                        acc_data[2].ToString("F3") + " " + gyr_data[0].ToString("F3") + " " +
+                                        gyr_data[1].ToString("F3") + " " + gyr_data[2].ToString("F3") + " " +
+                                        lq.getitem(0).ToString("F3") + " " + lq.getitem(1).ToString("F3") + " " +
+                                        lq.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
+                                        lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
+                                        lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
+                                        lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";
+
+                                    frame++;
+                                    fakets += 0.01f;
+
+                                    Trace.WriteLine(dataline);
+
+                                    mainWindow.fileSaver.appendCSVManual(dataline);
+                                }
+
+                                break;
+                        }
                         
-
                     }
-
 
                 }
             
