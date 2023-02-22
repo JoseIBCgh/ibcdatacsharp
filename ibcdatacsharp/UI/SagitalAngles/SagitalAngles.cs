@@ -189,6 +189,17 @@ namespace ibcdatacsharp.UI.SagitalAngles
                 }
             }
         }
+        private void changeQuaternionsListDeterministic()
+        {
+            Vector3 axis = new Vector3(2, 3, 1);
+            for (int i = 0; i < NUM_PACK; i++)
+            {
+                for (int s = 0; s < TOTAL_SENSORS; s++)
+                {
+                    mQ_sensors_raw_list[i, s] = Quaternion.CreateFromAxisAngle(axis, i * s);
+                }
+            }
+        }
         public void test()
         {
             ankle.initCapture();
@@ -213,7 +224,7 @@ namespace ibcdatacsharp.UI.SagitalAngles
             hip.initCapture();
             knee.initCapture();
             quaternionCalcsConnect();
-            changeQuaternionsListRandom();
+            changeQuaternionsListDeterministic();
             float[] ankleData = new float[NUM_PACK];
             float[] hipData = new float[NUM_PACK];
             float[] kneeData = new float[NUM_PACK];
@@ -229,7 +240,27 @@ namespace ibcdatacsharp.UI.SagitalAngles
                 hipData[i] = (float)eulerAnglesZ[hipIndex];
                 kneeData[i] = (float)eulerAnglesZ[kneeIndex];
             }
-            kneeData = new float[] {-0.7f,  -0.6f, -0.69f, -0.71f};
+            Trace.WriteLine("ankleData");
+            Trace.WriteLine("[");
+            foreach (double d in ankleData)
+            {
+                Trace.WriteLine(d);
+            }
+            Trace.WriteLine("]");
+            Trace.WriteLine("hipData");
+            Trace.WriteLine("[");
+            foreach (double d in hipData)
+            {
+                Trace.WriteLine(d);
+            }
+            Trace.WriteLine("]");
+            Trace.WriteLine("kneeData");
+            Trace.WriteLine("[");
+            foreach (double d in kneeData)
+            {
+                Trace.WriteLine(d);
+            }
+            Trace.WriteLine("]");
             ankle.drawData(ankleData);
             hip.drawData(hipData);
             knee.drawData(kneeData);
