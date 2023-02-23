@@ -26,8 +26,12 @@ using System.Drawing;
 using MessageBox = System.Windows.MessageBox;
 using System.Numerics;
 using static WisewalkSDK.Wisewalk;
+
+using ibcdatacsharp.EKF;
+
 using Microsoft.VisualBasic.ApplicationServices;
 using ibcdatacsharp.UI.Common;
+using ibcdatacsharp.UI.Filters;
 
 namespace ibcdatacsharp.UI
 {
@@ -107,6 +111,7 @@ namespace ibcdatacsharp.UI
 
         public IMUInfo imuInfo;
         public List<int> devHandlers;
+        public FilterManager filterManager;
 
         //end Wiseware API
         public MainWindow()
@@ -116,6 +121,7 @@ namespace ibcdatacsharp.UI
             device = new Device.Device();
             fileSaver = new FileSaver.FileSaver();
             graphManager = new GraphManager();
+            filterManager = new FilterManager();
             initIcon();
             initToolBarHandlers();
             initMenuHandlers();
@@ -138,7 +144,8 @@ namespace ibcdatacsharp.UI
             api.deviceDisconnected += Api_onDisconnect;
 
             //End Wisewalk API
-            EKF.EKF.test();
+
+            //EKF.EKF.test();
             //Test linear acceleration
             //LinearAcceleration.test();
         }
@@ -476,6 +483,15 @@ namespace ibcdatacsharp.UI
                     {
                         imus.Add(new IMUInfo(i, "ActiSense", GetMacAddress(scanDevices, i)));
                     }
+                    // Añade imus falsos
+                    /*
+                    imus.Add(new IMUInfo(0, "A", "CD"));
+                    IMUInfo imu = new IMUInfo(1, "B", "DF");
+                    imu.connected = true;
+                    imus.Add(imu);
+                    */
+                    //end añade imus falsos
+
                     deviceListClass.setIMUs(imus);
                     MessageBox.Show(scanDevices.Count + " IMUs encontrados", "Scan Devices", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -678,6 +694,7 @@ namespace ibcdatacsharp.UI
         // Funcion que se ejecuta al clicar el boton Capture
         private void onCapture(object sender, EventArgs e)
         {
+            virtualToolBar.captureClick();
             graphManager.initCapture(); 
         }
         // Funcion que se ejecuta al clicar el boton Pause

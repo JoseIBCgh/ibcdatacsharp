@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using ibcdatacsharp.UI.Common;
 using System.Windows.Media.Animation;
+using ibcdatacsharp.UI.Filters;
 
 namespace ibcdatacsharp.UI.ToolBar
 {
@@ -19,10 +20,19 @@ namespace ibcdatacsharp.UI.ToolBar
         private const int PRESSED_ICON_SIZE = 25;
         private const int INITIAL_FONT_SIZE = 11;
         private const int PRESSED_FONT_SIZE = 9;
+
         public ToolBar()
         {
             InitializeComponent();
-            deactivateButtons();
+            DataContext = ((MainWindow)Application.Current.MainWindow).virtualToolBar.properties;
+            FilterManager filterManager = ((MainWindow)Application.Current.MainWindow).filterManager;
+            filters.ItemsSource = filterManager.filters;
+            filters.SelectionChanged += (object sender, SelectionChangedEventArgs e) =>
+            {
+                Filter selected = (sender as ComboBox).SelectedItem as Filter;
+                filterManager.changeFilter(selected);
+            };
+            filters.SelectedIndex = 0;
         }
         private void initButtonAnimations()
         {
