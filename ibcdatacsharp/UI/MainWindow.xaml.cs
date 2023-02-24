@@ -26,9 +26,7 @@ using System.Drawing;
 using MessageBox = System.Windows.MessageBox;
 using System.Numerics;
 using static WisewalkSDK.Wisewalk;
-
 using ibcdatacsharp.EKF;
-
 using Microsoft.VisualBasic.ApplicationServices;
 using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.UI.Filters;
@@ -151,7 +149,6 @@ namespace ibcdatacsharp.UI
             api.updateDeviceInfo += Api_updateDeviceInfo;
 
             //End Wisewalk API
-
             //EKF.EKF.test();
             //Test linear acceleration
             //LinearAcceleration.test();
@@ -350,6 +347,10 @@ namespace ibcdatacsharp.UI
             //devices_list[deviceHandler.ToString()].HeaderInfo = dev.HeaderInfo;
             //devices_list[deviceHandler.ToString()].sampleRate = dev.sampleRate;
             //devices_list[deviceHandler.ToString()].offsetTime = dev.offsetTime;
+            Dispatcher.BeginInvoke(
+                () => (deviceList.Content as DeviceList.DeviceList).
+                updateHeaderInfo(dev.Id, deviceHandler)
+            );
 
             SetLogText(devices_list[deviceHandler.ToString()].Id, "Receive header info from " + dev.HeaderInfo.macAddress);
 
