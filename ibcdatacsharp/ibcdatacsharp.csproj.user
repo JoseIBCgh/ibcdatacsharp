@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
+  <PropertyGroup>
+    <_LastSelectedProfileId>C:\Users\berna\source\repos\ibcdatacsharp\ibcdatacsharp\Properties\PublishProfiles\FolderProfile3.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
   <ItemGroup>
     <ApplicationDefinition Update="App.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="UI\Graphs\AngleGraph.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="UI\CamaraViewport\CamaraViewport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -22,34 +21,37 @@
     <Compile Update="UI\FileSaver\SavingMenu.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\AngleGraphX.xaml.cs">
+    <Compile Update="UI\Graphs\TwoIMU\AngleGraphX.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphAngularAcceleration.xaml.cs">
+    <Compile Update="UI\Graphs\TwoIMU\GraphAngularAcceleration.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphAngularVelocity.xaml.cs">
+    <Compile Update="UI\Graphs\TwoIMU\GraphAngularVelocity.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphAccelerometer.xaml.cs">
+    <Compile Update="UI\Graphs\OneIMU\GraphAccelerometer.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphGyroscope.xaml.cs">
+    <Compile Update="UI\Graphs\OneIMU\GraphGyroscope.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphLinAcc.xaml.cs">
+    <Compile Update="UI\Graphs\OneIMU\GraphLinAcc.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphMagnetometer.xaml.cs">
+    <Compile Update="UI\Graphs\OneIMU\GraphMagnetometer.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\GraphQuaternion.xaml.cs">
+    <Compile Update="UI\Graphs\OneIMU\GraphQuaternion.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UI\MenuBar\MenuBar.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UI\MenuBar\Version.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UI\Graphs\Sagital\GraphHip.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UI\Subjects\Subjects.xaml.cs">
@@ -63,9 +65,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="UI\Graphs\AngleGraph.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Update="UI\CamaraViewport\CamaraViewport.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -78,34 +77,34 @@
     <Page Update="UI\FileSaver\SavingMenu.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\AngleGraphZ.xaml">
+    <Page Update="UI\Graphs\TwoIMU\AngleGraphZ.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\AngleGraphY.xaml">
+    <Page Update="UI\Graphs\TwoIMU\AngleGraphY.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\AngleGraphX.xaml">
+    <Page Update="UI\Graphs\TwoIMU\AngleGraphX.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphAngularAcceleration.xaml">
+    <Page Update="UI\Graphs\TwoIMU\GraphAngularAcceleration.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphAngularVelocity.xaml">
+    <Page Update="UI\Graphs\TwoIMU\GraphAngularVelocity.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphAccelerometer.xaml">
+    <Page Update="UI\Graphs\OneIMU\GraphAccelerometer.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphGyroscope.xaml">
+    <Page Update="UI\Graphs\OneIMU\GraphGyroscope.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphLinAcc.xaml">
+    <Page Update="UI\Graphs\OneIMU\GraphLinAcc.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphMagnetometer.xaml">
+    <Page Update="UI\Graphs\OneIMU\GraphMagnetometer.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\GraphQuaternion.xaml">
+    <Page Update="UI\Graphs\OneIMU\GraphQuaternion.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\MainWindow.xaml">
@@ -115,6 +114,15 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\MenuBar\Version.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Graphs\Sagital\GraphAnkle.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Graphs\Sagital\GraphKnee.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Graphs\Sagital\GraphHip.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\Subjects\Subjects.xaml">

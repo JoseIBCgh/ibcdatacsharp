@@ -32,6 +32,7 @@ using ibcdatacsharp.EKF;
 using Microsoft.VisualBasic.ApplicationServices;
 using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.UI.Filters;
+using ibcdatacsharp.UI.Graphs;
 
 namespace ibcdatacsharp.UI
 {
@@ -113,6 +114,8 @@ namespace ibcdatacsharp.UI
         public List<int> devHandlers;
         public FilterManager filterManager;
 
+        public SagitalAngles.SagitalAngles sagitalAngles;
+
         //end Wiseware API
         public MainWindow()
         {
@@ -122,6 +125,7 @@ namespace ibcdatacsharp.UI
             fileSaver = new FileSaver.FileSaver();
             graphManager = new GraphManager();
             filterManager = new FilterManager();
+            sagitalAngles = new SagitalAngles.SagitalAngles();
             initIcon();
             initToolBarHandlers();
             initMenuHandlers();
@@ -142,6 +146,9 @@ namespace ibcdatacsharp.UI
             api.deviceConnected += Api_deviceConnected;
             api.onError += Api_onError;
             api.deviceDisconnected += Api_onDisconnect;
+            api.updateDeviceRTC += Api_updateDeviceRTC;
+            api.updateDeviceConfiguration += Api_updateDeviceConfiguration;
+            api.updateDeviceInfo += Api_updateDeviceInfo;
 
             //End Wisewalk API
 
@@ -166,6 +173,7 @@ namespace ibcdatacsharp.UI
         {
             if (deviceHandler != 0xFF)
             {
+                
                 SetLogText(devices_list[deviceHandler.ToString()].Id, error);
             }
             else
@@ -260,6 +268,15 @@ namespace ibcdatacsharp.UI
 
             return mac;
         }
+        private string GetMacAddress(Wisewalk.Dev device)
+        {
+            string mac = "";
+
+            mac = device.mac[5].ToString("X2") + ":" + device.mac[4].ToString("X2") + ":" + device.mac[3].ToString("X2") + ":" +
+                                    device.mac[2].ToString("X2") + ":" + device.mac[1].ToString("X2") + ":" + device.mac[0].ToString("X2");
+
+            return mac;
+        }
 
         private void ShowScanList(List<Wisewalk.Dev> devices)
         {
@@ -277,53 +294,44 @@ namespace ibcdatacsharp.UI
 
         private async void Api_deviceConnected(byte handler, WisewalkSDK.Device dev)
         {
-            // Esta funcion tiene que ser LOCAL
-            void setRTCDevice(byte deviceHandler, byte sampleRate, byte packetType)
-            {
-                if(deviceHandler == handler)
-                {
-                    api.SetRTCDevice(deviceHandler, GetDateTime(), out error);
-                    Dispatcher.BeginInvoke(
-                    () => (deviceList.Content as DeviceList.DeviceList).
-                    updateHeaderInfo(dev.Id, handler)
-                );
-                    api.updateDeviceConfiguration -= setRTCDevice;
-                }
-            }
+            
             //if (!devices_list.ContainsKey(handler.ToString())) { 
-                // Add new device to list
-                //WisewalkSDK.Device device = new WisewalkSDK.Device();
+            // Add new device to list
+            //WisewalkSDK.Device device = new WisewalkSDK.Device();
 
-                //Trace.WriteLine("DevList: " + dev.Id + " handler: " + handler.ToString());
+            //Trace.WriteLine("DevList: " + dev.Id + " handler: " + handler.ToString());
 
-                //devices_list.Add(handler.ToString(), device);
+            //devices_list.Add(handler.ToString(), device);
 
-                // Update values
-                /*
-                devices_list[handler.ToString()].Id = dev.Id;
-                devices_list[handler.ToString()].Name = dev.Name;
-                devices_list[handler.ToString()].Connected = dev.Connected;
-                devices_list[handler.ToString()].HeaderInfo = dev.HeaderInfo;
-                devices_list[handler.ToString()].NPackets = 0;
-                devices_list[handler.ToString()].sampleRate = dev.sampleRate;
-                devices_list[handler.ToString()].offsetTime = dev.offsetTime;
-                devices_list[handler.ToString()].Rtc = dev.Rtc;
-                devices_list[handler.ToString()].Stream = false;
-                devices_list[handler.ToString()].Record = false;
-                */
-                
-                await Dispatcher.BeginInvoke(
-                    () => (deviceList.Content as DeviceList.DeviceList).
-                    connectIMU(dev.Id, handler)
-                );
-                
-                api.SetDeviceConfiguration(handler, 100, 3, out error);
-                api.updateDeviceConfiguration += setRTCDevice;
-                
-                
-                counter.Add(0);
+            // Update values
+            /*
+            devices_list[handler.ToString()].Id = dev.Id;
+            devices_list[handler.ToString()].Name = dev.Name;
+            devices_list[handler.ToString()].Connected = dev.Connected;
+            devices_list[handler.ToString()].HeaderInfo = dev.HeaderInfo;
+            devices_list[handler.ToString()].NPackets = 0;
+            devices_list[handler.ToString()].sampleRate = dev.sampleRate;
+            devices_list[handler.ToString()].offsetTime = dev.offsetTime;
+            devices_list[handler.ToString()].Rtc = dev.Rtc;
+            devices_list[handler.ToString()].Stream = false;
+            devices_list[handler.ToString()].Record = false;
+            */
 
-                Trace.WriteLine("DevList: " + devices_list[handler.ToString()].Id + " handler: " + handler.ToString());
+            await Dispatcher.BeginInvoke(
+                () => (deviceList.Content as DeviceList.DeviceList).
+                connectIMU(dev.Id, handler)
+            );
+
+            ushort sampleRate = 100;
+            byte packetType = (byte)3;
+
+            api.SetDeviceConfiguration(handler, sampleRate, packetType, out error);
+
+            api.SetRTCDevice(handler, GetDateTime(), out error);
+
+            counter.Add(0);
+
+            Trace.WriteLine("DevList: " + devices_list[handler.ToString()].Id + " handler: " + handler.ToString());
 
             /*
             }
@@ -337,15 +345,35 @@ namespace ibcdatacsharp.UI
             */
         }
 
-        
+        private void Api_updateDeviceInfo(byte deviceHandler, WisewalkSDK.Device dev)
+        {
+            //devices_list[deviceHandler.ToString()].HeaderInfo = dev.HeaderInfo;
+            //devices_list[deviceHandler.ToString()].sampleRate = dev.sampleRate;
+            //devices_list[deviceHandler.ToString()].offsetTime = dev.offsetTime;
+
+            SetLogText(devices_list[deviceHandler.ToString()].Id, "Receive header info from " + dev.HeaderInfo.macAddress);
+
+            //ShowDevices(devices_list);
+        }
+
+        void Api_updateDeviceConfiguration(byte deviceHandler, byte sampleRate, byte packetType)
+        {
+            Trace.WriteLine($"Configured {deviceHandler} {sampleRate} {packetType}");
+        }
+
+        void Api_updateDeviceRTC(byte deviceHandler, DateTime dateTime)
+        {
+            Trace.WriteLine(dateTime.ToString());
+        }
+
 
         //Cálculo de Fecha y hora
         public DateTime GetDateTime()
         {
-            DateTime dateTime = new DateTime(2022, 11, 8, 13, 0, 0, 0);
+            return DateTime.Now;
+            DateTime dateTime = new DateTime(2023, 2, 17, 10, 10, 10, 100);
             return dateTime;
         }
-
         //End métodos de WiseWare
 
         // Cambia el icono de la ventana
@@ -369,6 +397,10 @@ namespace ibcdatacsharp.UI
                 toolBarClass.stop.Click += new RoutedEventHandler(onStop);
                 toolBarClass.record.Click += new RoutedEventHandler(onRecord);
                 toolBarClass.capturedFiles.Click += new RoutedEventHandler(onCapturedFiles);
+                #region SAGITAL ANGLES
+                toolBarClass.calculateMounting.Click += new RoutedEventHandler(onCalculateMounting);
+                toolBarClass.saveFrontalReference.Click += new RoutedEventHandler(onSaveFrontalReference);
+                #endregion SAGITAL ANGLES
             };
         }
         // Conecta los botones del Menu
@@ -481,16 +513,14 @@ namespace ibcdatacsharp.UI
                     List<IMUInfo> imus = new List<IMUInfo>();
                     for (int i = 0; i < scanDevices.Count; i++)
                     {
-                        imus.Add(new IMUInfo(i, "ActiSense", GetMacAddress(scanDevices, i)));
+                        imus.Add(new IMUInfo("ActiSense", GetMacAddress(scanDevices, i)));
                     }
-                    // Añade imus falsos
-                    /*
-                    imus.Add(new IMUInfo(0, "A", "CD"));
-                    IMUInfo imu = new IMUInfo(1, "B", "DF");
-                    imu.connected = true;
-                    imus.Add(imu);
+                    /* 
+                    //IMUS falsos
+                    Random random = new Random();
+                    imus.Add(new IMUInfo("ActiSense", random.NextSingle().ToString()));
+                    imus.Add(new IMUInfo("ActiSense2", random.NextSingle().ToString()));
                     */
-                    //end añade imus falsos
 
                     deviceListClass.setIMUs(imus);
                     MessageBox.Show(scanDevices.Count + " IMUs encontrados", "Scan Devices", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -510,6 +540,10 @@ namespace ibcdatacsharp.UI
             }
             deviceListLoadedCheck(onScanFunction);
             virtualToolBar.onScanClick();
+        }
+        private Dev findIMU(IMUInfo imuInfo)
+        {
+            return scanDevices.FirstOrDefault(de => GetMacAddress(de) == imuInfo.address);
         }
         // Conecta el boton connect
         private void onConnect(object sender, EventArgs e)
@@ -548,10 +582,12 @@ namespace ibcdatacsharp.UI
                 // Operación atómica de conexión
                 foreach (IMUInfo imu in connectedIMUs)
                 {
-                    conn_list_dev.Add(scanDevices[imu.id]);
-                    devHandlers.Remove(imu.id);
+                    conn_list_dev.Add(findIMU(imu));
+                    devHandlers.Remove((int)imu.id);
                 }
-                if(!api.Connect(conn_list_dev, out error))
+             
+                
+                if (!api.Connect(conn_list_dev, out error))
                 {
                     Trace.WriteLine("Connect error " + error);
                 }
@@ -581,9 +617,9 @@ namespace ibcdatacsharp.UI
                 //Borrar si existe
                 foreach (IMUInfo imu in connectedIMUs)
                 {
-                    if (devHandlers.Contains(imuInfo.id))
+                    if (devHandlers.Contains((int)imuInfo.id))
                     {
-                        devHandlers.Remove(imuInfo.id);
+                        devHandlers.Remove((int)imuInfo.id);
 
                     }
                 }
@@ -633,7 +669,7 @@ namespace ibcdatacsharp.UI
                         IMUInfo imuInfo = treeViewItem.DataContext as IMUInfo;
 
                         devHandlers.Add(handler(imuInfo));
-                        conn_list_dev.Remove(scanDevices[imuInfo.id]);
+                        conn_list_dev.Remove(findIMU(imuInfo));
                         //devices_list.Remove(imuInfo.handler.ToString());
                         imuInfo.handler = null;
                         IMUsToDisconnect.Add(imuInfo.address);
@@ -718,6 +754,16 @@ namespace ibcdatacsharp.UI
         {
             virtualToolBar.openClick();
         }
+        #region SAGITAL ANGLES
+        private void onCalculateMounting(object sender, EventArgs e)
+        {
+            sagitalAngles.calculateMounting();
+        }
+        private void onSaveFrontalReference(object sender, EventArgs e)
+        {
+            sagitalAngles.calculateVirtualOrientation();
+        }
+        #endregion
         // IMPORTANTE: La funcion eventHandler tiene que ser local
         public void readQuaternion(IMUInfo imu)
         {

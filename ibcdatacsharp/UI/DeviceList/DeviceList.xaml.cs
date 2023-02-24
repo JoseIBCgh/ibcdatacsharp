@@ -75,23 +75,30 @@ namespace ibcdatacsharp.UI.DeviceList
         {
             // Quitar los IMUs que no se han escaneado 
             // Los que estaban conectados no los escanea de alli => imu.connected ||
-            VM.IMUs = new ObservableCollection<IMUInfo>(VM.IMUs.Where(imu => imu.connected || IMUs.Any(newImu => newImu.address == imu.address)));
+            List<IMUInfo> IMUsToRemove = new List<IMUInfo>();
+            foreach(IMUInfo imuOld in VM.IMUs)
+            {
+                if (!IMUs.Any(imuNew => imuNew.address == imuOld.address) && !imuOld.connected)
+                {
+                    IMUsToRemove.Add(imuOld);
+                }
+            }
+            foreach(IMUInfo imu in IMUsToRemove)
+            {
+                IMUInfo.removeIMU(imu);
+                VM.IMUs.Remove(imu);
+            }
+            //VM.IMUs = new ObservableCollection<IMUInfo>(VM.IMUs.Where(imu => imu.connected || IMUs.Any(newImu => newImu.address == imu.address)));
             foreach (IMUInfo imu in IMUs)
             {
                 if (!VM.IMUs.Any(imuOld => imuOld.address == imu.address))
                 {
+                    imu.setID();
                     VM.IMUs.Add(imu);
-                }
-                else // Cambiar el id del IMU si es diferente
-                {
-                    int index = VM.IMUs.ToList().FindIndex(imuOld => imuOld.address == imu.address);
-                    if (VM.IMUs[index].id != imu.id)
-                    {
-                        VM.IMUs[index].id = imu.id;
-                    }
                 }
             }
         }
+        /*
         public void addIMU(IMUInfo imu)
         {
             if (VM.IMUs.Any(imuOld => imuOld.address == imu.address))
@@ -114,6 +121,7 @@ namespace ibcdatacsharp.UI.DeviceList
                 VM.IMUs.Add(imu);
             }
         }
+        */
         #endregion
         #region Cameras
         public ObservableCollection<CameraInfo> getCameras()
@@ -314,12 +322,14 @@ namespace ibcdatacsharp.UI.DeviceList
         }
         private void onCheckIMU(object sender, RoutedEventArgs e)
         {
+            /*
             if (numIMUsUsed > MAX_IMU_USED)
             {
                 MessageBox.Show("Solo puedes seleccionar dos IMUs", caption: null,
                     button: MessageBoxButton.OK, icon: MessageBoxImage.Warning);
                 (sender as CheckBox).IsChecked = false;
             }
+            */
         }
         public int numIMUsUsed
         {

@@ -1,11 +1,15 @@
 ﻿using ibcdatacsharp.Common;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Documents;
 
 namespace ibcdatacsharp.DeviceList.TreeClasses
 {
     // Guarda la información de un IMU
     public class IMUInfo : BaseObject
     {
-        public int id
+        private static HashSet<int> idsUsed = new HashSet<int>();
+        public int? id
         {
             get { return GetValue<int>("id"); }
             set { SetValue("id", value); }
@@ -50,6 +54,18 @@ namespace ibcdatacsharp.DeviceList.TreeClasses
             set { SetValue("fw", value); }
         }
 
+        public string A
+        {
+            get { return GetValue<string>("A"); }
+            set { 
+                if(value != "" && !used)
+                {
+                    used = true;
+                }
+                SetValue("A", value); 
+            }
+        }
+
         public byte? handler { get; set; }
 
         public void checkJAUpdate()
@@ -57,15 +73,41 @@ namespace ibcdatacsharp.DeviceList.TreeClasses
             NotifyChange("connected");
         }
         public IMUInfo() { }
-        public IMUInfo(int id, string name, string address)
+        public IMUInfo(string name, string address)
         {
-            this.id = id;
             this.name = name;
             this.address = address;
             this.battery = null;
             this.connected = false;
             this.used = false;
             this.fw = null;
+            this.A = "";
+        }
+        public void setID()
+        {
+            id = getNextID();
+        }
+        private static int getNextID()
+        {
+            //Trace.WriteLine("getNextID");
+            //Trace.WriteLine(idsUsed.Count);
+            for (int i = 0; i < idsUsed.Count; i++)
+            {
+                if (!idsUsed.Contains(i))
+                {
+                    idsUsed.Add(i);
+                    return i;
+                }
+            }
+            int id = idsUsed.Count;
+            idsUsed.Add(id);
+            return id;
+        }
+        public static void removeIMU(IMUInfo imu)
+        {
+            //Trace.WriteLine("removeIMU");
+            //Trace.WriteLine(imu.id);
+            idsUsed.Remove((int)imu.id);
         }
     }
 }
