@@ -1,18 +1,5 @@
 ibcdatacsharp/obj/
-<<<<<<< HEAD
 ibcdatacsharp/bin/
 bin
 obj
 .vs
-||||||| bfd1fa3
-ibcdatacsharp/bin/
-=======
-ibcdatacsharp/bin/
-bin
-obj
-<<<<<<< HEAD
-.vs
-=======
-.vs
->>>>>>> v1.0.0_main_bernat
->>>>>>> release/1.0.0
