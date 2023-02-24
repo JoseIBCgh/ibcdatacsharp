@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <StartupObject></StartupObject>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,15 +36,19 @@
     <None Remove="UI\ToolBar\Icons\Blue\record-stop-blue-icon.png" />
     <None Remove="UI\ToolBar\Icons\Blue\scan-blue-icon.png" />
     <None Remove="UI\ToolBar\Icons\Blue\stop-blue-icon.png" />
+    <None Remove="UI\ToolBar\Icons\calculateMounting-icon.png" />
     <None Remove="UI\ToolBar\Icons\capture-icon.png" />
     <None Remove="UI\ToolBar\Icons\capturedFiles-icon.png" />
     <None Remove="UI\ToolBar\Icons\connect-icon.png" />
     <None Remove="UI\ToolBar\Icons\disconnect-icon.png" />
     <None Remove="UI\ToolBar\Icons\openCamera-icon.png" />
+    <None Remove="UI\ToolBar\Icons\OriginalcalculateMounting-icon.png" />
     <None Remove="UI\ToolBar\Icons\pause-icon.png" />
     <None Remove="UI\ToolBar\Icons\play-pause-icon.png" />
     <None Remove="UI\ToolBar\Icons\record-recording-icon.png" />
     <None Remove="UI\ToolBar\Icons\record-stop-icon.png" />
+    <None Remove="UI\ToolBar\Icons\sagitalAngles-icon.png" />
+    <None Remove="UI\ToolBar\Icons\saveFrontalReference-icon.png" />
     <None Remove="UI\ToolBar\Icons\scan-icon.png" />
     <None Remove="UI\ToolBar\Icons\stop-icon.png" />
   </ItemGroup>
@@ -160,6 +164,12 @@
     <Resource Include="UI\ToolBar\Icons\Blue\stop-blue-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="UI\ToolBar\Icons\calculateMounting-icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\ToolBar\Icons\OriginalcalculateMounting-icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="UI\ToolBar\Icons\capture-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -187,6 +197,12 @@
     <Resource Include="UI\ToolBar\Icons\record-stop-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="UI\ToolBar\Icons\sagitalAngles-icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="UI\ToolBar\Icons\saveFrontalReference-icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="UI\ToolBar\Icons\scan-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -196,20 +212,34 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="UI\Graphs\AngleGraphZ.xaml.cs">
+    <Compile Update="UI\Graphs\TwoIMU\AngleGraphZ.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Graphs\AngleGraphY.xaml.cs">
+    <Compile Update="UI\Graphs\TwoIMU\AngleGraphY.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UI\Graphs\Sagital\GraphAnkle.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UI\Graphs\Sagital\GraphKnee.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="UI\Graphs\AngleGraphZ.xaml">
+    <Page Update="UI\Graphs\TwoIMU\AngleGraphZ.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Graphs\AngleGraphY.xaml">
+    <Page Update="UI\Graphs\TwoIMU\AngleGraphY.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Graphs\Sagital\GraphAnkle.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Graphs\Sagital\GraphKnee.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
       <SubType>Designer</SubType>
     </Page>
