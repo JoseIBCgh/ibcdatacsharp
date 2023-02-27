@@ -118,6 +118,7 @@ namespace ibcdatacsharp.UI
         public MainWindow()
         {
             InitializeComponent();
+            Application.Current.MainWindow = this;
             virtualToolBar = new VirtualToolBar();
             device = new Device.Device();
             fileSaver = new FileSaver.FileSaver();

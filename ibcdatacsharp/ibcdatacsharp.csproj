@@ -54,12 +54,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Biaui" Version="1.0.24" />
     <PackageReference Include="DirectShowLib" Version="1.0.0" />
     <PackageReference Include="DirectShowLib.Standard" Version="2.1.0" />
-    <PackageReference Include="Dirkster.AvalonDock" Version="4.70.2" />
+    <PackageReference Include="Dirkster.AvalonDock" Version="4.71.2" />
+    <PackageReference Include="Dirkster.AvalonDock.Themes.VS2013" Version="4.71.2" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.7.1" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="MultiSelectTreeView" Version="1.0.9" />
     <PackageReference Include="OpenCvSharp4" Version="4.6.0.20220608" />
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.6.0.20220608" />
@@ -69,6 +73,7 @@
     <PackageReference Include="RealTimeGraphX" Version="1.0.17" />
     <PackageReference Include="RealTimeGraphX.WPF" Version="1.0.17" />
     <PackageReference Include="ScottPlot.WPF" Version="4.1.58" />
+    <PackageReference Include="StyledWindow.WPF" Version="6.0.0.1" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.IO.Ports" Version="7.0.0" />
     <PackageReference Include="System.Management" Version="7.0.0" />

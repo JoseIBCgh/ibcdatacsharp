@@ -14,7 +14,7 @@
     <!--Algunos color del menuItem no se pueden cambiar directamente-->
 
     <DockPanel Margin="0,-15,0,0">
-        <Menu DockPanel.Dock="Top" Height="30" Foreground="Black" >
+        <Menu DockPanel.Dock="Top" Height="30" >
             <MenuItem Header="Connect" x:Name="connectMenu" Height="30" >
                 <MenuItem Header="Scan" x:Name="scan">
                     <MenuItem.IsEnabled>
