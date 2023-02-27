@@ -21,6 +21,8 @@ namespace ibcdatacsharp.UI
     /// </summary>
     public partial class SplashScreen : Window
     {
+        const int totalTimeMs = 2000;
+        const int numIterations = 20;
         public SplashScreen()
         {
             InitializeComponent();
@@ -36,16 +38,16 @@ namespace ibcdatacsharp.UI
         }
         void worker_DoWork(object sender, DoWorkEventArgs e) 
         { 
-            for(int i = 0; i <= 100; i++)
+            for(int i = 1; i <= numIterations; i++)
             {
                 (sender as BackgroundWorker).ReportProgress(i);
-                Thread.Sleep(80);
+                Thread.Sleep(totalTimeMs / numIterations);
             }
         }
         void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            progressBar.Value = e.ProgressPercentage;
-            if(progressBar.Value == 100)
+            progressBar.Value = e.ProgressPercentage * 100 / numIterations;
+            if(e.ProgressPercentage == numIterations)
             {
                 MainWindow mainWindow = new MainWindow();
                 Close();
