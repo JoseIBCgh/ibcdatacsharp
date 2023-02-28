@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Windows.Controls;
 using System.Runtime.CompilerServices;
 using System.Windows.Navigation;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace ibcdatacsharp.UI.Common
 {
@@ -65,6 +66,12 @@ namespace ibcdatacsharp.UI.Common
         public static float ToGs(float ms2)
         {
             return ms2 / 9.8f;
+        }
+        public static MathNet.Numerics.LinearAlgebra.Vector<float> ToDegrees(MathNet.Numerics.LinearAlgebra.Vector<float> v)
+        {
+            Trace.WriteLine(v);
+            Trace.WriteLine(v.Map(ToDegrees));
+            return v.Map(ToDegrees);
         }
         public static float ToDegrees(float radians)
         {
@@ -211,6 +218,15 @@ namespace ibcdatacsharp.UI.Common
 
         }
         private static float maxDiference = 0;
+        public static MathNet.Numerics.LinearAlgebra.Vector<float> AngularVelocityFromQuaternion(Quaternion q1, Quaternion q2)
+        {
+            Matrix<float> m1 = Matrix<float>.Build.DenseOfArray(new float[,] { { -q1.X, -q1.W, -q1.Z, q1.Y},
+            {-q1.Y, q1.Z, q1.W, -q1.X },
+            {-q1.Z, -q1.Y, q1.X, q1.W } });
+            //Matrix<float> m2 = Matrix<float>.Build.DenseOfArray(new float[,] { { q2.W }, { q2.X }, { q2.Y }, {q2.Z } });
+            MathNet.Numerics.LinearAlgebra.Vector<float> m2 = MathNet.Numerics.LinearAlgebra.Vector<float>.Build.DenseOfArray(new float[] { q2.W, q2.X, q2.Y, q2.Z });
+            return m1 * m2;
+        }
         public static float AngularVelocityFromDegrees(float angle1, float angle0, float dt)
         {
             float angle1Rad = ToRadians(angle1);

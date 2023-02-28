@@ -178,6 +178,7 @@ namespace ibcdatacsharp.UI.Graphs
 
         Vector3 prev_angle = new Vector3(0, 0, 0);
         Vector3 prev_angle_vel = new Vector3(0, 0, 0);
+        Quaternion prev_q = new Quaternion();
 
         int anglequat = 0;
         int mac1 = 0;
@@ -992,6 +993,7 @@ namespace ibcdatacsharp.UI.Graphs
                         Matrix4x4 refmat = Matrix4x4.CreateFromQuaternion(refq);
                         Vector3 angle_ref = new();
                         angle_ref = Helpers.ToEulerAngles(refq);
+                        Quaternion[] angleOrientations = new Quaternion[4];
                         for (int i = 0; i < 4; i++)
                         {
                             /*
@@ -1039,6 +1041,18 @@ namespace ibcdatacsharp.UI.Graphs
 
                             Matrix4x4 r = Matrix4x4.Multiply(m_lower, m_upper);
 
+                            angleOrientations[i] = Quaternion.CreateFromRotationMatrix(r);
+
+                            /*
+                            if (angleOrientations[i] != Quaternion.Multiply(q_lower[i], q_upper[i]))
+                            {
+                                Trace.WriteLine("to matrix from matrix");
+                                Trace.WriteLine(angleOrientations[i]);
+                                Trace.WriteLine("quaternion multiply");
+                                Trace.WriteLine(Quaternion.Multiply(q_lower[i], q_upper[i]));
+                            }
+                            */
+
                             double beta = Math.Atan2(r.M32, Math.Sqrt(Math.Pow(r.M12, 2) * Math.Pow(r.M22, 2)));
                             double delta = Math.Atan2(-(r.M12 / Math.Cos(beta)), r.M22 / Math.Cos(beta));
                             double phi = Math.Atan2(-(r.M31 / Math.Cos(beta)), r.M33 / Math.Cos(beta));
@@ -1051,6 +1065,23 @@ namespace ibcdatacsharp.UI.Graphs
 
                             }
                         }
+                        MathNet.Numerics.LinearAlgebra.Vector<float>[] angularVelocityQuats = new MathNet.Numerics.LinearAlgebra.Vector<float>[4];
+
+                        angularVelocityQuats[0] = Helpers.AngularVelocityFromQuaternion(prev_q, angleOrientations[0]);
+                        angularVelocityQuats[0] = Helpers.ToDegrees(angularVelocityQuats[0]);
+                        for (int i = 1; i < 4; i++)
+                        {
+                            angularVelocityQuats[i] = Helpers.AngularVelocityFromQuaternion(angleOrientations[i], angleOrientations[i - 1]);
+                            angularVelocityQuats[i] = Helpers.ToDegrees(angularVelocityQuats[i]);
+                        }
+                        prev_q = angleOrientations[3];
+                        Vector3[] angularVelocity = new Vector3[4];
+                        for(int i = 0; i < 4; i++)
+                        {
+                            angularVelocity[i] = new Vector3(angularVelocityQuats[i][0], angularVelocityQuats[i][1], angularVelocityQuats[i][2]);
+                        }
+
+                        /*
                         float[] angleX_v_a = new float[4];
                         float[] angleY_v_a = new float[4];
                         float[] angleZ_v_a = new float[4];
@@ -1075,6 +1106,7 @@ namespace ibcdatacsharp.UI.Graphs
                             angularVelocity[i].Z = Helpers.AngularVelocityFromDegrees(angleZ_v_a[i], angleZ_v_a[i - 1], dt);
                         }
                         prev_angle = new Vector3(angleX[3], angleY[3], angleZ[3]);
+                        */
 
                         Vector3[] angularAcceleration = new Vector3[4];
                         angularAcceleration[0] = Helpers.AngularAcceleration(angularVelocity[0], prev_angle_vel, dt);
@@ -1083,6 +1115,7 @@ namespace ibcdatacsharp.UI.Graphs
                             angularAcceleration[i] = Helpers.AngularAcceleration(angularVelocity[i], angularVelocity[i - 1], dt);
                         }
                         prev_angle_vel = angularVelocity[3];
+                        
 
                         float offsetX = (float)this.angleX.model.offset;
                         float offsetY = (float)this.angleY.model.offset;
