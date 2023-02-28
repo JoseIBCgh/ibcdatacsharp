@@ -1,4 +1,4 @@
 # IBC Capture Tool
 
 ## Version
-1.0.0_master_ivan
+feature/1.0.2_sagital_angles_lab_2imuquats
