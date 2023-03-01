@@ -113,6 +113,7 @@ namespace ibcdatacsharp.UI
         public FilterManager filterManager;
 
         public SagitalAngles.SagitalAngles sagitalAngles;
+        public Angles.Angles angles;
 
         //end Wiseware API
         public MainWindow()
@@ -125,6 +126,7 @@ namespace ibcdatacsharp.UI
             graphManager = new GraphManager();
             filterManager = new FilterManager();
             sagitalAngles = new SagitalAngles.SagitalAngles();
+            angles = new Angles.Angles();
             initIcon();
             initToolBarHandlers();
             initMenuHandlers();
@@ -759,11 +761,24 @@ namespace ibcdatacsharp.UI
         #region SAGITAL ANGLES
         private void onCalculateMounting(object sender, EventArgs e)
         {
-            sagitalAngles.calculateMounting();
+            switch((deviceList.Content as DeviceList.DeviceList).IMUsUsed.Count)
+            {
+                case 2:
+                    angles.calculateMounting();
+                    break;
+                case 4:
+                    sagitalAngles.calculateMounting();
+                    break;
+            }
         }
         private void onSaveFrontalReference(object sender, EventArgs e)
         {
-            sagitalAngles.calculateVirtualOrientation();
+            switch ((deviceList.Content as DeviceList.DeviceList).IMUsUsed.Count)
+            {
+                case 4:
+                    sagitalAngles.calculateVirtualOrientation();
+                    break;
+            }
         }
         #endregion
         // IMPORTANTE: La funcion eventHandler tiene que ser local

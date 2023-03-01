@@ -44,6 +44,7 @@ namespace ibcdatacsharp.UI.Graphs
             VirtualToolBar virtualToolBar = mainWindow.virtualToolBar;
             FilterManager filterManager = mainWindow.filterManager;
             SagitalAngles.SagitalAngles sagitalAngles = mainWindow.sagitalAngles;
+            Angles.Angles angles = mainWindow.angles;
             Device.Device device = mainWindow.device;
             graphs1IMU = new List<Frame>();
             graphs2IMU = new List<Frame>();
@@ -81,14 +82,14 @@ namespace ibcdatacsharp.UI.Graphs
                 {
                     DeviceList.DeviceList deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
                     captureManager = new CaptureManager(graphs1IMU, graphs2IMU, graphsSagital,
-                        virtualToolBar, device, deviceList, filterManager, sagitalAngles);
+                        virtualToolBar, device, deviceList, filterManager, sagitalAngles, angles);
                 };
             }
             else
             {
                 DeviceList.DeviceList deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
                 captureManager = new CaptureManager(graphs1IMU, graphs2IMU, graphsSagital,
-                    virtualToolBar, device, deviceList, filterManager, sagitalAngles);
+                    virtualToolBar, device, deviceList, filterManager, sagitalAngles, angles);
             }
         }
         public void initReplay(GraphData data)
@@ -156,6 +157,7 @@ namespace ibcdatacsharp.UI.Graphs
         private int numIMUs;
 
         private SagitalAngles.SagitalAngles sagitalAngles;
+        private Angles.Angles angles;
 
         MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
 
@@ -219,7 +221,7 @@ namespace ibcdatacsharp.UI.Graphs
         //End Wise
         public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU, List<Frame> graphsSagital,
             VirtualToolBar virtualToolBar, Device.Device device, DeviceList.DeviceList deviceList, 
-            FilterManager filterManager, SagitalAngles.SagitalAngles sagitalAngles)
+            FilterManager filterManager, SagitalAngles.SagitalAngles sagitalAngles, Angles.Angles angles)
         {
             active = false;
             this.graphs1IMU = graphs1IMU;
@@ -230,6 +232,7 @@ namespace ibcdatacsharp.UI.Graphs
             this.deviceList = deviceList;
             this.filterManager = filterManager;
             this.sagitalAngles = sagitalAngles;
+            this.angles = angles;
             saveGraphs();
             saveTimeLine();
 
@@ -239,10 +242,12 @@ namespace ibcdatacsharp.UI.Graphs
             refq.X = -0.189621f;
             refq.Y = 0.693031f;
             refq.Z = -0.672846f;
+            angles.q_v = refq;
         }
         public void setReference(Quaternion q)
         {
             refq = q;
+            angles.q_v = refq;
         }
         /*
         private void onNumIMUsFunction(int n)
@@ -509,6 +514,7 @@ namespace ibcdatacsharp.UI.Graphs
                         case 2:
                             saveHandlers();
                             graphs = graphs2IMU;
+                            angles.initIMUs();
                             break;
                         case 4:
                             graphs = graphsSagital;
@@ -986,6 +992,8 @@ namespace ibcdatacsharp.UI.Graphs
                     }
                     if (anglequat % 2 == 0)
                     {
+                        angles.processSerialData(deviceHandler, data);
+                        break;
                         float[] angleX = new float[4];
                         float[] angleY = new float[4];
                         float[] angleZ = new float[4];
