@@ -1287,8 +1287,10 @@ namespace ibcdatacsharp.UI.Graphs
                                 //Plotear aceleración lineal
 
                                 GraphLinAcc lacc = linAcc;
-                                //GraphAccelerometer acc = accelerometer;
-                                //GraphGyroscope gyr = gyroscope;
+                                GraphAccelerometer acc = accelerometer;
+                                GraphGyroscope gyr = gyroscope;
+                                GraphMagnetometer mag = magnetometer;
+                                GraphQuaternion quat = quaternions;
 
 
                                 double[] lacc_data = new double[3];
@@ -1297,7 +1299,7 @@ namespace ibcdatacsharp.UI.Graphs
                                 lacc_data[1] = Convert.ToDouble(la.getitem(1)) * G;
                                 lacc_data[2] = Convert.ToDouble(la.getitem(2)) * G;
 
-                                lacc.drawData(lacc_data);
+                                lacc.queueData(lacc_data);
 
                                 double[] acc_data = new double[3];
 
@@ -1305,14 +1307,29 @@ namespace ibcdatacsharp.UI.Graphs
                                 acc_data[1] = Convert.ToDouble(fa.getitem(1)) * G;
                                 acc_data[2] = Convert.ToDouble(fa.getitem(2)) * G;
 
-                                //acc.drawData(acc_data);
+                                acc.queueData(acc_data);
 
                                 double[] gyr_data = new double[3];
                                 gyr_data[0] = Convert.ToDouble(lg.getitem(0)) * toDegrees;
                                 gyr_data[1] = Convert.ToDouble(lg.getitem(1)) * toDegrees;
                                 gyr_data[2] = Convert.ToDouble(lg.getitem(2)) * toDegrees;
 
-                                //gyr.drawData(gyr_data);
+                                gyr.queueData(gyr_data);
+
+                                double[] mag_data = new double[3];
+                                mag_data[0] = Convert.ToDouble(lb.getitem(0));
+                                mag_data[1] = Convert.ToDouble(lb.getitem(1));
+                                mag_data[2] = Convert.ToDouble(lb.getitem(2));
+
+                                mag.queueData(gyr_data);
+
+                                double[] quat_data = new double[4];
+                                quat_data[0] = Convert.ToDouble(lq.getitem(0));
+                                quat_data[1] = Convert.ToDouble(lq.getitem(1));
+                                quat_data[2] = Convert.ToDouble(lq.getitem(2));
+                                quat_data[3] = Convert.ToDouble(lq.getitem(0));
+
+                                quat.queueData(quat_data);
 
                                 if (virtualToolBar.recordState == RecordState.Recording)
                                 {
@@ -1323,8 +1340,8 @@ namespace ibcdatacsharp.UI.Graphs
                                         acc_data[0].ToString("F3") + " " + acc_data[1].ToString("F3") + " " +
                                         acc_data[2].ToString("F3") + " " + gyr_data[0].ToString("F3") + " " +
                                         gyr_data[1].ToString("F3") + " " + gyr_data[2].ToString("F3") + " " +
-                                        lq.getitem(0).ToString("F3") + " " + lq.getitem(1).ToString("F3") + " " +
-                                        lq.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
+                                        lb.getitem(0).ToString("F3") + " " + lb.getitem(1).ToString("F3") + " " +
+                                        lb.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
                                         lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
                                         lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
                                         lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";

@@ -100,6 +100,10 @@ namespace ibcdatacsharp.UI.Graphs.Models
             //clear();
             captureModel.updateData(data);
         }
+        public async void queueData(double[] data)
+        {
+            captureModel.queueData(data);
+        }
         public async void updateData(Vector3[] data, bool render = true)
         {
             captureModel.updateData(data, render);
@@ -126,6 +130,7 @@ namespace ibcdatacsharp.UI.Graphs.Models
             SignalPlot signalPlotY;
             SignalPlot signalPlotZ;
             public int nextIndex = 0;
+            const int QUEUE_PLOT_FREQ = 4;
 
             public CaptureModel(Model3S model)
             {
@@ -186,6 +191,32 @@ namespace ibcdatacsharp.UI.Graphs.Models
                     initCapture();
                 }
                 
+            }
+            public void queueData(double[] data)
+            {
+
+                if (valuesX != null & valuesY != null & valuesZ != null)
+                {
+                    int index = nextIndex % CAPACITY;
+                    valuesX[index] = data[0];
+                    valuesY[index] = data[1];
+                    valuesZ[index] = data[2];
+                    nextIndex += 1;
+                    if (nextIndex % QUEUE_PLOT_FREQ == 0)
+                    {
+                        signalPlotX.Label = "X= "; // + data[0].ToString("0.##");
+                        signalPlotY.Label = "Y= "; // + data[1].ToString("0.##");
+                        signalPlotZ.Label = "Z= "; // + data[2].ToString("0.##");
+                        model.lineFrame.X = nextIndex % CAPACITY;
+                        model.plot.Render();
+                    }
+                }
+
+                else
+                {
+                    initCapture();
+                }
+
             }
         }
         class ReplayModel

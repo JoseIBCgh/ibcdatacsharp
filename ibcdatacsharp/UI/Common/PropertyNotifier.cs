@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ibcdatacsharp.Common
 {
@@ -11,7 +13,7 @@ namespace ibcdatacsharp.Common
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "" )
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

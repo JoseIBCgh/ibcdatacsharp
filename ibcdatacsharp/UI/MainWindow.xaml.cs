@@ -32,6 +32,7 @@ using ibcdatacsharp.UI.Common;
 using ibcdatacsharp.UI.Filters;
 using ibcdatacsharp.UI.Graphs;
 using System.Runtime.CompilerServices;
+using System.Windows.Threading;
 
 namespace ibcdatacsharp.UI
 {
@@ -353,8 +354,12 @@ namespace ibcdatacsharp.UI
                 */
                 
                 await Dispatcher.BeginInvoke(
-                    () => (deviceList.Content as DeviceList.DeviceList).
-                    connectIMU(dev.Id, handler)
+                    () => {
+                        (deviceList.Content as DeviceList.DeviceList).
+                        connectIMU(dev.Id);
+                        (deviceList.Content as DeviceList.DeviceList).
+                        setIMUHandler(dev.Id, handler);
+                    }
                 );
                 
                 api.SetDeviceConfiguration(handler, 100, 3, out error);
@@ -461,18 +466,25 @@ namespace ibcdatacsharp.UI
 
                 if (!OpenZen.ZenWaitForNextEvent(mZenHandle, zenEvent))
                     break;
-
                 if (zenEvent.component.handle == 0)
                 {
                     switch (zenEvent.eventType)
                     {
                         case ZenEventType.ZenEventType_SensorFound:
-                            SensorListResult localDesc = new SensorListResult();
-                            localDesc.Identifier = zenEvent.data.sensorFound.identifier;
-                            localDesc.IoType = zenEvent.data.sensorFound.ioType;
-                            localDesc.BaudRate = zenEvent.data.sensorFound.baudRate;
-                            mFoundSensor.Add(localDesc);
-
+                            if (zenEvent.data.sensorFound.ioType != "WindowsDevice") // Si no detecta tambien COM
+                            {
+                                SensorListResult localDesc = new SensorListResult();
+                                localDesc.Identifier = zenEvent.data.sensorFound.identifier;
+                                localDesc.IoType = zenEvent.data.sensorFound.ioType;
+                                localDesc.BaudRate = zenEvent.data.sensorFound.baudRate;
+                                mFoundSensor.Add(localDesc);
+                                await Application.Current.Dispatcher.BeginInvoke(() =>
+                                {
+                                    DeviceList.DeviceList deviceListClass = deviceList.Content as DeviceList.DeviceList;
+                                    IMUInfo imu = new LPInfo("LPMBS2", localDesc.Identifier, zenEvent.data.sensorFound);
+                                    Application.Current.Dispatcher.BeginInvoke(() => deviceListClass.addIMU(imu));
+                                });
+                            }
                             break;
 
                         case ZenEventType.ZenEventType_SensorListingProgress:
@@ -585,12 +597,10 @@ namespace ibcdatacsharp.UI
 
                     await Task.Delay(4000);
 
-               
-                    imus.Add(new IMUInfo("LPMSB2", "TEST"));
-
                     for (int i = 0; i < scanDevices.Count; i++)
                     {
-                        imus.Add(new IMUInfo("ActiSense", GetMacAddress(scanDevices, i)));
+                        ActiSenseInfo imu = new ActiSenseInfo("ActiSense", GetMacAddress(scanDevices, i));
+                        deviceListClass.addIMU(imu); // Esto hay que cambiarlo porque sino chafa los de LP
                     }
 
                    
@@ -600,9 +610,6 @@ namespace ibcdatacsharp.UI
                     imus.Add(new IMUInfo("ActiSense", random.NextSingle().ToString()));
                     imus.Add(new IMUInfo("ActiSense2", random.NextSingle().ToString()));
                     */
-
-
-                    deviceListClass.setIMUs(imus);
                     MessageBox.Show(scanDevices.Count + " IMUs encontrados", "Scan Devices", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
@@ -649,13 +656,14 @@ namespace ibcdatacsharp.UI
             //   (int)EZenImuProperty.ZenImuProperty_SamplingRate, 200);
 
             //Trace.WriteLine("Configured device: freq error: " + freq_error.ToString());
-
+            // Esto ya no hace falta ahore se conectan abajo de uno en uno
+            /*
             var sensorInitError = OpenZen.ZenObtainSensorByName(mZenHandle,
                      mFoundSensor[0].IoType,
                      mFoundSensor[0].Identifier,
                      mFoundSensor[0].BaudRate,
                      mSensorHandle);
-            Trace.WriteLine("Device Connected");
+            */
         }
 
         // Conecta el boton connect
@@ -668,7 +676,8 @@ namespace ibcdatacsharp.UI
                 IList<object> selectedItems = (IList<object>)deviceListClass.treeView.SelectedItems;
                 List<IMUInfo> connectedIMUs = new List<IMUInfo>();
                 List<object> selectedIMUs = new List<object>(); // Necesario porque deviceListClass.treeView.SelectedItems puede cambiar despues de clicar connect
-                
+                List<LPInfo> connectedLP = new List<LPInfo>();
+
                 foreach (object selected in selectedItems)
                 {
                     if (selected != null) // No sé si se puede quitar
@@ -700,18 +709,40 @@ namespace ibcdatacsharp.UI
                 // Operación atómica de conexión
                 foreach (IMUInfo imu in connectedIMUs)
                 {
-                    conn_list_dev.Add(findIMU(imu));
-                    devHandlers.Remove((int)imu.id);
+                    switch (imu.GetType().Name)
+                    {
+                        case nameof(ActiSenseInfo):
+                            conn_list_dev.Add(findIMU(imu));
+                            devHandlers.Remove((int)imu.id);
+                            break;
+                        case nameof(LPInfo):
+                            connectedLP.Add((LPInfo)imu);
+                            break;
+                    }     
                 }
                 if(!api.Connect(conn_list_dev, out error))
                 {
                     Trace.WriteLine("Connect error " + error);
                 }
-                
+
+                foreach(LPInfo sensor in connectedLP)
+                {
+                    OpenZen.ZenObtainSensor(mZenHandle, sensor.sensorDesc, mSensorHandle);
+                    await Dispatcher.BeginInvoke(
+                    () => {
+                        (deviceList.Content as DeviceList.DeviceList).connectIMU(sensor.address);
+                        (deviceList.Content as DeviceList.DeviceList).setHandle(sensor.address, mSensorHandle);
+                    }
+                );
+                }
+                Trace.WriteLine("Device Connected");
+
 
                 //EndWise
 
+                // Esto ya se hace arriba. Aqui no hace falta y creo que habria problemas porque hay varios tipos ahora
                 //Borrar si existe
+                /*
                 foreach (IMUInfo imu in connectedIMUs)
                 {
                     if (devHandlers.Contains((int)imuInfo.id))
@@ -720,6 +751,7 @@ namespace ibcdatacsharp.UI
 
                     }
                 }
+                */
             }
             deviceListLoadedCheck(onConnectFunction);
         }
@@ -756,7 +788,7 @@ namespace ibcdatacsharp.UI
             {
                 DeviceList.DeviceList deviceListClass = deviceList.Content as DeviceList.DeviceList;
                 IList<object> selectedItems = (IList<object>)deviceListClass.treeView.SelectedItems;
-                List<string> IMUsToDisconnect = new List<string>();
+                List<IMUInfo> IMUsToDisconnect = new List<IMUInfo>();
                 devHandlers = new List<int>();
                 Trace.WriteLine("before disconnect");
                 Helpers.printDevicesConnected();
@@ -768,18 +800,41 @@ namespace ibcdatacsharp.UI
                         //Begin Wise
                         IMUInfo imuInfo = treeViewItem.DataContext as IMUInfo;
 
+                        IMUsToDisconnect.Add(imuInfo);
+
+                        /*
                         devHandlers.Add(handler(imuInfo));
                         conn_list_dev.Remove(findIMU(imuInfo));
                         //devices_list.Remove(imuInfo.handler.ToString());
-                        imuInfo.handler = null;
+                        //imuInfo.handler = null;
                         IMUsToDisconnect.Add(imuInfo.address);
-
+                        */
                         
                     }
                 }
+                List<LPInfo> LPsToDisconnect = new List<LPInfo>();
+                foreach(IMUInfo imu in IMUsToDisconnect)
+                {
+                    switch (imu.GetType().Name)
+                    {
+                        case nameof(ActiSenseInfo):
+                            conn_list_dev.Remove(findIMU(imu));
+                            devHandlers.Add((int)imu.id);
+                            break;
+                        case nameof(LPInfo):
+                            LPsToDisconnect.Add((LPInfo)imu);
+                            break;
+                    }
+                }
+
                 if (!api.Disconnect(devHandlers, out error))
                 {
                     Trace.WriteLine("Disconnect error " + error);
+                }
+                foreach (LPInfo sensor in LPsToDisconnect)
+                {
+                    OpenZen.ZenReleaseSensor(mZenHandle, sensor.sensorHandle);
+                    deviceListClass.clearHandle(sensor);
                 }
                 
                 await Task.Delay(4000);
@@ -872,7 +927,7 @@ namespace ibcdatacsharp.UI
             CancellationToken ct = tokenSource.Token;
             void eventHandler(object sender, byte handler, Quaternion q)
             {
-                if(imu.handler != null && handler == imu.handler)
+                if(((ActiSenseInfo)imu).handler != null && handler == ((ActiSenseInfo)imu).handler)
                 {
                     graphManager.captureManager.quaternionEvent -= eventHandler;
                     tokenSource.Cancel();

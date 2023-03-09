@@ -10,6 +10,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
+using static WisewalkSDK.Wisewalk;
+using System.Windows.Threading;
 
 namespace ibcdatacsharp.UI.DeviceList
 {
@@ -97,6 +100,26 @@ namespace ibcdatacsharp.UI.DeviceList
                     VM.IMUs.Add(imu);
                 }
             }
+        }
+        public void addIMU(IMUInfo imu)
+        {
+            Trace.WriteLine("addIMU");
+            Trace.WriteLine(imu.address);
+            if (!IMUinList(imu))
+            {
+                VM.addIMU(imu);
+            }
+        }
+        private bool IMUinList(IMUInfo imu)
+        {
+            foreach (IMUInfo IMUInList in VM.IMUs)
+            {
+                if (imu.address == IMUInList.address) // Tiene que identificar a un IMU de forma unica
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         /*
         public void addIMU(IMUInfo imu)
@@ -249,12 +272,14 @@ namespace ibcdatacsharp.UI.DeviceList
         public void setIMUHandler(string mac, byte handler)
         {
             IMUInfo imuInfo = VM.IMUs.Where((imu) => imu.address == mac).First();
-            imuInfo.handler = handler;
+            if (imuInfo is ActiSenseInfo)
+            {
+                ((ActiSenseInfo)imuInfo).handler = handler;
+            }
         }
-        public void connectIMU(string mac, byte handler)
+        public void connectIMU(string mac)
         {
             IMUInfo imuInfo = VM.IMUs.Where((imu) => imu.address == mac).First();
-            imuInfo.handler = handler;
             imuInfo.connected = true;
         }
         public void updateHeaderInfo(string mac, byte handler)
@@ -278,10 +303,31 @@ namespace ibcdatacsharp.UI.DeviceList
                     imuInfo.connected = true;
                     // No estoy seguro de que esta sea la lista y este key
 
-                    imuInfo.battery = mainWindow.devices_list[imuInfo.handler.ToString()].HeaderInfo.battery;
-                    imuInfo.fw = mainWindow.devices_list[imuInfo.handler.ToString()].HeaderInfo.fwVersion;
-                    treeViewItem.Foreground = new SolidColorBrush(Colors.Green);
+                    if (imuInfo is ActiSenseInfo)
+                    {
+                        imuInfo.battery = mainWindow.devices_list[((ActiSenseInfo)imuInfo).handler.ToString()].HeaderInfo.battery;
+                        imuInfo.fw = mainWindow.devices_list[((ActiSenseInfo)imuInfo).handler.ToString()].HeaderInfo.fwVersion;
+                        treeViewItem.Foreground = new SolidColorBrush(Colors.Green);
+                    }
                 }
+            }
+        }
+        public void setHandle(string mac, ZenSensorHandle_t handle)
+        {
+            IMUInfo imuInfo = VM.IMUs.Where((imu) => imu.address == mac).First();
+            if(imuInfo is LPInfo)
+            {
+                LPInfo lpInfo = (LPInfo)imuInfo;
+                lpInfo.sensorHandle = handle;
+            }
+        }
+        public void clearHandle(LPInfo imuToClear)
+        {
+            IMUInfo imuInfo = VM.IMUs.Where((imu) => imu.address == imuToClear.address).First();
+            if (imuInfo is LPInfo)
+            {
+                LPInfo lpInfo = (LPInfo)imuInfo;
+                lpInfo.sensorHandle = null;
             }
         }
         // Funcion que se llama al conectar una camara (doble click o boton connect) para cambiar el TreeView
@@ -296,7 +342,7 @@ namespace ibcdatacsharp.UI.DeviceList
         }
         public void disconnectIMU(byte handler)
         {
-            IMUInfo imuInfo = VM.IMUs.Where((imu) => imu.handler == handler).First();
+            IMUInfo imuInfo = VM.IMUs.Where((imu) => imu is ActiSenseInfo && (imu as ActiSenseInfo).handler == handler).First();
             imuInfo.connected = false;
             imuInfo.battery = null;
             imuInfo.fw = null;
@@ -306,6 +352,16 @@ namespace ibcdatacsharp.UI.DeviceList
             foreach (string mac in IMUsToDisconnect)
             {
                 IMUInfo imuInfo = VM.IMUs.Where((imu) => imu.address == mac).First();
+                imuInfo.connected = false;
+                imuInfo.battery = null;
+                imuInfo.fw = null;
+            }
+        }
+        public void disconnectIMUs(List<IMUInfo> IMUsToDisconnect)
+        {
+            foreach (IMUInfo imu in IMUsToDisconnect)
+            {
+                IMUInfo imuInfo = VM.IMUs.Where((imuList) => imuList.address == imu.address).First();
                 imuInfo.connected = false;
                 imuInfo.battery = null;
                 imuInfo.fw = null;

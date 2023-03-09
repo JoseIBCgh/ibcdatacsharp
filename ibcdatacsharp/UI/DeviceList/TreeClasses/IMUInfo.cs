@@ -1,6 +1,7 @@
 ﻿using ibcdatacsharp.Common;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Sockets;
 using System.Windows.Documents;
 
 namespace ibcdatacsharp.DeviceList.TreeClasses
@@ -54,13 +55,12 @@ namespace ibcdatacsharp.DeviceList.TreeClasses
             set { SetValue("fw", value); }
         }
 
-        public byte? handler { get; set; }
-
         public void checkJAUpdate()
         {
             NotifyChange("connected");
         }
-        public IMUInfo() { }
+        public IMUInfo() {
+        }
         public IMUInfo(string name, string address)
         {
             this.name = name;
@@ -95,6 +95,25 @@ namespace ibcdatacsharp.DeviceList.TreeClasses
             //Trace.WriteLine("removeIMU");
             //Trace.WriteLine(imu.id);
             idsUsed.Remove((int)imu.id);
+        }
+    }
+    public class ActiSenseInfo : IMUInfo
+    {
+        public byte? handler { get; set; }
+        public ActiSenseInfo(string name, string address) : base(name, address)
+        {
+
+        }
+    }
+    public class LPInfo : IMUInfo
+    {
+        public ZenSensorDesc? sensorDesc { get; set; }
+        public ZenSensorHandle_t? sensorHandle { get; set; }
+        public LPInfo(string name, string address, ZenSensorDesc sensorDesc) : base(name, address)
+        {
+            this.sensorDesc = sensorDesc;
+            this.sensorHandle = null;
+            setID();
         }
     }
 }

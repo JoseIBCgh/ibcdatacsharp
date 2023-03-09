@@ -35,11 +35,11 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
         }
 
         //Para LP
-        public async void drawData(double[] acc)
+        public async void queueData(double[] gyr)
         {
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                model.updateData(acc);
+                model.queueData(gyr);
             });
         }
         public async void drawData(GraphData data)

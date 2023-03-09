@@ -42,11 +42,12 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
             });
         }
 
-        public async void drawData(double[] acc)
+        //Para LP
+        public async void queueData(double[] acc)
         {
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                model.updateData(acc);
+                model.queueData(acc);
             });
         }
 
