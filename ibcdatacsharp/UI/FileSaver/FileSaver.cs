@@ -38,6 +38,8 @@ namespace ibcdatacsharp.UI.FileSaver
         private bool recordVideo;
         private StringBuilder? csvData = new StringBuilder();
 
+        public bool firstLine { get; private set; }
+
         public delegate void filesAddedEvent(object sender, List<string> files);
         public event filesAddedEvent filesAdded;
         public FileSaver()
@@ -207,6 +209,7 @@ namespace ibcdatacsharp.UI.FileSaver
             {
                 csvFile = baseFilename + ".txt";
                 csvData = new StringBuilder();
+                firstLine = true;
                 switch (deviceList.numIMUsUsed)
                 {
                     case 1:
@@ -236,7 +239,11 @@ namespace ibcdatacsharp.UI.FileSaver
 
         public void appendCSVManual(string dataline)
         {
-           csvData.Append(dataline);
+            if (firstLine)
+            {
+                firstLine = false;
+            }
+            csvData.Append(dataline);
            
         }
 

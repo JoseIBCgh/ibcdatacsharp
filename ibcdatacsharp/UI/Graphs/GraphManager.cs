@@ -220,6 +220,8 @@ namespace ibcdatacsharp.UI.Graphs
         const float G = 9.8f;
         const float toDegrees = 57.29577f;
 
+        private double initialTimespamp = 0;
+
         public delegate void QuaternionEventHandler(object sender, byte handler, Quaternion q);
         public event QuaternionEventHandler quaternionEvent;
         //End Wise
@@ -1282,7 +1284,7 @@ namespace ibcdatacsharp.UI.Graphs
                                 OpenZenFloatArray lg = OpenZenFloatArray.frompointer(zenEvent.data.imuData.g1);
                                 OpenZenFloatArray lb = OpenZenFloatArray.frompointer(zenEvent.data.imuData.b);
                                 OpenZenFloatArray lq = OpenZenFloatArray.frompointer(zenEvent.data.imuData.q);
-                                string ts = (zenEvent.data.imuData.timestamp).ToString("F2");
+                                double ts = (zenEvent.data.imuData.timestamp);
 
                                 //Plotear aceleración lineal
 
@@ -1333,10 +1335,16 @@ namespace ibcdatacsharp.UI.Graphs
 
                                 if (virtualToolBar.recordState == RecordState.Recording)
                                 {
+                                    if (mainWindow.fileSaver.firstLine)
+                                    {
+                                        initialTimespamp = ts;
+                                    }
 
+                                    ts = ts - initialTimespamp;
+                                    
                                     string dataline = "";
 
-                                    dataline += "1 " + fakets.ToString("F2") + " " + (frame).ToString() + " " +
+                                    dataline += "1 " + ts.ToString("F2") + " " + (frame).ToString() + " " +
                                         acc_data[0].ToString("F3") + " " + acc_data[1].ToString("F3") + " " +
                                         acc_data[2].ToString("F3") + " " + gyr_data[0].ToString("F3") + " " +
                                         gyr_data[1].ToString("F3") + " " + gyr_data[2].ToString("F3") + " " +
