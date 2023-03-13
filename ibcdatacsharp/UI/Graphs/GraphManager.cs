@@ -20,6 +20,7 @@ using System.Net;
 using System.Windows.Markup;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
+using System.Globalization;
 
 namespace ibcdatacsharp.UI.Graphs
 {
@@ -1312,9 +1313,9 @@ namespace ibcdatacsharp.UI.Graphs
                                 acc.queueData(acc_data);
 
                                 double[] gyr_data = new double[3];
-                                gyr_data[0] = Convert.ToDouble(lg.getitem(0)) * toDegrees;
-                                gyr_data[1] = Convert.ToDouble(lg.getitem(1)) * toDegrees;
-                                gyr_data[2] = Convert.ToDouble(lg.getitem(2)) * toDegrees;
+                                gyr_data[0] = Convert.ToDouble(lg.getitem(0));
+                                gyr_data[1] = Convert.ToDouble(lg.getitem(1));
+                                gyr_data[2] = Convert.ToDouble(lg.getitem(2));
 
                                 gyr.queueData(gyr_data);
 
@@ -1344,15 +1345,15 @@ namespace ibcdatacsharp.UI.Graphs
                                     
                                     string dataline = "";
 
-                                    dataline += "1 " + ts.ToString("F2") + " " + (frame).ToString() + " " +
-                                        acc_data[0].ToString("F3") + " " + acc_data[1].ToString("F3") + " " +
-                                        acc_data[2].ToString("F3") + " " + gyr_data[0].ToString("F3") + " " +
-                                        gyr_data[1].ToString("F3") + " " + gyr_data[2].ToString("F3") + " " +
-                                        lb.getitem(0).ToString("F3") + " " + lb.getitem(1).ToString("F3") + " " +
-                                        lb.getitem(2).ToString("F3") + " " + lacc_data[0].ToString("F3") + " " +
-                                        lacc_data[1].ToString("F3") + " " + lacc_data[2].ToString("F3") + " " +
-                                        lq.getitem(0).ToString("0.##") + " " + lq.getitem(1).ToString("0.##") + " " +
-                                        lq.getitem(2).ToString("0.##") + " " + lq.getitem(3).ToString("0.##") + "\n";
+                                    dataline += "1 " + ts.ToString("F2", CultureInfo.InvariantCulture) + " " + (frame).ToString() + " " +
+                                        acc_data[0].ToString("F3", CultureInfo.InvariantCulture) + " " + acc_data[1].ToString("F3", CultureInfo.InvariantCulture) + " " +
+                                        acc_data[2].ToString("F3", CultureInfo.InvariantCulture) + " " + gyr_data[0].ToString("F3", CultureInfo.InvariantCulture) + " " +
+                                        gyr_data[1].ToString("F3", CultureInfo.InvariantCulture) + " " + gyr_data[2].ToString("F3", CultureInfo.InvariantCulture) + " " +
+                                        lb.getitem(0).ToString("F3", CultureInfo.InvariantCulture) + " " + lb.getitem(1).ToString("F3", CultureInfo.InvariantCulture) + " " +
+                                        lb.getitem(2).ToString("F3", CultureInfo.InvariantCulture) + " " + lacc_data[0].ToString("F3", CultureInfo.InvariantCulture) + " " +
+                                        lacc_data[1].ToString("F3", CultureInfo.InvariantCulture) + " " + lacc_data[2].ToString("F3", CultureInfo.InvariantCulture) + " " +
+                                        lq.getitem(1).ToString("0.##", CultureInfo.InvariantCulture) + " " + lq.getitem(2).ToString("0.##", CultureInfo.InvariantCulture) + " " +
+                                        lq.getitem(3).ToString("0.##", CultureInfo.InvariantCulture) + " " + lq.getitem(0).ToString("0.##", CultureInfo.InvariantCulture) + "\n";
 
                                     frame++;
                                     fakets += 0.01f;

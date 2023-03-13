@@ -87,9 +87,9 @@ namespace ibcdatacsharp.UI.Graphs.OneIMU
             for (int i = 0; i < data.length; i++)
             {
                 // Cambiar esto
-                accX[i] = ((FrameData1IMU)data[i]).accX;
-                accY[i] = ((FrameData1IMU)data[i]).accY;
-                accZ[i] = ((FrameData1IMU)data[i]).accZ;
+                accX[i] = ((FrameData1IMU)data[i]).laccX;
+                accY[i] = ((FrameData1IMU)data[i]).laccY;
+                accZ[i] = ((FrameData1IMU)data[i]).laccZ;
             }
             await Application.Current.Dispatcher.BeginInvoke(UPDATE_PRIORITY, () =>
             {
