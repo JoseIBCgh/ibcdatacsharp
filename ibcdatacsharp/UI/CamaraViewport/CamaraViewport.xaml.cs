@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Navigation;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace ibcdatacsharp.UI.CamaraViewport
 {
@@ -36,6 +37,7 @@ namespace ibcdatacsharp.UI.CamaraViewport
         private Mat _currentFrame;
 
         public int fps { get; private set; }
+        public System.Drawing.Size resolution { get; private set; }
         public Mat currentFrame
         {
             get
@@ -111,9 +113,10 @@ namespace ibcdatacsharp.UI.CamaraViewport
             return frame;
         }
         // Empieza a grabar la camara
-        public async void initializeCamara(int index, int fps)
+        public async void initializeCamara(int index, int fps, System.Drawing.Size resolution)
         {
             this.fps = fps;
+            this.resolution = resolution;
             Trace.WriteLine("fps selected = " + fps);
             // Quitar la imagen de la grabacion anterior
             currentFrame = getBlackImage();
@@ -125,6 +128,8 @@ namespace ibcdatacsharp.UI.CamaraViewport
             cancellationTokenDisplay = cancellationTokenSourceDisplay.Token;
             videoCapture = new VideoCapture(index, VideoCaptureAPIs.DSHOW);
             videoCapture.Set(VideoCaptureProperties.Fps, this.fps);
+            videoCapture.Set(VideoCaptureProperties.FrameHeight, this.resolution.Height);
+            videoCapture.Set(VideoCaptureProperties.FrameWidth, this.resolution.Width);
             cameraChanged?.Invoke(this, EventArgs.Empty);
             await Task.Run(() => displayCameraCallback());
         }

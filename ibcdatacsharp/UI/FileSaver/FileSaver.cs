@@ -230,7 +230,7 @@ namespace ibcdatacsharp.UI.FileSaver
             {
                 videoFile = baseFilename + ".avi";
                 string pathVideoFile = path + Path.DirectorySeparatorChar + videoFile;
-                videoWriter = new VideoWriter(pathVideoFile, FourCC.DIVX, camaraViewport.fps, new OpenCvSharp.Size(Config.FRAME_WIDTH, Config.FRAME_HEIGHT));
+                videoWriter = new VideoWriter(pathVideoFile, FourCC.DIVX, camaraViewport.fps, new OpenCvSharp.Size(camaraViewport.resolution.Width, camaraViewport.resolution.Height));
                 initRecordVideo();
             }
         }
@@ -270,7 +270,7 @@ namespace ibcdatacsharp.UI.FileSaver
                 {
                     frame.ConvertTo(frame, (MatType)Config.MAT_TYPE);
                 }
-                Mat frameResized = frame.Resize(new OpenCvSharp.Size(Config.FRAME_WIDTH, Config.FRAME_HEIGHT));
+                Mat frameResized = frame.Resize(new OpenCvSharp.Size(camaraViewport.resolution.Width, camaraViewport.resolution.Height));
                 if (videoWriter != null)
                 {
                     videoWriter.Write(frameResized);
