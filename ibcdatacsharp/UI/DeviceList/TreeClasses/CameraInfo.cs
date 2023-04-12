@@ -28,6 +28,7 @@ namespace ibcdatacsharp.DeviceList.TreeClasses
             set { 
                 SetValue("fps", value);
                 resolutionsAvailable = fpsResolutions[value];
+                resolution = resolutionsAvailable[0];
             }
         }
         private Dictionary<int, List<System.Drawing.Size>> fpsResolutions
