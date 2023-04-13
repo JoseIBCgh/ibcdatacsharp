@@ -601,7 +601,7 @@ namespace ibcdatacsharp.UI
                         imus.Add(new IMUInfo("ActiSense", GetMacAddress(scanDevices, i)));
                     }
                     
-                    /* 
+                    /*
                     //IMUS falsos
                     Random random = new Random();
                     imus.Add(new IMUInfo("ActiSense", random.NextSingle().ToString()));
