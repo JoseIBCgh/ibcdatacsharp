@@ -127,6 +127,9 @@ namespace ibcdatacsharp.UI.CamaraViewport
             cancellationTokenSourceDisplay = new CancellationTokenSource();
             cancellationTokenDisplay = cancellationTokenSourceDisplay.Token;
             videoCapture = new VideoCapture(index, VideoCaptureAPIs.DSHOW);
+            double bufferSize = videoCapture.Get(VideoCaptureProperties.BufferSize);
+            Trace.WriteLine("buffer size " + bufferSize);
+            videoCapture.Set(VideoCaptureProperties.BufferSize, bufferSize * 2);
             videoCapture.Set(VideoCaptureProperties.Fps, this.fps);
             videoCapture.Set(VideoCaptureProperties.FrameHeight, this.resolution.Height);
             videoCapture.Set(VideoCaptureProperties.FrameWidth, this.resolution.Width);
