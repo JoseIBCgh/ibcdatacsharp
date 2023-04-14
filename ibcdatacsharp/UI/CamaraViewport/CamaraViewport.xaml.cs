@@ -127,9 +127,13 @@ namespace ibcdatacsharp.UI.CamaraViewport
             cancellationTokenSourceDisplay = new CancellationTokenSource();
             cancellationTokenDisplay = cancellationTokenSourceDisplay.Token;
             videoCapture = new VideoCapture(index, VideoCaptureAPIs.DSHOW);
+            double BUFFER_SIZE = 180;
+            videoCapture.Set(VideoCaptureProperties.BufferSize, BUFFER_SIZE);
             double bufferSize = videoCapture.Get(VideoCaptureProperties.BufferSize);
-            Trace.WriteLine("buffer size " + bufferSize);
-            videoCapture.Set(VideoCaptureProperties.BufferSize, bufferSize * 2);
+            if(bufferSize != BUFFER_SIZE)
+            {
+                MessageBox.Show("No se ha actualizado el buffer size correctamente valor: " + bufferSize);
+            }
             videoCapture.Set(VideoCaptureProperties.Fps, this.fps);
             videoCapture.Set(VideoCaptureProperties.FrameHeight, this.resolution.Height);
             videoCapture.Set(VideoCaptureProperties.FrameWidth, this.resolution.Width);
