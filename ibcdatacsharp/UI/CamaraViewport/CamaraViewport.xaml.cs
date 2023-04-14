@@ -112,11 +112,20 @@ namespace ibcdatacsharp.UI.CamaraViewport
             Mat frame = new Mat(Config.FRAME_HEIGHT, Config.FRAME_WIDTH, matType);
             return frame;
         }
+        private System.Drawing.Size swapResolutionIfNeed(System.Drawing.Size resolution)
+        {
+            if(resolution.Height == 720 || resolution.Width == 720)
+            {
+                System.Drawing.Size newResolution = new System.Drawing.Size(resolution.Height, resolution.Width);
+                return newResolution;
+            }
+            return resolution;
+        }
         // Empieza a grabar la camara
         public async void initializeCamara(int index, int fps, System.Drawing.Size resolution)
         {
             this.fps = fps;
-            this.resolution = resolution;
+            this.resolution = swapResolutionIfNeed(resolution);
             Trace.WriteLine("fps selected = " + fps);
             // Quitar la imagen de la grabacion anterior
             currentFrame = getBlackImage();
