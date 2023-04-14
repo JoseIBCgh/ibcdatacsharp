@@ -19,7 +19,11 @@
                 <Setter Property="Width" Value="60"/>
             </Style>
         </Grid.Resources>
-        <Button Grid.Row="0" Click="onClose">Close</Button>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Click="onClose">Close</Button>
+            <TextBox x:Name="bufferSize" TextAlignment="Center" Width="60" Text="100"/>
+            <Button Click="updateBuffer" Width="120">Update Buffer</Button>
+        </StackPanel>
         <Image Grid.Row="1" Name="imgViewport" Stretch="Uniform" Visibility="Visible"/>
         <MediaElement Grid.Row="1" Name="videoViewport" Stretch="Uniform" Visibility="Collapsed"/>
     </Grid>

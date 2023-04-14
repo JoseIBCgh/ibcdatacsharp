@@ -55,6 +55,7 @@ namespace ibcdatacsharp.UI.CamaraViewport
                 }
             }
         }
+        private int BUFFER_SIZE = 100;
 
         public CamaraViewport()
         {
@@ -127,12 +128,11 @@ namespace ibcdatacsharp.UI.CamaraViewport
             cancellationTokenSourceDisplay = new CancellationTokenSource();
             cancellationTokenDisplay = cancellationTokenSourceDisplay.Token;
             videoCapture = new VideoCapture(index, VideoCaptureAPIs.DSHOW);
-            double BUFFER_SIZE = 180;
             videoCapture.Set(VideoCaptureProperties.BufferSize, BUFFER_SIZE);
             double bufferSize = videoCapture.Get(VideoCaptureProperties.BufferSize);
             if(bufferSize != BUFFER_SIZE)
             {
-                MessageBox.Show("No se ha actualizado el buffer size correctamente valor: " + bufferSize);
+                MessageBox.Show("No se ha actualizado el buffer size correctamente valor: " + BUFFER_SIZE + " valor real: " + bufferSize);
             }
             videoCapture.Set(VideoCaptureProperties.Fps, this.fps);
             videoCapture.Set(VideoCaptureProperties.FrameHeight, this.resolution.Height);
@@ -190,6 +190,20 @@ namespace ibcdatacsharp.UI.CamaraViewport
             if(videoCapture != null)
             {
                 videoCapture.Release();
+            }
+        }
+
+        private void updateBuffer(object sender, RoutedEventArgs e)
+        {
+            BUFFER_SIZE =  int.Parse(bufferSize.Text);
+            if(videoCapture != null)
+            {
+                videoCapture.Set(VideoCaptureProperties.BufferSize, BUFFER_SIZE);
+                double bufferSize = videoCapture.Get(VideoCaptureProperties.BufferSize);
+                if (bufferSize != BUFFER_SIZE)
+                {
+                    MessageBox.Show("No se ha actualizado el buffer size correctamente valor: " + BUFFER_SIZE + " valor real: " + bufferSize);
+                }
             }
         }
     }
