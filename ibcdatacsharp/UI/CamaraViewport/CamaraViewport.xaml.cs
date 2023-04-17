@@ -194,7 +194,7 @@ namespace ibcdatacsharp.UI.CamaraViewport
                     if(virtualToolBar.recordState == ToolBar.Enums.RecordState.Recording &&
                         fileSaver.recordVideo)
                     {
-                        Task.Run(() => fileSaver.appendFrame(currentFrame));
+                        await Task.Run(() => fileSaver.appendFrame(currentFrame));
                     }
                 }
                 //await Task.Delay(1000 / fps);
