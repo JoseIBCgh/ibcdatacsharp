@@ -35,7 +35,7 @@ namespace ibcdatacsharp.UI.FileSaver
         private string? csvFile;
         private string? videoFile;
         private bool recordCSV;
-        private bool recordVideo;
+        public bool recordVideo { get; private set; }
         private StringBuilder? csvData = new StringBuilder();
 
         public delegate void filesAddedEvent(object sender, List<string> files);
@@ -169,8 +169,8 @@ namespace ibcdatacsharp.UI.FileSaver
             }
             if (recordVideo)
             {
-                timerVideo.Stop();
-                timerVideo = null;
+                //timerVideo.Stop();
+                //timerVideo = null;
                 mainWindow.virtualToolBar.pauseEvent -= onPauseVideo;
                 videoWriter.Release();
                 videoWriter = null;
@@ -231,10 +231,27 @@ namespace ibcdatacsharp.UI.FileSaver
                 videoFile = baseFilename + ".avi";
                 string pathVideoFile = path + Path.DirectorySeparatorChar + videoFile;
                 videoWriter = new VideoWriter(pathVideoFile, FourCC.DIVX, camaraViewport.fps, new OpenCvSharp.Size(Config.FRAME_WIDTH, Config.FRAME_HEIGHT));
-                initRecordVideo();
+                //initRecordVideo();
             }
         }
-
+        public void appendFrame(Mat frame)
+        {
+            if (videoWriter != null)
+            {
+                lock (videoWriter)
+                {
+                    if (Config.MAT_TYPE == null)
+                    {
+                        Config.MAT_TYPE = Config.DEFAULT_MAT_TYPE;
+                    }
+                    if (frame.Type() != Config.MAT_TYPE)
+                    {
+                        frame.ConvertTo(frame, (MatType)Config.MAT_TYPE);
+                    }
+                    videoWriter.Write(frame);
+                }
+            }
+        }
         //Añadde fila en un csv de forma manual
 
         public void appendCSVManual(string dataline)
@@ -256,7 +273,7 @@ namespace ibcdatacsharp.UI.FileSaver
             csvData.Append(newLine);
             frameCsv++;
         }
-
+        //deprecated
         private void appendVideo()
         {
             if (videoWriter != null)
@@ -296,12 +313,12 @@ namespace ibcdatacsharp.UI.FileSaver
         {
             if (recordCSV)
             {
-                timerCsv.Stop();
+                //timerCsv.Stop();
                 saveCsvFile();
             }
             if (recordVideo)
             {
-                timerVideo.Stop();
+                //timerVideo.Stop();
                 videoWriter.Dispose();
                 videoWriter = null;
             }

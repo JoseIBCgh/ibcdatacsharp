@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Navigation;
 using System.Diagnostics;
+using ibcdatacsharp.UI.ToolBar;
 
 namespace ibcdatacsharp.UI.CamaraViewport
 {
@@ -25,6 +26,8 @@ namespace ibcdatacsharp.UI.CamaraViewport
     public partial class CamaraViewport : Page
     {
         private TimeLine.TimeLine timeLine;
+        private VirtualToolBar virtualToolBar;
+        private FileSaver.FileSaver fileSaver;
         private VideoCapture videoCapture;
 
         private CancellationTokenSource cancellationTokenSourceDisplay;
@@ -70,6 +73,19 @@ namespace ibcdatacsharp.UI.CamaraViewport
             else
             {
                 timeLine = mainWindow.timeLine.Content as TimeLine.TimeLine;
+            }
+            if (!mainWindow.IsInitialized)
+            {
+                mainWindow.initialized += delegate (object sender, EventArgs e)
+                {
+                    virtualToolBar = mainWindow.virtualToolBar;
+                    fileSaver = mainWindow.fileSaver;
+                };
+            }
+            else
+            {
+                virtualToolBar = mainWindow.virtualToolBar;
+                fileSaver = mainWindow.fileSaver;
             }
         }
         public void initReplay(string path)
@@ -168,6 +184,11 @@ namespace ibcdatacsharp.UI.CamaraViewport
                         imgViewport.Source = BitmapSourceConverter.ToBitmapSource(currentFrame);
                     }
                     );
+                    if(virtualToolBar.recordState == ToolBar.Enums.RecordState.Recording &&
+                        fileSaver.recordVideo)
+                    {
+                        Task.Run(() => fileSaver.appendFrame(currentFrame));
+                    }
                 }
                 //await Task.Delay(1000 / fps);
             }
