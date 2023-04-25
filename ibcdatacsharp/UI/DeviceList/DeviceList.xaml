@@ -116,7 +116,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Image Grid.Column="1" Source="pack://application:,,,/UI/DeviceList/Icons/arrow-icon.png"/>
-                            <CheckBox IsEnabled="{Binding Path=connected, Converter={StaticResource jaEnabledConverter}}" Grid.Column="2" IsChecked="{Binding Path=used}" Checked="onCheckIMU"/>
+                            <CheckBox IsEnabled="{Binding Path=connected, Converter={StaticResource jaEnabledConverted}}" Grid.Column="2" IsChecked="{Binding Path=used}" Checked="onCheckIMU"/>
                             <ComboBox Grid.Column="3" Text="{Binding Path=A}">
                                 <ComboBoxItem>0</ComboBoxItem>
                                 <ComboBoxItem>1</ComboBoxItem>
