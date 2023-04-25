@@ -30,7 +30,41 @@ namespace ibcdatacsharp.UI.CamaraViewport
     {
         private TimeLine.TimeLine timeLine;
         private VirtualToolBar virtualToolBar;
-        private FileSaver.FileSaver fileSaver;
+        private FileSaver.FileSaver _fileSaver;
+        private FileSaver.FileSaver fileSaver
+        {
+            get
+            {
+                lock (_fileSaver)
+                {
+                    return _fileSaver;
+                }
+            }
+            set
+            {
+                lock(_fileSaver)
+                {
+                    _fileSaver = value;
+                }
+            }
+        }
+        private System.Windows.Controls.Image imageViewport
+        {
+            get
+            {
+                lock (imgViewport)
+                {
+                    return imgViewport;
+                }
+            }
+            set
+            {
+                lock(imgViewport)
+                {
+                    imgViewport = value;
+                }
+            }
+        }
         private VideoCapture videoCapture;
 
         private CancellationTokenSource cancellationTokenSourceDisplay;
@@ -65,7 +99,7 @@ namespace ibcdatacsharp.UI.CamaraViewport
         {
             InitializeComponent();
             _currentFrame = getBlackImage(); // Acceder directamente porque no estaba inicializado (Error sino)
-            imgViewport.Source = BitmapSourceConverter.ToBitmapSource(currentFrame);
+            imageViewport.Source = BitmapSourceConverter.ToBitmapSource(currentFrame);
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             if (mainWindow.timeLine.Content == null)
             {
@@ -83,19 +117,19 @@ namespace ibcdatacsharp.UI.CamaraViewport
                 mainWindow.initialized += delegate (object sender, EventArgs e)
                 {
                     virtualToolBar = mainWindow.virtualToolBar;
-                    fileSaver = mainWindow.fileSaver;
+                    _fileSaver = mainWindow.fileSaver;
                 };
             }
             else
             {
                 virtualToolBar = mainWindow.virtualToolBar;
-                fileSaver = mainWindow.fileSaver;
+                _fileSaver = mainWindow.fileSaver;
             }
         }
         public void initReplay(string path)
         {
             endCameraTask(); // Dejar de usar la camara
-            imgViewport.Visibility = Visibility.Collapsed;
+            imageViewport.Visibility = Visibility.Collapsed;
             videoViewport.Visibility = Visibility.Visible;
             videoViewport.Source = new Uri(path);
             videoViewport.LoadedBehavior = MediaState.Pause;
@@ -108,7 +142,7 @@ namespace ibcdatacsharp.UI.CamaraViewport
         {
             if (videoViewport.Source != null)
             {
-                imgViewport.Visibility = Visibility.Visible;
+                imageViewport.Visibility = Visibility.Visible;
                 videoViewport.Visibility = Visibility.Collapsed;
                 videoViewport.Source = null;
                 timeLine.model.timeEvent -= onUpdateTimeLine;
@@ -186,15 +220,15 @@ namespace ibcdatacsharp.UI.CamaraViewport
                 if (!currentFrame.Empty())
                 {
                     //currentFrame = frame;
-                    await Dispatcher.BeginInvoke(DispatcherPriority.Normal, () =>
+                    Dispatcher.BeginInvoke(DispatcherPriority.Normal, () =>
                     {
-                        imgViewport.Source = BitmapSourceConverter.ToBitmapSource(currentFrame);
+                        imageViewport.Source = BitmapSourceConverter.ToBitmapSource(currentFrame);
                     }
                     );
                     if(virtualToolBar.recordState == ToolBar.Enums.RecordState.Recording &&
                         fileSaver.recordVideo)
                     {
-                        await Task.Run(() => fileSaver.appendFrame(currentFrame));
+                        Task.Run(() => fileSaver.appendFrame(currentFrame));
                     }
                 }
                 //await Task.Delay(1000 / fps);
