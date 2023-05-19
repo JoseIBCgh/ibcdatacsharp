@@ -186,7 +186,6 @@ namespace ibcdatacsharp.UI
         private void SetLogText(string device, string text)
         {
 
-
             var output = "";
             var message = "";
 

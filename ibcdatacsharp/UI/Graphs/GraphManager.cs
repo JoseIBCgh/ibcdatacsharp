@@ -1130,17 +1130,13 @@ namespace ibcdatacsharp.UI.Graphs
                         }
 
                         Vector3[] angularVelocity = new Vector3[4];
-                        angularVelocity[0].X = Helpers.AngularVelocityFromDegrees(angleX_v_a[0], prev_angle.X, dt);
-                        angularVelocity[0].Y = Helpers.AngularVelocityFromDegrees(angleY_v_a[0], prev_angle.Y, dt);
-                        angularVelocity[0].Z = Helpers.AngularVelocityFromDegrees(angleZ_v_a[0], prev_angle.Z, dt);
-                        for (int i = 1; i < 4; i++)
+                        for(int i = 0; i < 4; i++)
                         {
-                            angularVelocity[i].X = Helpers.AngularVelocityFromDegrees(angleX_v_a[i], angleX_v_a[i - 1], dt);
-                            angularVelocity[i].Y = Helpers.AngularVelocityFromDegrees(angleY_v_a[i], angleY_v_a[i - 1], dt);
-                            angularVelocity[i].Z = Helpers.AngularVelocityFromDegrees(angleZ_v_a[i], angleZ_v_a[i - 1], dt);
+                            Vector3 angles = new Vector3(angleX_v_a[i],
+                                angleY_v_a[i], angleZ_v_a[i]);
+                            angularVelocity[i] = Helpers.AngularVelocityMethod2(angles);
                         }
-                        prev_angle = new Vector3(angleX[3], angleY[3], angleZ[3]);
-
+                        
                         Vector3[] angularAcceleration = new Vector3[4];
                         angularAcceleration[0] = Helpers.AngularAcceleration(angularVelocity[0], prev_angle_vel, dt);
                         for (int i = 1; i < 4; i++)

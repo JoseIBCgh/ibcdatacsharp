@@ -319,5 +319,14 @@ namespace ibcdatacsharp.UI.Common
                     quats[i].Z);
             }
         }
+        public static Vector3 AngularVelocityMethod2(Vector3 angles)
+        {
+            double x = angles.X + Math.Sin(angles.Y) * angles.Z;
+            double y = Math.Cos(angles.X) * angles.Y -
+                Math.Sin(angles.X) * Math.Cos(angles.Y) * angles.Z;
+            double z = Math.Sin(angles.X) * angles.Y +
+                Math.Cos(angles.X) * Math.Cos(angles.Y) * angles.Z;
+            return new Vector3((float)x, (float)y, (float)z);
+        }
     }
 }
