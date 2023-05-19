@@ -1129,15 +1129,25 @@ namespace ibcdatacsharp.UI.Graphs
                             angleZ_v_a = angleZ;
                         }
 
-                        Vector3[] angularVelocity = new Vector3[4];
-                        for(int i = 0; i < 4; i++)
+                        
+                        Vector3[] angularVelocity = new Vector3[3];
+                        float x = Helpers.AngularVelocityDerivate(angleX_v_a[1], prev_angle.X, dt);
+                        float y = Helpers.AngularVelocityDerivate(angleY_v_a[1], prev_angle.Y, dt);
+                        float z = Helpers.AngularVelocityDerivate(angleZ_v_a[1], prev_angle.Z, dt);
+                        angularVelocity[0] = new Vector3(x, y, z);
+                        for(int i = 1; i < 3; i++)
                         {
-                            Vector3 angles = new Vector3(angleX_v_a[i],
-                                angleY_v_a[i], angleZ_v_a[i]);
-                            angularVelocity[i] = Helpers.AngularVelocityMethod2(angles);
+                            x = Helpers.AngularVelocityDerivate(angleX_v_a[i + 1], angleX_v_a[i - 1], dt);
+                            y = Helpers.AngularVelocityDerivate(angleY_v_a[i + 1], angleY_v_a[i - 1], dt);
+                            z = Helpers.AngularVelocityDerivate(angleZ_v_a[i + 1], angleZ_v_a[i - 1], dt);
+                            angularVelocity[i] = new Vector3(x, y, z);
                         }
                         
-                        Vector3[] angularAcceleration = new Vector3[4];
+                        Vector3[] angularAcceleration = new Vector3[3];
+                        float ax = Helpers.AngularVelocityDerivate(angleX_v_a[1], prev_angle.X, dt);
+                        float ay = Helpers.AngularVelocityDerivate(angleY_v_a[1], prev_angle.Y, dt);
+                        float az = Helpers.AngularVelocityDerivate(angleZ_v_a[1], prev_angle.Z, dt);
+                        angularAcceleration[3] = new Vector3(x, y, z);
                         angularAcceleration[0] = Helpers.AngularAcceleration(angularVelocity[0], prev_angle_vel, dt);
                         for (int i = 1; i < 4; i++)
                         {
@@ -1148,6 +1158,8 @@ namespace ibcdatacsharp.UI.Graphs
                         float offsetX = (float)this.angleX.model.offset;
                         float offsetY = (float)this.angleY.model.offset;
                         float offsetZ = (float)this.angleZ.model.offset;
+
+                        prev_angle = new Vector3(angleX_v_a[3], angleY_v_a[3], angleZ_v_a[3]);
 
                         if (virtualToolBar.recordState == RecordState.Recording)
                         {

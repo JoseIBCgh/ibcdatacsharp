@@ -328,5 +328,13 @@ namespace ibcdatacsharp.UI.Common
                 Math.Cos(angles.X) * Math.Cos(angles.Y) * angles.Z;
             return new Vector3((float)x, (float)y, (float)z);
         }
+        public static float AngularVelocityDerivate(float angle_tp1, float angle_tm1, float dt)
+        {
+            return (angle_tp1 - angle_tm1) / (2 * dt);  
+        }
+        public static float AngularAccelerationDerivate(float angle_tp1, float angle_t, float angle_tm1, float dt)
+        {
+            return (angle_tp1 - 2 * angle_t + angle_tm1) / (float)Math.Pow(dt, 2);
+        }
     }
 }
