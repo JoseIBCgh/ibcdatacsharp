@@ -20,6 +20,8 @@ using System.Net;
 using System.Globalization;
 using static System.Windows.Forms.AxHost;
 using System.Windows.Forms.Design;
+using ibcdatacsharp.EKF_deprecated;
+
 
 namespace ibcdatacsharp.UI.Graphs
 {
@@ -32,7 +34,6 @@ namespace ibcdatacsharp.UI.Graphs
         public List<Frame> graphs2IMU;
         public List<Frame> graphsSagital;
         private SagitalAngles.SagitalAngles sagitalAngles;
-
 
         public GraphManager()
         {
@@ -222,6 +223,10 @@ namespace ibcdatacsharp.UI.Graphs
 
         public delegate void QuaternionEventHandler(object sender, byte handler, Quaternion q);
         public event QuaternionEventHandler quaternionEvent;
+
+        // Para unity
+        JoingAngles JA = new JoingAngles();
+
         //End Wise
         public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU, List<Frame> graphsSagital,
             VirtualToolBar virtualToolBar, Device.Device device, DeviceList.DeviceList deviceList, 
@@ -1095,6 +1100,11 @@ namespace ibcdatacsharp.UI.Graphs
                                     angleYprev = angleY[i];
                                     angleZprev = angleZ[i];
                                 }
+
+                                // para probar con Unity
+
+                                double angleJA = JA.GetRelativeAngles(qbase, qmob);
+                                Trace.WriteLine($"JA=> {angleJA}");
                             }
                             
 

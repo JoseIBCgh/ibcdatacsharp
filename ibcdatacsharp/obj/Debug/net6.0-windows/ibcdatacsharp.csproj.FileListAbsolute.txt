@@ -183,6 +183,9 @@ C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdata
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdatacsharp.runtimeconfig.json
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdatacsharp.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ibcdatacsharp.pdb
+C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\AForge.dll
+C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\AForge.Video.dll
+C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\AForge.Video.DirectShow.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\DirectShowLib.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\AvalonDock.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\MathNet.Numerics.dll
@@ -202,6 +205,8 @@ C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ScottPl
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\System.CodeDom.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\System.IO.Ports.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\System.Management.dll
+C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\UnityEditor.dll
+C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\UnityEngine.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\ca-ES\AvalonDock.resources.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\cs-CZ\AvalonDock.resources.dll
 C:\Users\Deva\wsibc\ibcdatacsharp\ibcdatacsharp\bin\Debug\net6.0-windows\de\AvalonDock.resources.dll

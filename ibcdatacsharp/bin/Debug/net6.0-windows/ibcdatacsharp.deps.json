@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v6.0": {
       "ibcdatacsharp/1.0.0": {
         "dependencies": {
+          "AForge.Video.DirectShow": "2.2.5",
           "DirectShowLib": "1.0.0",
           "DirectShowLib.Standard": "2.1.0",
           "Dirkster.AvalonDock": "4.70.2",
@@ -27,10 +28,42 @@
           "System.IO.Ports": "7.0.0",
           "System.Management": "7.0.0",
           "System.Management.dll": "1.0.0",
+          "System.Numerics.Vectors": "4.5.0",
+          "Unity3D.SDK": "2021.1.14.1",
           "WisewalkSDK": "1.0.0.0"
         },
         "runtime": {
           "ibcdatacsharp.dll": {}
+        }
+      },
+      "AForge/2.2.5": {
+        "runtime": {
+          "lib/AForge.dll": {
+            "assemblyVersion": "2.2.5.0",
+            "fileVersion": "2.2.5.0"
+          }
+        }
+      },
+      "AForge.Video/2.2.5": {
+        "dependencies": {
+          "AForge": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Video.dll": {
+            "assemblyVersion": "2.2.5.0",
+            "fileVersion": "2.2.5.0"
+          }
+        }
+      },
+      "AForge.Video.DirectShow/2.2.5": {
+        "dependencies": {
+          "AForge.Video": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Video.DirectShow.dll": {
+            "assemblyVersion": "2.2.5.0",
+            "fileVersion": "2.2.5.0"
+          }
         }
       },
       "DirectShowLib/1.0.0": {
@@ -386,6 +419,18 @@
       "System.Memory/4.5.4": {},
       "System.Numerics.Vectors/4.5.0": {},
       "System.Runtime.CompilerServices.Unsafe/6.0.0": {},
+      "Unity3D.SDK/2021.1.14.1": {
+        "runtime": {
+          "lib/UnityEditor.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          },
+          "lib/UnityEngine.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "WisewalkSDK/1.0.0.0": {
         "runtime": {
           "WisewalkSDK.dll": {
@@ -401,6 +446,27 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "AForge/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-clkumhM9DggqIzEXAHgVLeWO4arG5YfoPr7J4jfjJx35AoeEIJSSm49J25bwp/9mXQYLwi7y1Wunc8qgYJsGxg==",
+      "path": "aforge/2.2.5",
+      "hashPath": "aforge.2.2.5.nupkg.sha512"
+    },
+    "AForge.Video/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XqzcOXtBUagEPRqg/00oayxlCPmxP4284SdM62mVotsNoD03fs19BrzdMBfhUOOYPyd0B/IXH7tEWnSDmc2gxA==",
+      "path": "aforge.video/2.2.5",
+      "hashPath": "aforge.video.2.2.5.nupkg.sha512"
+    },
+    "AForge.Video.DirectShow/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pEch6felU/RGAbl0A7yjaQjsGxwiRFU9R+qBqR92wQo++XhzPLeQaZHnAPIBYaG7MfoqtjgCDkK4z3Tra4VQ3w==",
+      "path": "aforge.video.directshow/2.2.5",
+      "hashPath": "aforge.video.directshow.2.2.5.nupkg.sha512"
     },
     "DirectShowLib/1.0.0": {
       "type": "package",
@@ -632,6 +698,13 @@
       "sha512": "sha512-/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg==",
       "path": "system.runtime.compilerservices.unsafe/6.0.0",
       "hashPath": "system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    },
+    "Unity3D.SDK/2021.1.14.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-t5wm+eCp4HvhSiAmH2lASj82QobnZe0uEwZyd+RreN4bRqB6x2kSK4uvu213TQrtMeDi+HB015wWWu2VnKpEIQ==",
+      "path": "unity3d.sdk/2021.1.14.1",
+      "hashPath": "unity3d.sdk.2021.1.14.1.nupkg.sha512"
     },
     "WisewalkSDK/1.0.0.0": {
       "type": "reference",
