@@ -104,6 +104,9 @@
             <MenuItem Header="About" Height="30">
                 <MenuItem Header="Version" Click="showVersion" Height="30"/>
             </MenuItem>
+            <MenuItem Header="Login" Height="30">
+                <MenuItem Header="Login" Click="showLogin" Height="30"/>
+            </MenuItem>
         </Menu>
     </DockPanel>
 </Page>

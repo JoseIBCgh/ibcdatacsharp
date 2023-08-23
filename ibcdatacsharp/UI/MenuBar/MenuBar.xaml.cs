@@ -1,4 +1,5 @@
-﻿using ibcdatacsharp.UI.MenuBar.View;
+﻿using ibcdatacsharp.UI.Login;
+using ibcdatacsharp.UI.MenuBar.View;
 using ibcdatacsharp.UI.ToolBar;
 using ibcdatacsharp.UI.ToolBar.Enums;
 using System;
@@ -99,6 +100,12 @@ namespace ibcdatacsharp.UI.MenuBar
         {
             Version version = new Version();
             version.ShowDialog();
+        }
+
+        private void showLogin(object sender, RoutedEventArgs e)
+        {
+            Login.Login login = new Login.Login();
+            login.ShowDialog();
         }
 
         private void showWindow(object sender, RoutedEventArgs e)

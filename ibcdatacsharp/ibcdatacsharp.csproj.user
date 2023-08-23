@@ -45,6 +45,9 @@
     <Compile Update="UI\Graphs\OneIMU\GraphQuaternion.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UI\Login\Login.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UI\MenuBar\MenuBar.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -105,6 +108,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\Graphs\OneIMU\GraphQuaternion.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Login\Login.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\MainWindow.xaml">
