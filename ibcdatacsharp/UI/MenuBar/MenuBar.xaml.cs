@@ -1,5 +1,4 @@
-﻿using ibcdatacsharp.UI.Login;
-using ibcdatacsharp.UI.MenuBar.View;
+﻿using ibcdatacsharp.UI.MenuBar.View;
 using ibcdatacsharp.UI.ToolBar;
 using ibcdatacsharp.UI.ToolBar.Enums;
 using System;
@@ -40,9 +39,6 @@ namespace ibcdatacsharp.UI.MenuBar
             ViewVM.Add(new WindowInfo(mainWindow.angleZAnchorable));
             ViewVM.Add(new WindowInfo(mainWindow.angularVelocityAnchorable));
             ViewVM.Add(new WindowInfo(mainWindow.angularAccelerationAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.kneeAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.hipAnchorable));
-            ViewVM.Add(new WindowInfo(mainWindow.ankleAnchorable));
             ViewVM.Add(new WindowInfo(mainWindow.camaraAnchorable));
         }
         private void deactivateButtons()
@@ -104,8 +100,14 @@ namespace ibcdatacsharp.UI.MenuBar
 
         private void showLogin(object sender, RoutedEventArgs e)
         {
-            Login.Login login = new Login.Login();
+            Remote.Login login = new Remote.Login();
             login.ShowDialog();
+        }
+
+        private void showUsers(object sender, RoutedEventArgs e)
+        {
+            Remote.ChoseUser choseUser = new Remote.ChoseUser();
+            choseUser.ShowDialog();
         }
 
         private void showWindow(object sender, RoutedEventArgs e)

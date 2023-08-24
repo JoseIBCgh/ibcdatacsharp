@@ -9,7 +9,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace ibcdatacsharp.UI.Login
+namespace ibcdatacsharp.UI.Remote
 {
     /// <summary>
     /// Lógica de interacción para Login.xaml
@@ -47,6 +47,7 @@ namespace ibcdatacsharp.UI.Login
 
                         if(true)//(hashedPassword == user.Password)
                         {
+                            RemoteService.username = username.Text;
                             MessageBox.Show("Login correct", "Login correct", MessageBoxButton.OK, MessageBoxImage.Information);
                             Close();
                         }

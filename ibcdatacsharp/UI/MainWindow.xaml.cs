@@ -117,8 +117,6 @@ namespace ibcdatacsharp.UI
         public List<int> devHandlers;
         public FilterManager filterManager;
 
-        public SagitalAngles.SagitalAngles sagitalAngles;
-
         //end Wiseware API
         public MainWindow()
         {
@@ -128,7 +126,6 @@ namespace ibcdatacsharp.UI
             fileSaver = new FileSaver.FileSaver();
             graphManager = new GraphManager();
             filterManager = new FilterManager();
-            sagitalAngles = new SagitalAngles.SagitalAngles();
             initIcon();
             initToolBarHandlers();
             initMenuHandlers();
@@ -844,11 +841,11 @@ namespace ibcdatacsharp.UI
         #region SAGITAL ANGLES
         private void onCalculateMounting(object sender, EventArgs e)
         {
-            sagitalAngles.calculateMounting();
+            
         }
         private void onSaveFrontalReference(object sender, EventArgs e)
         {
-            sagitalAngles.calculateVirtualOrientation();
+            
         }
         #endregion
         // IMPORTANTE: La funcion eventHandler tiene que ser local

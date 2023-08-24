@@ -13,8 +13,6 @@ using ibcdatacsharp.DeviceList.TreeClasses;
 using ibcdatacsharp.UI.Filters;
 using ibcdatacsharp.UI.Graphs.OneIMU;
 using ibcdatacsharp.UI.Graphs.TwoIMU;
-using ibcdatacsharp.UI.Graphs.Sagital;
-using ibcdatacsharp.UI.SagitalAngles;
 using System.Linq;
 using System.Net;
 using System.Globalization;
@@ -28,9 +26,6 @@ namespace ibcdatacsharp.UI.Graphs
         public ReplayManager replayManager;
         public List<Frame> graphs1IMU;
         public List<Frame> graphs2IMU;
-        public List<Frame> graphsSagital;
-        private SagitalAngles.SagitalAngles sagitalAngles;
-
 
         public GraphManager()
         {
@@ -43,11 +38,9 @@ namespace ibcdatacsharp.UI.Graphs
             MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
             VirtualToolBar virtualToolBar = mainWindow.virtualToolBar;
             FilterManager filterManager = mainWindow.filterManager;
-            SagitalAngles.SagitalAngles sagitalAngles = mainWindow.sagitalAngles;
             Device.Device device = mainWindow.device;
             graphs1IMU = new List<Frame>();
             graphs2IMU = new List<Frame>();
-            graphsSagital = new List<Frame>();
             graphs1IMU.Add(mainWindow.accelerometer);
             graphs1IMU.Add(mainWindow.gyroscope);
             graphs1IMU.Add(mainWindow.magnetometer);
@@ -58,21 +51,18 @@ namespace ibcdatacsharp.UI.Graphs
             graphs2IMU.Add(mainWindow.angularVelocity);
             graphs2IMU.Add(mainWindow.angularAcceleration);
             graphs1IMU.Add(mainWindow.quaternions);
-            graphsSagital.Add(mainWindow.ankle);
-            graphsSagital.Add(mainWindow.hip);
-            graphsSagital.Add(mainWindow.knee);
             if (mainWindow.timeLine.Content == null)
             {
                 mainWindow.timeLine.Navigated += delegate (object sender, NavigationEventArgs e)
                 {
                     TimeLine.TimeLine timeLine = mainWindow.timeLine.Content as TimeLine.TimeLine;
-                    replayManager = new ReplayManager(timeLine, graphs1IMU, graphs2IMU, graphsSagital);
+                    replayManager = new ReplayManager(timeLine, graphs1IMU, graphs2IMU);
                 };
             }
             else
             {
                 TimeLine.TimeLine timeLine = mainWindow.timeLine.Content as TimeLine.TimeLine;
-                replayManager = new ReplayManager(timeLine, graphs1IMU, graphs2IMU, graphsSagital);
+                replayManager = new ReplayManager(timeLine, graphs1IMU, graphs2IMU);
             }
 
             if (mainWindow.deviceList.Content == null)
@@ -80,15 +70,15 @@ namespace ibcdatacsharp.UI.Graphs
                 mainWindow.deviceList.Navigated += delegate (object sender, NavigationEventArgs e)
                 {
                     DeviceList.DeviceList deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
-                    captureManager = new CaptureManager(graphs1IMU, graphs2IMU, graphsSagital,
-                        virtualToolBar, device, deviceList, filterManager, sagitalAngles);
+                    captureManager = new CaptureManager(graphs1IMU, graphs2IMU,
+                        virtualToolBar, device, deviceList, filterManager);
                 };
             }
             else
             {
                 DeviceList.DeviceList deviceList = mainWindow.deviceList.Content as DeviceList.DeviceList;
-                captureManager = new CaptureManager(graphs1IMU, graphs2IMU, graphsSagital,
-                    virtualToolBar, device, deviceList, filterManager, sagitalAngles);
+                captureManager = new CaptureManager(graphs1IMU, graphs2IMU,
+                    virtualToolBar, device, deviceList, filterManager);
             }
         }
         public void initReplay(GraphData data)
@@ -149,13 +139,7 @@ namespace ibcdatacsharp.UI.Graphs
         public GraphAngularVelocity angleVel;
         public GraphAngularAcceleration angleAcc;
 
-        public GraphAnkle ankle;
-        public GraphHip hip;
-        public GraphKnee knee;
-
         private int numIMUs;
-
-        private SagitalAngles.SagitalAngles sagitalAngles;
 
         MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
 
@@ -221,19 +205,17 @@ namespace ibcdatacsharp.UI.Graphs
         public delegate void QuaternionEventHandler(object sender, byte handler, Quaternion q);
         public event QuaternionEventHandler quaternionEvent;
         //End Wise
-        public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU, List<Frame> graphsSagital,
+        public CaptureManager(List<Frame> graphs1IMU, List<Frame> graphs2IMU,
             VirtualToolBar virtualToolBar, Device.Device device, DeviceList.DeviceList deviceList, 
-            FilterManager filterManager, SagitalAngles.SagitalAngles sagitalAngles)
+            FilterManager filterManager)
         {
             active = false;
             this.graphs1IMU = graphs1IMU;
             this.graphs2IMU = graphs2IMU;
-            this.graphsSagital = graphsSagital;
             this.virtualToolBar = virtualToolBar;
             this.device = device;
             this.deviceList = deviceList;
             this.filterManager = filterManager;
-            this.sagitalAngles = sagitalAngles;
             saveGraphs();
             saveTimeLine();
 
@@ -452,39 +434,6 @@ namespace ibcdatacsharp.UI.Graphs
             {
                 quaternions = mainWindow.quaternions.Content as GraphQuaternion;
             }
-            if (mainWindow.ankle.Content == null)
-            {
-                mainWindow.ankle.Navigated += delegate (object sender, NavigationEventArgs e)
-                {
-                    ankle = mainWindow.ankle.Content as GraphAnkle;
-                };
-            }
-            else
-            {
-                ankle = mainWindow.ankle.Content as GraphAnkle;
-            }
-            if (mainWindow.hip.Content == null)
-            {
-                mainWindow.hip.Navigated += delegate (object sender, NavigationEventArgs e)
-                {
-                    hip = mainWindow.hip.Content as GraphHip;
-                };
-            }
-            else
-            {
-                hip = mainWindow.hip.Content as GraphHip;
-            }
-            if (mainWindow.knee.Content == null)
-            {
-                mainWindow.knee.Navigated += delegate (object sender, NavigationEventArgs e)
-                {
-                    knee = mainWindow.knee.Content as GraphKnee;
-                };
-            }
-            else
-            {
-                knee = mainWindow.knee.Content as GraphKnee;
-            }
         }
 
         // issue #100
@@ -536,10 +485,6 @@ namespace ibcdatacsharp.UI.Graphs
                         case 2:
                             saveHandlers();
                             graphs = graphs2IMU;
-                            break;
-                        case 4:
-                            graphs = graphsSagital;
-                            sagitalAngles.initIMUs();
                             break;
                     }
                     if (graphs != null)
@@ -682,7 +627,6 @@ namespace ibcdatacsharp.UI.Graphs
                 //Opcion 1 desactivar todos los graficos
                 deactivateGraphs(graphs1IMU);
                 deactivateGraphs(graphs2IMU);
-                deactivateGraphs(graphsSagital);
                 virtualToolBar.stopEvent -= onStop; //funcion local
                 mainWindow.api.StopStream(out error);
                 //Opcion 2 desactivar solo los graficos que toquen no se si funciona
@@ -776,9 +720,6 @@ namespace ibcdatacsharp.UI.Graphs
                         case 2:
                             saveHandlers();
                             graphs = graphs2IMU;
-                            break;
-                        case 4:
-                            graphs = graphsSagital;
                             break;
                     }
                     if(graphs != null)
@@ -888,7 +829,6 @@ namespace ibcdatacsharp.UI.Graphs
         {
             fakets = 0;
             frame = 0;
-            sagitalAngles.initRecord();
         }
         private void gyroDegrees(ref WisewalkSDK.WisewalkData data)
         {
@@ -1184,9 +1124,6 @@ namespace ibcdatacsharp.UI.Graphs
                         fakets += 0.04f;
                     }
                     break;
-                case 4:
-                    sagitalAngles.processSerialData(deviceHandler, data);
-                    break;
             }
             /*
             // Only a IMU
@@ -1427,14 +1364,12 @@ namespace ibcdatacsharp.UI.Graphs
         private TimeLine.TimeLine timeLine;
         private List<Frame> graphs1IMU;
         private List<Frame> graphs2IMU;
-        private List<Frame> graphsSagital;
-        public ReplayManager(TimeLine.TimeLine timeLine, List<Frame> graphs1IMU, List<Frame> graphs2IMU, List<Frame> graphsSagital)
+        public ReplayManager(TimeLine.TimeLine timeLine, List<Frame> graphs1IMU, List<Frame> graphs2IMU)
         {
             active = false;
             this.timeLine = timeLine;
             this.graphs1IMU = graphs1IMU;
             this.graphs2IMU = graphs2IMU;
-            this.graphsSagital = graphsSagital;
         }
         public void activate(GraphData graphData)
         {
@@ -1451,9 +1386,6 @@ namespace ibcdatacsharp.UI.Graphs
                         break;
                     case 2:
                         graphs = graphs2IMU;
-                        break;
-                    case 4:
-                        graphs = graphsSagital;
                         break;
 
                 }
@@ -1547,9 +1479,6 @@ namespace ibcdatacsharp.UI.Graphs
                     case 2:
                         graphs = graphs2IMU;
                         break;
-                    case 4:
-                        graphs = graphsSagital;
-                        break;
                 }
                 if(graphs != null)
                 {
@@ -1639,9 +1568,6 @@ namespace ibcdatacsharp.UI.Graphs
                     case 2:
                         graphs = graphs2IMU;
                         break ;
-                    case 4:
-                        graphs = graphsSagital;
-                        break;
                 }
                 if(graphs != null)
                 {

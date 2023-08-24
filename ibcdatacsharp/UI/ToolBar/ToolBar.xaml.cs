@@ -7,7 +7,6 @@ using System.Windows.Media.Imaging;
 using ibcdatacsharp.UI.Common;
 using System.Windows.Media.Animation;
 using ibcdatacsharp.UI.Filters;
-using ibcdatacsharp.UI.SagitalAngles;
 using System.Diagnostics;
 using ibcdatacsharp.DeviceList.TreeClasses;
 

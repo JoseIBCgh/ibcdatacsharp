@@ -45,16 +45,16 @@
     <Compile Update="UI\Graphs\OneIMU\GraphQuaternion.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\Login\Login.xaml.cs">
+    <Compile Update="UI\Remote\ChoseUser.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UI\Remote\Login.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UI\MenuBar\MenuBar.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UI\MenuBar\Version.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="UI\Graphs\Sagital\GraphHip.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="UI\Subjects\Subjects.xaml.cs">
@@ -110,7 +110,10 @@
     <Page Update="UI\Graphs\OneIMU\GraphQuaternion.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI\Login\Login.xaml">
+    <Page Update="UI\Remote\ChoseUser.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\Remote\Login.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\MainWindow.xaml">
@@ -120,15 +123,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\MenuBar\Version.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UI\Graphs\Sagital\GraphAnkle.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UI\Graphs\Sagital\GraphKnee.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UI\Graphs\Sagital\GraphHip.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\Subjects\Subjects.xaml">

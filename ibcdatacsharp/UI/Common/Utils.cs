@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 
-namespace ibcdatacsharp.UI.SagitalAngles
+namespace ibcdatacsharp.UI.Common
 {
     public static class Utils
     {

@@ -4,8 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:System="clr-namespace:System;assembly=mscorlib"
-      xmlns:sagital="clr-namespace:ibcdatacsharp.UI.SagitalAngles"
       xmlns:local="clr-namespace:ibcdatacsharp.UI.ToolBar"
+      xmlns:common="clr-namespace:ibcdatacsharp.UI.Common"
       mc:Ignorable="d" 
       d:DesignHeight="30" d:DesignWidth="1100"
       Title="ToolBar">
@@ -14,7 +14,7 @@
         <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues"
                             ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="sagital:Utils+RotSeq"/>
+                <x:Type TypeName="common:Utils+RotSeq"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Page.Resources>

@@ -1,12 +1,16 @@
-﻿using ibcdatacsharp.UI.Device;
+﻿using ibcdatacsharp.Models;
+using ibcdatacsharp.UI.Device;
+using ibcdatacsharp.UI.Remote;
 using ibcdatacsharp.UI.ToolBar;
 using ibcdatacsharp.UI.ToolBar.Enums;
+using Microsoft.EntityFrameworkCore;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -281,7 +285,35 @@ namespace ibcdatacsharp.UI.FileSaver
         private async void saveCsvFile()
         {
             string filePath = path + Path.DirectorySeparatorChar + csvFile;
-            await File.WriteAllTextAsync(filePath, csvData.ToString());
+            await System.IO.File.WriteAllTextAsync(filePath, csvData.ToString());
+
+            if (RemoteService.username != null && RemoteService.selectedUser != null)
+            {
+                using (var dbContext = new PrefallContext())
+                {
+                    User selectedUser = dbContext.Users.Find(RemoteService.selectedUser.Id);
+                    List<Test> tests = dbContext.Tests.Where((t) => t.IdPaciente == selectedUser.Id).ToList();
+                    int maxNum = -1;
+                    if (tests.Count > 0)
+                        maxNum = tests.Max(t => t.NumTest);
+                    Test test = new Test
+                    {
+                        NumTest = maxNum + 1,
+                        IdPaciente = selectedUser.Id,
+                        IdPacienteNavigation = selectedUser
+                    };
+                    dbContext.Tests.Add(test);
+                    try
+                    {
+                        dbContext.SaveChanges();
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        Exception innerException = ex.InnerException;
+                        Trace.WriteLine(innerException.Message);
+                    }
+                }
+            }
         }
         // Se llama al seleccionar las opciones de grabacion
         public void onSaveInfo(object sender, SaveArgs args)
@@ -325,7 +357,7 @@ namespace ibcdatacsharp.UI.FileSaver
                 csvData.Append(line);
             }
             string filePath = path + Path.DirectorySeparatorChar + filename;
-            File.WriteAllTextAsync(filePath, csvData.ToString());
+            System.IO.File.WriteAllTextAsync(filePath, csvData.ToString());
         }
     }
 }
